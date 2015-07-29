@@ -1,0 +1,18 @@
+Package: camtrapR
+Type: Package
+Title: Camera Trap Photograph Management and Preparation of Occupancy
+        Analyses
+Version: 0.97.0
+Date: 2015-07-29
+Author: Juergen Niedballa  [aut, cre],
+        Alexandre Courtiol  [ctb]
+Maintainer: Juergen Niedballa <niedballa@izw-berlin.de>
+Depends: R (>= 3.1.0)
+Imports: methods, overlap
+Suggests: unmarked
+Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photographs, computes record databases and detection/non-detection matrices for occupancy analysis with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station) and can plot activity data using various functions (using package overlap and adapting function from the plotrix package).
+License: GPL (>= 2)
+NeedsCompilation: no
+Packaged: 2015-07-29 15:08:30 UTC; niedballa
+Repository: CRAN
+Date/Publication: 2015-07-29 17:51:21

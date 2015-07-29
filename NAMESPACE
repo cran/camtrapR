@@ -1,0 +1,15 @@
+importFrom("overlap", overlapEst, getBandWidth, densityFit)
+importFrom("grDevices", col2rgb, dev.off, extendrange, png,
+           rgb)
+importFrom("graphics", abline, axis, box, grconvertX, grconvertY,
+           hist, legend, lines, par, plot, plot.default, points,
+           polygon, rect, segments, strheight, strwidth,
+           text)
+importFrom("stats", aggregate, na.omit)
+importFrom("utils", modifyList, write.csv)
+importFrom("methods", hasArg)
+
+export(activityDensity, activityHistogram, activityOverlap, activityRadial,
+      appendSpeciesNames, cameraOperation, checkSpeciesFolders,
+      createSpeciesFolders, detectionHistory, detectionMaps, exifTagNames, exiftoolPath,
+      getSpeciesImages, imageRename, recordDatabase, surveyReport, TimeShiftImages)
