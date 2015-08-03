@@ -5,22 +5,23 @@
 Extract Exif metadata tag names from a jpg image
 }
 \description{
-The function will return tag names of Exif metadata of jpg images. It uses the first jpg image from a subdirectory of the specified directory.
+The function will return tag names of Exif metadata of jpg images. It uses the first jpg image it finds in a subdirectory of the specified directory.
 }
 \usage{
-exifTagNames(inDir, whichSubDir = 1)
+exifTagNames(inDir, 
+  whichSubDir = 1)
 }
 
 \arguments{
   \item{inDir}{
-  a character vector representing a directory containg camera trap images
+  a character vector representing a directory containing camera trap images  (e.g. inDir/StationA/Species1)
 }
 \item{whichSubDir}{
   integer. The number of the subdirectory of \code{inDir} in which to look for an image
 }
 }
 \details{
-Many digital cameras record information such as ambient temperature or moon phase under ma\-nu\-fact\-ur\-er-specific tag names in Exif meta\-data of jpg images. If the tag names are known, they can passed to the \code{\link{recordDatabase}} function via the \code{metadataTags} argument to extract those information from images and add them to the record database.
+Many digital cameras record information such as ambient temperature or moon phase under maker-specific tag names in Exif metadata of jpg images. If the tag names are known, they can passed to the \code{\link{recordDatabase}} function via the \code{metadataTags} argument to extract those information from images and add them to the record database.
 }
 \value{
 A character vector containing available metadata tag names.

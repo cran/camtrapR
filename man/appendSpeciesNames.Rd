@@ -2,7 +2,7 @@
 \alias{appendSpeciesNames}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Add or remove species name from image filenames
+Add or remove species names from image filenames
 }
 \description{
 Function to add or remove species names from jpg image filenames. Images must be sorted into station directories and species subdirectories.
@@ -17,7 +17,7 @@ appendSpeciesNames(inDir,
 \arguments{
 
   \item{inDir}{
-  Directory containing station directories with renamed and identified images in species directories
+  Directory containing station directories with renamed and identified images in species directories (e.g. inDir/StationA/Species1)
 }
   \item{removeNames}{
  logical. remove appended species names?
@@ -28,10 +28,10 @@ appendSpeciesNames(inDir,
 }
 
 \details{
- Species names can be appended or removed. If species names were appended several times by accident, they can all be removed by running the function with \code{removeNames = TRUE}. Before running the function, you may want to run \code{\link{checkSpeciesFolders}} to detect possible misidentifications.
+ Species names can be appended or removed. If species names were appended several times by accident, they can all be removed by running the function with \code{removeNames = TRUE}. Before running the function, you may want to run \code{\link{checkSpeciesFolders}} to detect possible misidentifications. As an example, the function would change an image file name from "StationA__2015-05-41__20-59-59(1).JPG" to "StationA__2015-05-41__20-59-59(1)__Species Name.JPG".
 }
 \value{
-A data frame containing the old and new file names and directories.
+A \code{data.frame} containing the old and new file names and directories.
 }
 % \references{
 % ~put references to the literature/web site here ~

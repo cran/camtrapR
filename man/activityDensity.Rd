@@ -2,7 +2,7 @@
 \alias{activityDensity}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Plot kernel density function of single-species activity
+Plot kernel density estimation of single-species activity
 }
 \description{
 The function plots a kernel density estimation of species diel activity using function \code{\link[overlap]{densityPlot}} from package \pkg{\link[overlap]{overlap}}.

@@ -12,4 +12,4 @@ importFrom("methods", hasArg)
 export(activityDensity, activityHistogram, activityOverlap, activityRadial,
       appendSpeciesNames, cameraOperation, checkSpeciesFolders,
       createSpeciesFolders, detectionHistory, detectionMaps, exifTagNames, exiftoolPath,
-      getSpeciesImages, imageRename, recordDatabase, surveyReport, TimeShiftImages)
+      getSpeciesImages, imageRename, recordDatabase, surveyReport, timeShiftImages)

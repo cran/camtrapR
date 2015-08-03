@@ -2,10 +2,10 @@
 \alias{createSpeciesFolders}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Create species folders for species identification
+Create species directories for species identification
 }
 \description{
-This function creates species subdirectories within station directories. They can be used for species identification by manually moving images into the respective species directories. It can also delete empty species directories (if species were not detected at sites).
+This function creates species subdirectories within station directories. They can be used for species identification by manually moving images into the respective species directories. The function can also delete empty species directories (if species were not detected at sites).
 }
 \usage{
 createSpeciesFolders(inDir, 
@@ -16,22 +16,22 @@ createSpeciesFolders(inDir,
 
 \arguments{
   \item{inDir}{
-  character. Directory containing station subdirectories with renamed images (output of  \code{\link{imageRename}})
+  character. Directory containing station subdirectories with renamed images (output of  \code{\link{imageRename}},  e.g. inDir/StationA)
 }
   \item{species}{
   character. names of species directories to be created in every (station) subdirectory of \code{inDir}
 }
   \item{removeFolders}{
-  logical. Indicating whether to create (TRUE) or remove species directories (FALSE).
+  logical. Indicating whether to create (TRUE) or remove (FALSE) species directories .
 }
 
 }
 \details{
 
-Empty directories can be created as containers for species identification, which should be done via drag and drop (i.e. moving images into species directories, not copying). After this, empty species directories can be deleted using \code{removeFolders = TRUE}. 
+Empty directories can be created as containers for species identification, which should be done via drag and drop (i.e. moving images into species directories, not copying). After this, empty species directories can be deleted using \code{removeFolders = TRUE}. The function will attempt to delete only directories which are specified in \code{species}.
 }
 \value{
-  A data.frame with directory names and an indicator for whether they exist.
+  A \code{data.frame} with directory names and an indicator for whether they were created or deleted.
 }
 \author{
 Juergen Niedballa

@@ -2,7 +2,7 @@
 \alias{getSpeciesImages}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Fetch all images of a species
+Copy all images of a species to a new directory
 }
 \description{
 This function will fetch all images of a particular species at all camera trap stations and copies these species' images to a new location. Images must be in the directory structure that is necessary for other functions of this package, too (species subdirectories within station directories). Images should be renamed prior to running the function to give them unique names based on station ID and date/time.
@@ -21,7 +21,7 @@ getSpeciesImages(species,
 character. species name for which the images are to be fetched
 }
   \item{inDir}{
-Directory in which to look for images. This is the directory containing the station directories, which in turn contain species directories. 
+Directory in which to look for images. This is the directory containing the station directories, which in turn contain species subdirectories (e.g. inDir/StationA/SpeciesA)
 }
   \item{outDir}{
 Directory in which to save species images (in a species subdirectory) 
@@ -34,12 +34,12 @@ logical. If TRUE, all .jpg images in the species folder in \code{outDir} will be
 }
 }
 \details{
-Rename the images in the folder structure using function \code{\link{imageRename}} to provide unique file names and prevent several images having the same name (if generic names like "DCIM0001.jpg" are used).
+Before running the function, first rename the images using function \code{\link{imageRename}} to provide unique file names and prevent several images from having the same name (if generic names like "DCIM0001.jpg" are used).
 \code{inDir} must contain station directories, which in turn contain species image subdirectories of name \code{species}.
-If \code{emptyOutDir} is TRUE, all .jpg images will be deleted from the target folder \code{outDir/species} recursively (in case there are station subdirectories). This may cause data loss, so please be careful. If \code{emptyOutDir} is FALSE and the target directory is not empty, an error will inform you and nothing will be copied, overwritten or deleted.
+If \code{emptyOutDir} is TRUE, all .jpg images will be deleted from the target folder \code{outDir/species} recursively (in case there are station subdirectories). This may cause data loss, so please be careful. If \code{emptyOutDir} is FALSE and the target directory contains any .jpg images, an error will inform you and nothing will be copied, overwritten or deleted.
 }
 \value{
-A data.frame with old and new file locations and the copy status (\code{copy_ok}; TRUE if copying was successful).
+A \code{data.frame} with old and new file locations and the copy status (\code{copy_ok}; TRUE if copying was successful).
 }
 
 \author{

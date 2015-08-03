@@ -1,36 +1,36 @@
-TimeShiftImages <- function(inDir,
-                            TimeShiftTable,
+timeShiftImages <- function(inDir,
+                            timeShiftTable,
                             stationCol,
                             cameraCol,
                             hasCameraSubfolders,
-                            TimeShiftColumn,
-                            TimeShiftSignColumn,
+                            timeShiftColumn,
+                            timeShiftSignColumn,
                             undo = FALSE
 )
 {
   if(Sys.which("exiftool") == "") stop("cannot find Exiftool")
 
-  TimeShiftTable <- apply(TimeShiftTable, MARGIN = 2, FUN = as.character)
+  timeShiftTable <- apply(timeShiftTable, MARGIN = 2, FUN = as.character)
 
-  stopifnot(c(stationCol, TimeShiftColumn, TimeShiftSignColumn) %in% colnames(TimeShiftTable))
+  stopifnot(c(stationCol, timeShiftColumn, timeShiftSignColumn) %in% colnames(timeShiftTable))
   if(isTRUE(hasCameraSubfolders)){
-    stopifnot(cameraCol %in% colnames(TimeShiftTable))
+    stopifnot(cameraCol %in% colnames(timeShiftTable))
   }
 
   stopifnot(is.logical(hasCameraSubfolders))
-  for(xy in 1:nrow(TimeShiftTable)){
-    if(length(unlist(strsplit(TimeShiftTable[xy,TimeShiftColumn], split = " "))) != 2) stop(paste("there is more than 1 space in your TimeShiftColumn string. Only 1 space is allowed (", TimeShiftTable[xy,stationCol], ")"))
-    if(nchar(TimeShiftTable[xy,TimeShiftColumn]) - nchar(gsub(":","",TimeShiftTable[xy,TimeShiftColumn])) != 4) stop("there should be 4 colons in TimeShiftColumn (", TimeShiftTable[xy,stationCol], ")")
-    if(TimeShiftTable[xy,TimeShiftSignColumn] %in% c("+", "-") == FALSE) stop("TimeShiftSignColumn can only be + or - (",
-                                                                              TimeShiftTable[xy,stationCol], ")")
-    if(length(unlist(lapply(strsplit(TimeShiftTable[xy,TimeShiftColumn], split = " "), FUN = strsplit, split = ":"))) != 6) stop("there must be six numbers in TimeShiftColumn (",
-                                                                                                                                 TimeShiftTable[xy,stationCol], ")")
+  for(xy in 1:nrow(timeShiftTable)){
+    if(length(unlist(strsplit(timeShiftTable[xy,timeShiftColumn], split = " "))) != 2) stop(paste("there is more than 1 space in your timeShiftColumn string. Only 1 space is allowed (", timeShiftTable[xy,stationCol], ")"))
+    if(nchar(timeShiftTable[xy,timeShiftColumn]) - nchar(gsub(":","",timeShiftTable[xy,timeShiftColumn])) != 4) stop("there should be 4 colons in timeShiftColumn (", timeShiftTable[xy,stationCol], ")")
+    if(timeShiftTable[xy,timeShiftSignColumn] %in% c("+", "-") == FALSE) stop("timeShiftSignColumn can only be + or - (",
+                                                                              timeShiftTable[xy,stationCol], ")")
+    if(length(unlist(lapply(strsplit(timeShiftTable[xy,timeShiftColumn], split = " "), FUN = strsplit, split = ":"))) != 6) stop("there must be six numbers in timeShiftColumn (",
+                                                                                                                                 timeShiftTable[xy,stationCol], ")")
   }
 
   if(isTRUE(hasCameraSubfolders)){
-    shift.dirs <- paste(inDir, TimeShiftTable[,stationCol], TimeShiftTable[,cameraCol], sep = "/")
+    shift.dirs <- paste(inDir, timeShiftTable[,stationCol], timeShiftTable[,cameraCol], sep = "/")
   } else {
-    shift.dirs <- paste(inDir, TimeShiftTable[,stationCol], sep = "/")
+    shift.dirs <- paste(inDir, timeShiftTable[,stationCol], sep = "/")
   }
 
   if(any(file.exists(shift.dirs) == FALSE)){
@@ -56,11 +56,11 @@ TimeShiftImages <- function(inDir,
 
     results.tmp <- list()
 
-    for(i in 1:nrow(TimeShiftTable)){
+    for(i in 1:nrow(timeShiftTable)){
       print(shift.dirs[i])
       list.files(shift.dirs)
-      command.tmp2b <- paste('exiftool -r "-DateTimeOriginal', TimeShiftTable[i,TimeShiftSignColumn], '=',
-                             TimeShiftTable[i,TimeShiftColumn], '" "', shift.dirs[i], '"', sep = "")
+      command.tmp2b <- paste('exiftool -r "-DatetimeOriginal', timeShiftTable[i,timeShiftSignColumn], '=',
+                             timeShiftTable[i,timeShiftColumn], '" "', shift.dirs[i], '"', sep = "")
       results.tmp[[i]] <- system(command.tmp2b, intern=TRUE)
       rm(command.tmp2b)
     }

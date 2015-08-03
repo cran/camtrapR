@@ -87,12 +87,37 @@ cameraOperation <- function(CTtable,
                collapse = ", "))
   }
 
+    if(isTRUE(hasProblems)){
+         
+      cols.prob.from <- grep(colnames(CTtable), pattern = "Problem\\d\\Sfrom")
+      cols.prob.to    <- grep(colnames(CTtable), pattern = "Problem\\d\\Sto")
+      
+      if(length(cols.prob.from) == 0) stop("could not find column ProblemX_from")
+      if(length(cols.prob.to) == 0) stop("could not find column ProblemX_to")
+          
+      if(length(cols.prob.from) != length(cols.prob.to)){
+        stop("length of 'Problem..._from' and 'Problem..._to' columns differs. Check format. Sample: 'Problem1_from', 'Problem1_to'")
+      }
+      
+      for(xy in c(cols.prob.from, cols.prob.to)){
+        CTtable[,xy] <- as.Date(as.character(CTtable[,xy]), format = dateFormat,  origin = "1970-01-01")
+      }
 
-  if(length(grep(colnames(CTtable), pattern = "Problem")) >= 1){
-    for(xy in grep(colnames(CTtable), pattern = "Problem")){
-      CTtable[,xy] <- as.Date(as.character(CTtable[,xy]), format = dateFormat,  origin = "1970-01-01")
+      for(xyz in cols.prob.from){
+        if(any(CTtable[,setupCol] > CTtable[,xyz], na.rm = TRUE)){
+          stop(paste(paste(CTtable[which(CTtable[,setupCol] > CTtable[,xyz]), stationCol], collapse = ", "), ": Problem begins before Setup"))
+        }
+      }
+      for(xyz2 in cols.prob.to){
+        if(any(CTtable[,retrievalCol] < CTtable[,xyz2], na.rm = TRUE)){
+          stop(paste(paste(CTtable[which(CTtable[,retrievalCol] < CTtable[,xyz2]), stationCol], collapse = ", "), ": Problem ends after retrieval"))
+        }
+      }
+      
+      
+      rm(xy, xyz, xyz2)
     }
-  }
+  
 
   # function
 
@@ -103,31 +128,8 @@ cameraOperation <- function(CTtable,
     colnames(m) <- as.character(as.Date(min(CTtable[,setupCol]):max(CTtable[,retrievalCol]), origin = "1970-01-01"))
     rownames(m) <- stationcam
 
-    # camera problem columns
-    stopifnot(length(grep(colnames(CTtable), pattern = "Problem\\d\\Sfrom")) == length(grep(colnames(CTtable), pattern = "Problem\\d\\Sto")))
-
-    # fill camera operation matrix (if at least 1 cam operational per Camera)
+     # fill camera operation matrix (if at least 1 cam operational per Camera)
     unique.tmp <- strsplit(stationcam, split = "_")
-
-    if(isTRUE(hasProblems)){
-      cols.prob.from <- grep(colnames(CTtable), pattern = "Problem\\d\\Sfrom")
-      cols.prob.to    <- grep(colnames(CTtable), pattern = "Problem\\d\\Sto")
-      if(length(cols.prob.from) != length(cols.prob.to)){
-        stop("length of 'Problem..._from' and 'Problem..._to' columns differs. Check format. Sample: 'Problem1_from', 'Problem1_to'")
-      }
-
-      for(xyz in cols.prob.from){
-        if(any(CTtable[,setupCol] > CTtable[,xyz], na.rm = TRUE)){
-          stop(paste(paste(CTtable[which(CTtable[,setupCol] > CTtable[,xyz]), stationCol], collapse = ", "), ": Problem begins before Setup"))
-        }
-      }
-      for(xyz2 in cols.prob.to){
-        if(any(CTtable[,retrievalCol] < CTtable[,xyz2], na.rm = TRUE)){
-          stop(paste(paste(CTtable[which(CTtable[,retrievalCol] > CTtable[,xyz2]), stationCol], collapse = ", "), ": Problem ends after retrieval"))
-        }
-      }
-      rm(xyz, xyz2)
-    }
 
 
     for(i in 1:length(unique.tmp)){
@@ -199,17 +201,6 @@ cameraOperation <- function(CTtable,
     rownames(m) <- unique(CTtable[,stationCol])
 
     unique.tmp <- unique(CTtable[,stationCol])
-
-    # camera problem columns
-    if(isTRUE(hasProblems)){
-      stopifnot(length(grep(colnames(CTtable), pattern = "Problem[[:digit:]]from")) == length(grep(colnames(CTtable), pattern = "Problem[[:digit:]]to")))
-
-      cols.prob.from <- grep(colnames(CTtable), pattern = "Problem[[:digit:]]from")
-      cols.prob.to    <- grep(colnames(CTtable), pattern = "Problem[[:digit:]]to")
-      if(length(cols.prob.from) != length(cols.prob.to)){
-        stop("number of 'Problem..._from' and 'Problem..._to' columns differs. Check format. Sample: 'Problem1_from', 'Problem1_to'")
-      }
-    }
 
     for(i in 1:length(unique.tmp)){
 

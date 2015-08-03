@@ -2,11 +2,11 @@
 \alias{checkSpeciesFolders}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Consistency check on species photograph identification
+Consistency check on species image identification
 }
 \description{
-This function assesses possible misidentification of species or mistakes in moving images to species directories. Within each station and for all images of each species, it assesses whether there are images taken within a given time interval in other species directories. Often it is unlikely that different species are encountered within a very short time intervals at the same location.
-This type of misidentification can arise easily if some images belonging to a sequence are moved into different species directories.
+This function assesses possible misidentification of species or mistakes in moving images to species directories. Within each station, it assesses whether there are images of a species taken within a given time interval in other species directories. Often, it is unlikely that different species are encountered within a very short time intervals at the same location.
+This type of misidentification can arise easily if some images belonging to a sequence of images were moved into different species directories.
 }
 \usage{
 checkSpeciesFolders(inDir, 
@@ -18,7 +18,7 @@ checkSpeciesFolders(inDir,
 
 \arguments{
   \item{inDir}{
-  chraracter. Directory containing station subdirectories, which in turn contain renamed and identified images in species subdirectories (e.g. inDir/Station1/SpeciesA)
+  chraracter. Directory containing station subdirectories, which in turn contain renamed and identified images in species subdirectories (e.g. inDir/StationA/Species1)
 }
   \item{maxDeltaTime}{
   numeric. Maximum time interval between images to be returned (in seconds)
@@ -31,7 +31,7 @@ checkSpeciesFolders(inDir,
 }
 }
 \details{
-Images may accidentally be moved into wrong directories when identifying species by moving images into directories. Imagine your camera takes 3 shots every time it is triggered and you move those three images into different species directories. The time difference will be very small (e.g. a few seconds). This function will return all these images for you to check.
+Images may accidentally be moved into wrong directories when identifying species by moving images into directories. Imagine your camera takes 3 shots every time it is triggered, and you move those three images into different species directories. The time difference will be very small (e.g. a few seconds). This function will return all these images for you to check if they were identified correctly.
 Directories like "blank" or "team" can be ignored using \code{exclude}.
 }
 \value{
@@ -44,7 +44,7 @@ A \code{data.frame} listing all images  with their file names, directory and tim
 Juergen Niedballa
 }
  \note{
-The function will not be able to find "isolated" images, i.e. images that were misidentified, but were not part of a sequence of images. Likewise, if all images of a sequence were misidentified, they cannot be found either.
+The function will not be able to find "isolated" images, i.e. images that were misidentified, but were not part of a sequence of images . Likewise, if all images of a sequence were misidentified, they cannot be found either.
  }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

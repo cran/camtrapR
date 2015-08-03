@@ -2,7 +2,7 @@
 \alias{detectionHistory}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Species detection histories for occupancy analysis
+Species detection histories for occupancy analyses
 }
 \description{
 This function generates species detection histories that can be used in occupancy analyses, e.g. with package \code{\link[unmarked]{unmarked}}. It generates detection histories in different formats, with adjustable session length and session start time (other than midnight).

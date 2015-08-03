@@ -2,7 +2,7 @@
 \alias{recordDatabase}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Generate a species record database
+Generate a species record database from camera trap images
 }
 \description{
 Generates a record database from a folder structure of camera trap images (station/species). Within each station directory, all images need to be sorted into species subdirectories.
@@ -21,7 +21,7 @@ recordDatabase(inDir,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{inDir}{
-  character. Directory containing station directories with renamed and identified images in species subdirectories
+  character. Directory containing station directories with renamed and identified images in species subdirectories (e.g. inDir/StationA/SpeciesA)
 }
   \item{includeCameras}{
   logical. Should function try to derive camera ID from image names? Requires images renamed with \code{\link{imageRename}}.

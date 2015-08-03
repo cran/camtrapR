@@ -21,8 +21,8 @@ The variables are as follows:
  \item utm_x.   x coordinate of station (easting)
  \item Setup_date.   camera trap setup date
  \item Retrieval_date.   camera trap retrieval date
- \item Problem1from.   date of beginning of camera malfunction
- \item Problem1to.   date of end of camera malfunction
+ \item Problem1_from.   date of beginning of camera malfunction
+ \item Problem1_to.   date of end of camera malfunction
  }
 }
 

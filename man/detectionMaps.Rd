@@ -2,7 +2,7 @@
 \alias{detectionMaps}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Generate maps of number of species and species presence by station
+Generate maps of species richness and species presence by station
 }
 \description{
 Generates maps of species presence for all species that were recorded and the number of species by station. Output can be in R and/or in png.
@@ -77,11 +77,11 @@ detectionMaps(CTtable,
   integer. number of pixels in pngs on the longer side
 }
 }
-% \details{
-%  ~~ If necessary, more details than the description above ~~
-% }
+ \details{
+The column name \code{stationCol} must be identical in \code{CTtable} and \code{recordTable}.
+ }
 \value{
-A data frame with station coordinates, numbers of events by species at each station and total species number by station. In addition and optionally, R graphics or png image files.
+A \code{data.frame} with station coordinates, numbers of events by species at each station and total species number by station. In addition and optionally, R graphics or png image files.
 }
 
 \author{

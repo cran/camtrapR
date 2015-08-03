@@ -1,0 +1,9 @@
+Version 0.97.1
+
+  o surveyReport: fixed bug which caused wrong numbers of active trap nights to be returned
+  o surveyReport: does not depend on function cameraOperation any more
+  o renamed function TimeShiftImages to timeShiftImages
+  o minor fixes in cameraOperation
+  o some rephrasing in help files
+  o changes to author list
+  
