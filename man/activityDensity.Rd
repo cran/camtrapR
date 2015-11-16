@@ -5,7 +5,7 @@
 Plot kernel density estimation of single-species activity
 }
 \description{
-The function plots a kernel density estimation of species diel activity using function \code{\link[overlap]{densityPlot}} from package \pkg{\link[overlap]{overlap}}.
+The function plots a kernel density estimation of species diel activity using function \code{\link[overlap]{densityPlot}} from package \pkg{overlap}.
 }
 \usage{
 activityDensity(recordTable, 
@@ -96,14 +96,14 @@ data(recordDatabaseSample)
 species4activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 
 activityDensity(recordTable = recordDatabaseSample,
-                        species = species4activity)
+                species     = species4activity)
 
 
 # all species at once
 
 activityDensity(recordTable = recordDatabaseSample,
                 all.species = TRUE,
-                writePNG = FALSE,
-                plotR = TRUE,
-                add.rug = TRUE)
+                writePNG    = FALSE,
+                plotR       = TRUE,
+                add.rug     = TRUE)
 }

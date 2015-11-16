@@ -5,7 +5,7 @@
 Plot overlapping kernel densities of two-species activities
 }
 \description{
-This function plots kernel density estimates of two species' diel activity data by calling the function \code{\link[overlap]{overlapPlot}} from package \pkg{\link[overlap]{overlap}}. It further computes the overlap coefficient Dhat1 by calling \code{\link[overlap]{overlapEst}}.
+This function plots kernel density estimates of two species' diel activity data by calling the function \code{\link[overlap]{overlapPlot}} from package \pkg{overlap}. It further computes the overlap coefficient Dhat1 by calling \code{\link[overlap]{overlapEst}}.
 }
 \usage{
   activityOverlap(recordTable, 
@@ -105,16 +105,16 @@ speciesA_for_activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 speciesB_for_activity <- "PBE"    # = Prionailurus bengalensis, Leopard Cat
 
 # create activity overlap plot
-activityOverlap (recordDatabaseSample,
-  speciesA = speciesA_for_activity,
-  speciesB = speciesB_for_activity,
-  writePNG = FALSE,
-  plotR = TRUE,
-  createDir = FALSE,
-  pngMaxPix = 1000,
-  linecol = c("red", "blue"),
-  linewidth = c(3,3),
-  add.rug = TRUE
+activityOverlap (recordTable = recordDatabaseSample,
+                 speciesA    = speciesA_for_activity,
+                 speciesB    = speciesB_for_activity,
+                 writePNG    = FALSE,
+                 plotR       = TRUE,
+                 createDir   = FALSE,
+                 pngMaxPix   = 1000,
+                 linecol     = c("red", "blue"),
+                 linewidth   = c(3,3),
+                 add.rug     = TRUE
 )
 
 

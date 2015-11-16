@@ -65,7 +65,7 @@ character. The directory into which the survey report is saved (optional)
 
 The value of \code{CTDateFormat} should be an interpretable by \code{\link[base]{as.Date}}
 \code{CTDateFormat} defaults to "YYYY-MM-DD", e.g. "2014-10-31". See \code{\link[base]{strptime}} for how to format date and time strings in R.
-If \code{CTHasProblemshasProblems} is set to TRUE the function tries to find columns \code{ProblemX_from} and \code{ProblemX_to} in \code{CTtable} (\code{X} designates numbers from 1 to n in which a camera or station was not operational). If there are no such columns all stations are assumed to have been operational from setup to retrieval.
+If \code{CTHasProblems} is set to TRUE the function tries to find columns \code{ProblemX_from} and \code{ProblemX_to} in \code{CTtable} (\code{X} designates numbers from 1 to n in which a camera or station was not operational). If there are no such columns all stations are assumed to have been operational from setup to retrieval.
 }
 \value{
  An invisible list containing 5 \code{data.frames}. 
@@ -96,17 +96,17 @@ Juergen Niedballa
 data(camtraps)
 data(recordDatabaseSample)
 
-reportTest <- surveyReport (recordTable = recordDatabaseSample,
-              CTtable = camtraps,
-              speciesCol = "Species",
-              stationCol = "Station",
-              setupCol = "Setup_date",
-              retrievalCol = "Retrieval_date",
-              CTDateFormat = "\%d/\%m/\%Y", 
-              recordDateTimeCol = "DateTimeOriginal",
-              recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S")
+reportTest <- surveyReport (recordTable          = recordDatabaseSample,
+                            CTtable              = camtraps,
+                            speciesCol           = "Species",
+                            stationCol           = "Station",
+                            setupCol             = "Setup_date",
+                            retrievalCol         = "Retrieval_date",
+                            CTDateFormat         = "\%d/\%m/\%Y", 
+                            recordDateTimeCol    = "DateTimeOriginal",
+                            recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S")
 
-class(reportTest) # a list with
+class(reportTest)  # a list with
 length(reportTest) # 5 elements
 
 reportTest[[1]]    # camera trap operation times and image date ranges
@@ -117,37 +117,35 @@ reportTest[[5]]    # number of species events by station including 0s (non-obser
 
 # with camera problems
 
-reportTest_problem <- surveyReport (recordTable = recordDatabaseSample,
-              CTtable = camtraps,
-              speciesCol = "Species",
-              stationCol = "Station",
-              setupCol = "Setup_date",
-              retrievalCol = "Retrieval_date",
-              CTDateFormat = "\%d/\%m/\%Y", 
-              recordDateTimeCol = "DateTimeOriginal",
-              recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
-              CTHasProblems = TRUE)
+reportTest_problem <- surveyReport (recordTable          = recordDatabaseSample,
+                                    CTtable              = camtraps,
+                                    speciesCol           = "Species",
+                                    stationCol           = "Station",
+                                    setupCol             = "Setup_date",
+                                    retrievalCol         = "Retrieval_date",
+                                    CTDateFormat         = "\%d/\%m/\%Y", 
+                                    recordDateTimeCol    = "DateTimeOriginal",
+                                    recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
+                                    CTHasProblems        = TRUE)
 
-reportTest_problem[[1]]
+reportTest_problem$survey_dates
 
 \dontrun{
 # run again with sinkpath defined
-reportTest <- surveyReport (recordTable = recordDatabaseSample,
-                            CTtable = camtraps,
-                            speciesCol = "Species",
-                            stationCol = "Station",
-                            setupCol = "Setup_date",
-                            retrievalCol = "Retrieval_date",
-                            CTDateFormat = "\%d/\%m/\%Y", 
-                            recordDateTimeCol = "DateTimeOriginal",
+reportTest <- surveyReport (recordTable          = recordDatabaseSample,
+                            CTtable              = camtraps,
+                            speciesCol           = "Species",
+                            stationCol           = "Station",
+                            setupCol             = "Setup_date",
+                            retrievalCol         = "Retrieval_date",
+                            CTDateFormat         = "\%d/\%m/\%Y", 
+                            recordDateTimeCol    = "DateTimeOriginal",
                             recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
-                            sinkpath = getwd())
+                            sinkpath             = getwd())
 
 # have a look at the text file
 readLines(list.files(getwd(), pattern = ".txt$", full.names = TRUE))
 }
-
-
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

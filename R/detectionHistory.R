@@ -5,14 +5,14 @@ detectionHistory <- function(recordTable,
                              speciesCol = "Species",
                              recordDateTimeCol = "DateTimeOriginal",
                              recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
-                             sessionLength,
+                             occasionLength,
                              maxNumberDays,
-                             BeginWithDay1 = FALSE,
+                             beginWithDay1 = FALSE,
                              includeEffort = TRUE,
                              minimumEffort,
                              scaleEffort,
-                             SessionStartTime = 0,
-                             DatesAsSessionNames = FALSE,
+                             occasionStartTime = 0,
+                             datesAsOccasionNames = FALSE,
                              timeZone,
                              writecsv = FALSE,
                              outDir)
@@ -25,7 +25,7 @@ detectionHistory <- function(recordTable,
   stopifnot(is.character(species))
   stopifnot(length(species) == 1)
 
-  stopifnot(hasArg(sessionLength))
+  stopifnot(hasArg(occasionLength))
 
   stopifnot(hasArg(stationCol))
   stopifnot(is.character(stationCol))
@@ -43,7 +43,7 @@ detectionHistory <- function(recordTable,
   stopifnot(hasArg(camOp))
 
   if(hasArg(timeZone) == FALSE) {
-    print("timeZone is not specified. Assuming UTC")
+    warning("timeZone is not specified. Assuming UTC", call. = FALSE)
     timeZone <- "UTC"
   }
   if(!is.element(timeZone , OlsonNames())){
@@ -51,19 +51,19 @@ detectionHistory <- function(recordTable,
   }
   stopifnot(is.logical(writecsv))
 
-  SessionStartTime <- as.integer(round(SessionStartTime))
-  if(SessionStartTime != 0 & !is.integer(SessionStartTime)) {stop ("SessionStartTime must be between 0 and 23")}
-  if(SessionStartTime < 0 | SessionStartTime >= 24){stop ("SessionStartTime must be between 0 and 23")}
+  occasionStartTime <- as.integer(round(occasionStartTime))
+  if(occasionStartTime != 0 & !is.integer(occasionStartTime)) {stop ("occasionStartTime must be between 0 and 23")}
+  if(occasionStartTime < 0 | occasionStartTime >= 24){stop ("occasionStartTime must be between 0 and 23")}
 
-  sessionLength <- as.integer(round(sessionLength))
-  if(sessionLength <= 0) stop("sessionLength must be a positive integer and not 0")
-  if(sessionLength > ncol(camOp)/2) stop("sessionLength may not be greater than half the total number of days in camOp")
-  stopifnot(is.numeric(sessionLength))
+  occasionLength <- as.integer(round(occasionLength))
+  if(occasionLength <= 0) stop("occasionLength must be a positive integer and not 0")
+  if(occasionLength > ncol(camOp)/2) stop("occasionLength may not be greater than half the total number of days in camOp")
+  stopifnot(is.numeric(occasionLength))
 
   if(hasArg(maxNumberDays)){
     maxNumberDays <- as.integer(maxNumberDays)
     if(maxNumberDays > ncol(camOp)) stop("maxNumberDays must be smaller than the number of columns of camOp")
-    if(maxNumberDays < sessionLength) stop("maxNumberDays must be larger than or equal to sessionLength")
+    if(maxNumberDays < occasionLength) stop("maxNumberDays must be larger than or equal to occasionLength")
   }
 
   stopifnot(c(speciesCol, recordDateTimeCol, stationCol) %in% colnames(recordTable))
@@ -105,12 +105,12 @@ detectionHistory <- function(recordTable,
   # check if images were taken between setup and retrieval dates (Error if images outside station date range)
 
   cam.range.tmp <-  data.frame(t(apply(camOp.mat, MARGIN = 1, FUN = function(X){colnames(camOp.mat)[range(which(!is.na(X)))]})))
-  rec.tmp.min  <- tapply(subset_species$Date2, INDEX = subset_species[,stationCol], FUN = min)
-  rec.tmp.max  <- tapply(subset_species$Date2, INDEX = subset_species[,stationCol], FUN = max)
+  rec.tmp.min  <- tapply(subset_species$Date2, INDEX = subset_species[,stationCol], FUN = min, simplify = FALSE)
+  rec.tmp.max  <- tapply(subset_species$Date2, INDEX = subset_species[,stationCol], FUN = max, simplify = FALSE)
 
-  d <- data.frame(rec.min = as.Date(rec.tmp.min, origin = "1970-01-01"),
-                  rec.max = as.Date(rec.tmp.max, origin = "1970-01-01"),
-                  cam.min = as.Date(cam.range.tmp[match(names(rec.tmp.max), rownames(cam.range.tmp)),1]),
+  d <- data.frame(rec.min = as.Date(unlist(rec.tmp.min), origin = "1970-01-01"),
+                  rec.max = as.Date(unlist(rec.tmp.max), origin = "1970-01-01"),
+                  cam.min = as.Date(cam.range.tmp[match(names(rec.tmp.min), rownames(cam.range.tmp)),1]),
                   cam.max = as.Date(cam.range.tmp[match(names(rec.tmp.max), rownames(cam.range.tmp)),2])
   )
   rownames(d) <- names(rec.tmp.min)
@@ -127,9 +127,10 @@ detectionHistory <- function(recordTable,
   rownames(record.hist) <- rownames(camOp.mat)
   colnames(record.hist) <- colnames(camOp.mat)
 
-  record.by.station.tmp <- tapply(subset_species$DateTime2 - (SessionStartTime * 3600),
+  record.by.station.tmp <- tapply(subset_species$DateTime2 - (occasionStartTime * 3600),
                                   INDEX = subset_species[,stationCol],
-                                  FUN =  function(X){unique(as.Date(X, tz = timeZone))})
+                                  FUN =  function(X){unique(as.Date(X, tz = timeZone))},
+                                  simplify = FALSE)
 
   for(i in 1:length(record.by.station.tmp)){
     record.hist[match(names(record.by.station.tmp[i]), rownames(record.hist)),
@@ -150,8 +151,8 @@ detectionHistory <- function(recordTable,
     rm(j, rec.min.tmp)
   }
 
-  # adjust camera operation matrix if SessionStartTime != 0
-  if(SessionStartTime != 0){
+  # adjust camera operation matrix if occasionStartTime != 0
+  if(occasionStartTime != 0){
 
     for(k in 1:nrow(cam.op.worked)){
       tmp <- as.vector(cam.op.worked[k,])
@@ -166,13 +167,13 @@ detectionHistory <- function(recordTable,
     }
   }
 
-  colnames(record.hist) <- paste(colnames(record.hist), "+",SessionStartTime, "h", sep = "" )
-  colnames(cam.op.worked) <- paste(colnames(cam.op.worked), "+", SessionStartTime, "h", sep = "")
+  colnames(record.hist) <- paste(colnames(record.hist), "+",occasionStartTime, "h", sep = "" )
+  colnames(cam.op.worked) <- paste(colnames(cam.op.worked), "+", occasionStartTime, "h", sep = "")
 
   ################################################
   # if beginning with day one, remove leading NAs for each station
 
-  if(isTRUE(BeginWithDay1)){
+  if(isTRUE(beginWithDay1)){
     rec.min.tmp <- apply(record.hist, MARGIN = 1, function(X){min(which(!is.na(X)))})    # 1st day of each station
     rec.max.tmp <- apply(record.hist, MARGIN = 1, function(X){max(which(!is.na(X)))})    # last day of each station
     diff.days.tmp <- rec.max.tmp - rec.min.tmp
@@ -195,28 +196,28 @@ detectionHistory <- function(recordTable,
   }
 
   ################################################
-  # aggregate by sessions
+  # aggregate by occasions
 
   if(ncol(record.hist) != ncol(cam.op.worked))stop("Hi! I'm a weird and unexpected bug. Please report me.")
 
-  if(sessionLength == 1){
+  if(occasionLength == 1){
 
     record.hist3 <- record.hist
     cam.op3 <- cam.op.worked
-    effort <- cam.op3          # if sessionLength = 1 day, it is identical
+    effort <- cam.op3          # if occasionLength = 1 day, it is identical
 
   } else {
 
-    record.hist3 <- matrix(NA, nrow = nrow(record.hist), ncol = ceiling(ncol(record.hist) / sessionLength ))
-    cam.op3 <- matrix(NA, nrow = nrow(cam.op.worked), ncol = ceiling(ncol(cam.op.worked) / sessionLength ))
-    effort <- matrix(NA, nrow = nrow(cam.op.worked), ncol = ceiling(ncol(cam.op.worked) / sessionLength ))
+    record.hist3 <- matrix(NA, nrow = nrow(record.hist), ncol = ceiling(ncol(record.hist) / occasionLength ))
+    cam.op3 <- matrix(NA, nrow = nrow(cam.op.worked), ncol = ceiling(ncol(cam.op.worked) / occasionLength ))
+    effort <- matrix(NA, nrow = nrow(cam.op.worked), ncol = ceiling(ncol(cam.op.worked) / occasionLength ))
 
     index <- 1
 
     for(m in 1:(ncol(record.hist3))){
 
-      if(index + sessionLength <= ncol(record.hist)){
-        index.tmp <- index : (index + sessionLength - 1)
+      if(index + occasionLength <= ncol(record.hist)){
+        index.tmp <- index : (index + occasionLength - 1)
       } else {
         index.tmp <- index : ncol(record.hist)
       }
@@ -225,10 +226,10 @@ detectionHistory <- function(recordTable,
 
         record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = sum, na.rm = TRUE) >= 1), m] <- 1
         record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = sum, na.rm = TRUE) == 0), m] <- 0
-        record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = function(X){all(is.na(X))})), m] <- NA   # if all NA in session (cams not set up)
+        record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = function(X){all(is.na(X))})), m] <- NA   # if all NA in occasion (cams not set up)
 
         effort[, m] <- apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = sum, na.rm = TRUE)
-        effort[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = function(X){all(is.na(X))})), m] <- NA   # if all NA in session (cams not set up)
+        effort[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = function(X){all(is.na(X))})), m] <- NA   # if all NA in occasion (cams not set up)
 
         if(hasArg(minimumEffort)){
           record.hist3[which(effort[,m] < minimumEffort), m] <- NA
@@ -237,23 +238,23 @@ detectionHistory <- function(recordTable,
 
         record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = sum) >= 1), m] <- 1
         record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = sum) == 0), m] <- 0
-        record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = function(X){any(is.na(X))})), m] <- NA  # if al least 1 NA in session
+        record.hist3[which(apply(as.matrix(record.hist[,index.tmp]), MARGIN = 1, FUN = function(X){any(is.na(X))})), m] <- NA  # if al least 1 NA in occasion
 
-        # camOp = 1 if camera was operational all days of session.
-        cam.op3[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = sum) == sessionLength), m] <- 1
-        cam.op3[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = sum) < sessionLength), m] <- 0
+        # camOp = 1 if camera was operational all days of occasion.
+        cam.op3[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = sum) == occasionLength), m] <- 1
+        cam.op3[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = sum) < occasionLength), m] <- 0
         cam.op3[which(apply(as.matrix(cam.op.worked[,index.tmp]), MARGIN = 1, FUN = function(X){any(is.na(X))})), m] <- NA
 
         record.hist3[which(cam.op3[,m] == 0),m] <- NA     # set record history NA where cam.op = 0 (not operational)
       }
-      index <- index + sessionLength
+      index <- index + occasionLength
     }
     rm(index, index.tmp)
   }
        
   if(isTRUE(includeEffort)){
       if(isTRUE(scaleEffort)){      
-        if(sessionLength == 1) stop("cannot scale effort if sessionLength is 1")
+        if(occasionLength == 1) stop("cannot scale effort if occasionLength is 1")
         scale.eff.tmp <- scale(as.vector(effort))
         scale.eff.tmp.attr <- data.frame(effort.scaled.center = NA,
                                          effort.scaled.scale = NA)
@@ -274,13 +275,13 @@ detectionHistory <- function(recordTable,
   ################################################
   # column names for output table
 
-  if(isTRUE(DatesAsSessionNames)){
-    if(sessionLength == 1){
+  if(isTRUE(datesAsOccasionNames)){
+    if(occasionLength == 1){
       colnames.tmp <- colnames(cam.op.worked)
     } else {
-      seq.tmp <- seq(from = 1, by = sessionLength, length.out = ncol(record.hist3))
+      seq.tmp <- seq(from = 1, by = occasionLength, length.out = ncol(record.hist3))
       colnames.tmp <- paste(colnames(cam.op.worked)[seq.tmp],
-                            colnames(cam.op.worked)[seq.tmp + sessionLength - 1], sep = "_")
+                            colnames(cam.op.worked)[seq.tmp + occasionLength - 1], sep = "_")
       colnames.tmp[length(colnames.tmp)] <- paste(colnames(cam.op.worked)[max(seq.tmp)],
                                                   colnames(cam.op.worked)[ncol(cam.op.worked)],
                                                   sep = "_")
@@ -288,13 +289,13 @@ detectionHistory <- function(recordTable,
     colnames(record.hist3) <- colnames(cam.op3)  <- colnames.tmp
     if(includeEffort == TRUE) {colnames(effort) <- colnames.tmp}
   }  else {
-    colnames(record.hist3) <-  paste("s", seq(1,ncol(record.hist3), by = 1),sep = "")
-    if(includeEffort == TRUE) {colnames(effort) <-  paste("s", seq(1,ncol(effort), by = 1), sep = "")}
+    colnames(record.hist3) <-  paste("o", seq(1,ncol(record.hist3), by = 1),sep = "")
+    if(includeEffort == TRUE) {colnames(effort) <-  paste("o", seq(1,ncol(effort), by = 1), sep = "")}
   }
 
   ################################################
   # save output as table
-  day1string <- ifelse(isTRUE(BeginWithDay1), "from_1st_day", "by_date")
+  day1string <- ifelse(isTRUE(beginWithDay1), "from_1st_day", "by_date")
   effortstring <- ifelse(isTRUE(includeEffort), "with_effort__", "no_effort__")
   maxNumberDaysstring <- ifelse(hasArg(maxNumberDays), paste("max",maxNumberDays,"days_", sep = ""), "")
   if(hasArg(scaleEffort)){
@@ -304,26 +305,26 @@ detectionHistory <- function(recordTable,
   }
 
   outtable.name <- paste(species, "__record_history__", effortstring,
-                         sessionLength, "_days_per_session_",
+                         occasionLength, "_days_per_occasion_",
                          maxNumberDaysstring,
-                         SessionStartTime,"h_",
+                         occasionStartTime,"h_",
                          day1string, "_",
                          Sys.Date(),
                          ".csv", sep = "")
 
   outtable.name.effort <- paste(species, "__effort__",
                                 scaleEffortstring,
-                                sessionLength, "_days_per_session_",
+                                occasionLength, "_days_per_occasion_",
                                 maxNumberDaysstring,
-                                SessionStartTime,"h_",
+                                occasionStartTime,"h_",
                                 day1string, "_",
                                 Sys.Date(),
                                 ".csv", sep = "")
 
   outtable.name.effort.scale <- paste(species, "__effort_scaling_parameters__",
-                                      sessionLength, "_days_per_session_",
+                                      occasionLength, "_days_per_occasion_",
                                       maxNumberDaysstring,
-                                      SessionStartTime,"h_",
+                                      occasionStartTime,"h_",
                                       day1string, "_",
                                       Sys.Date(),
                                       ".csv", sep = "")
@@ -340,11 +341,14 @@ detectionHistory <- function(recordTable,
   }
   if(isTRUE(includeEffort)){
     if(scaleEffort == TRUE){
-      return(list(record.hist3, effort, scale.eff.tmp.attr))
+      return(list(detection_history = record.hist3,
+          effort = effort, 
+          effort_scaling_parameters = scale.eff.tmp.attr))
     } else {
-      return(list(record.hist3, effort))
+      return(list(detection_history = record.hist3, 
+          effort = effort))
     }
   } else {
-    return(list(record.hist3))
+    return(list(detection_history = record.hist3))
   }
 }

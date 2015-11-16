@@ -2,10 +2,10 @@
 \alias{exifTagNames}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Extract Exif metadata tag names from a jpg image
+Extract Exif metadata tag names from JPEG images
 }
 \description{
-The function will return tag names of Exif metadata of jpg images. It uses the first jpg image it finds in a subdirectory of the specified directory.
+The function will return tag names of Exif metadata of JPEG images. It uses the first JPEG image it finds in a subdirectory of the specified directory.
 }
 \usage{
 exifTagNames(inDir, 
@@ -21,7 +21,7 @@ exifTagNames(inDir,
 }
 }
 \details{
-Many digital cameras record information such as ambient temperature or moon phase under maker-specific tag names in Exif metadata of jpg images. If the tag names are known, they can passed to the \code{\link{recordDatabase}} function via the \code{metadataTags} argument to extract those information from images and add them to the record database.
+Many digital cameras record information such as ambient temperature or moon phase under maker-specific tag names in Exif metadata of JPEG images. If the tag names are known, they can passed to the \code{\link{recordDatabase}} function via the \code{metadataTags} argument to extract those information from images and add them to the record database.
 }
 \value{
 A character vector containing available metadata tag names.

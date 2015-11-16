@@ -32,7 +32,7 @@ Name of the single species for which to create a histogram of activity
   \item{all.species}{
 logical. If TRUE, plots are created for all species. This overrides argument \code{species}
 }
-\item{speciesCol}{
+  \item{speciesCol}{
 	character. name of the column specifying species in \code{recordTable}
 }
   \item{recordDateTimeCol}{
@@ -90,6 +90,6 @@ data(recordDatabaseSample)
 species4activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 
 activityHistogram (recordTable = recordDatabaseSample,
-                   species = species4activity,
+                   species     = species4activity,
                    all.species = FALSE)
 }

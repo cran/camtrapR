@@ -10,8 +10,8 @@ data(camtraps)
 General camera trap station information
 }
 \details{
-This is a general example of a \code{data.frame} that holds information about camera trap stations, e.g. setup and retrieval dates and coordinates. If more than 1 camera was set up at a station (often 2), a camera ID column can be added, with camera-specific information instead of station-specific information.
-If cameras malfunctioned repeatedly, additional pairs of problem columns can be added, e.g. "Problem2from" and "Problem2to" etc..
+This is a general example of a \code{data.frame} that holds information about camera trap stations, e.g. setup and retrieval dates and coordinates. If more than 1 camera was set up at a station (e.g. 2 facing each other), a camera ID column can be added, with camera-specific information instead of station-specific information.
+If cameras malfunctioned repeatedly, additional pairs of problem columns can be added, e.g. "Problem2_from" and "Problem2_to" etc..
 
 The variables are as follows:
 
@@ -27,7 +27,7 @@ The variables are as follows:
 }
 
 \note{
-The coordinates can be in the units of any coordinate system. UTM was chosen as an example, but it could be latlong or anything else, too. When using the function \code{\link{detectionMaps}}, set arguments \code{Xcol} and \code{Ycol} to the appropriate names. 
+The coordinates can be in the units of any coordinate system. UTM was chosen as an example, but it could be latlong or anything else, too. \code{\link[secr]{capthist}} objects (as created by \code{\link{spatialDetectionHistory}} for spatial capture-recapture analyses) expect the unit to be meters.
 }
 \keyword{datasets}
 

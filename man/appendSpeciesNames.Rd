@@ -2,13 +2,14 @@
 \alias{appendSpeciesNames}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Add or remove species names from image filenames
+Add or remove species names from JPEG image filenames
 }
 \description{
-Function to add or remove species names from jpg image filenames. Images must be sorted into station directories and species subdirectories.
+Function to add or remove species names from JPEG image filenames. Images must be sorted into station directories and species subdirectories prior to running the function.
 }
 \usage{
 appendSpeciesNames(inDir, 
+  hasCameraSubfolders,
   removeNames = FALSE, 
   writecsv = FALSE
 )
@@ -17,7 +18,10 @@ appendSpeciesNames(inDir,
 \arguments{
 
   \item{inDir}{
-  Directory containing station directories with renamed and identified images in species directories (e.g. inDir/StationA/Species1)
+  character. Directory containing station directories with renamed and identified images in species directories (e.g. inDir/StationA/Species1)
+}
+  \item{hasCameraSubfolders}{
+  logical. Do the station directories contain camera subdirectories (e.g. inDir/StationA/camera1/Species1)?
 }
   \item{removeNames}{
  logical. remove appended species names?
@@ -49,22 +53,22 @@ Juergen Niedballa
 \examples{
 \dontrun{
 
-# define image directory
+# copy sample images to another location (so we don't mess around in the package directory)
 wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
-file.copy(from = wd_images_ID, to = getwd(), recursive = TRUE)
+file.copy(from = wd_images_ID, to = getwd(), recursive = TRUE)       
 wd_images_ID_copy <- paste(getwd(), "sample_images", sep = "/")
 
 # append species names
-SpecNameAppend1 <- appendSpeciesNames(inDir = wd_images_ID_copy,
-  removeNames = FALSE,
-  writecsv = FALSE)
+SpecNameAppend1 <- appendSpeciesNames(inDir       = wd_images_ID_copy,
+                                      removeNames = FALSE,
+                                      writecsv    = FALSE)
   
 SpecNameAppend1
 
 # remove species names
-SpecNameRemove1 <- appendSpeciesNames(inDir = wd_images_ID_copy,
-  removeNames = TRUE,
-  writecsv = FALSE)
+SpecNameRemove1 <- appendSpeciesNames(inDir       = wd_images_ID_copy,
+                                      removeNames = TRUE,
+                                      writecsv    = FALSE)
   
 SpecNameRemove1
 }

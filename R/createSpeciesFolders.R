@@ -1,9 +1,11 @@
 createSpeciesFolders <- function(inDir,
+                                 hasCameraSubfolders,
                                  species,
                                  removeFolders = FALSE){
 
   stopifnot(is.character(species))
   stopifnot(is.logical(removeFolders))
+  stopifnot(is.logical(hasCameraSubfolders))
   if(file.exists(inDir) == FALSE) stop("inDir does not exist")
 
   dirs <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
@@ -11,7 +13,11 @@ createSpeciesFolders <- function(inDir,
 
   if(length(dirs) == 0) stop("inDir has no (station) subdirectories")
 
-  dirs.to.create <- paste(rep(dirs, each = length(species)), species, sep = "/")
+  if(hasCameraSubfolders == TRUE){
+    dirs.to.create <- paste(rep(list.dirs(dirs, recursive = FALSE), each = length(species)), species, sep = "/")
+  } else {
+    dirs.to.create <- paste(rep(dirs, each = length(species)), species, sep = "/")
+  }
 
   if(removeFolders == FALSE){
     tmp.create <- suppressWarnings(sapply(dirs.to.create, FUN = dir.create, showWarnings = TRUE, recursive = FALSE))

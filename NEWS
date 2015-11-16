@@ -1,7 +1,51 @@
-Version 0.97.1
+Changes in camtrapR 0.98.0
+=======================
+
+new functions
+------------
+
+  o createStationFolders: Create camera trap station directories, possibly with camera subdirectories, for storing raw images
+  o recordDatabaseIndividual: Single-species record databases from camera trap images with custom metadata tags
+  o spatialDetectionHistory: prepare a capthist object for spatial capture-recapture analyses
+
+new features
+------------
+
+  o support for camera subdirectories in species identification: Station/Camera/Species in the following function:
+      - appendSpeciesFolders
+      - createSpeciesFolders
+      - checkSpeciesFolders
+      - createStationFolders
+      - getSpeciesImages
+      - imageRename
+      - recordDatabase
+      - recordDatabaseIndividual
+  o recordDatabase: can handle different types of directory structures and metadata tags (both custom and manufacturer-specific) and has gained new arguments: 
+      - hasSpeciesFolders
+      - cameraID (expanded from includeCameras)
+      - camerasIndependent
+      - stationCol
+      - customMetadataTags
+      - metadataHierarchyDelimitor
+      - metadataSpeciesTag
+      - additionalMetadataTags (renamed from metadataTags)
+  o detectionMaps: shapefile export using packages sp and rgdal
+  o checkSpeciesFolders: new argument stationsToCheck
+  
+other changes
+------------
+
+o checkSpeciesFolders: renamed argument exclude -> excludeSpecies
+o detectionHistory: "session" in argument names was renamed to "occasion" (to be consistent with secr nomenclature)
+o getSpeciesImages: removed argument emptyOutDir (nothing can be deleted anymore)
+o recordDatabase: row names of object are 1:nrow
+
+
+Changes in camtrapR 0.97.1
+=======================
 
   o surveyReport: fixed bug which caused wrong numbers of active trap nights to be returned
-  o surveyReport: does not depend on function cameraOperation any more
+  o surveyReport: does not depend on function cameraOperation anymore
   o renamed function TimeShiftImages to timeShiftImages
   o minor fixes in cameraOperation
   o some rephrasing in help files

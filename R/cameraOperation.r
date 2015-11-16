@@ -6,7 +6,7 @@ cameraOperation <- function(CTtable,
                             hasProblems = FALSE,
                             byCamera,
                             allCamsOn,
-                            sumUpCameras,
+                            camerasIndependent,
                             dateFormat = "%Y-%m-%d",
                             writecsv = FALSE,
                             outDir){
@@ -47,8 +47,8 @@ cameraOperation <- function(CTtable,
       if(hasArg(allCamsOn) == FALSE) stop("if cameraCol is set and byCamera is FALSE, allCamsOn must be specified")
       stopifnot(is.logical(allCamsOn))
       if(allCamsOn == FALSE){
-        if(hasArg(sumUpCameras) == FALSE) stop("if cameraCol is set, byCamera is FALSE and allCamsOn is FALSE, sumUpCameras must be specified")
-        stopifnot(is.logical(sumUpCameras))
+        if(hasArg(camerasIndependent) == FALSE) stop("if cameraCol is set, byCamera is FALSE and allCamsOn is FALSE, camerasIndependent must be specified")
+        stopifnot(is.logical(camerasIndependent))
       }
     }
   }
@@ -112,13 +112,10 @@ cameraOperation <- function(CTtable,
         if(any(CTtable[,retrievalCol] < CTtable[,xyz2], na.rm = TRUE)){
           stop(paste(paste(CTtable[which(CTtable[,retrievalCol] < CTtable[,xyz2]), stationCol], collapse = ", "), ": Problem ends after retrieval"))
         }
-      }
-      
-      
+      }  
       rm(xy, xyz, xyz2)
     }
   
-
   # function
 
   if(hasArg(cameraCol)){      # there is a camera column, 1 or more cameras per station
@@ -135,10 +132,10 @@ cameraOperation <- function(CTtable,
     for(i in 1:length(unique.tmp)){
 
       date0 <- as.character(min(CTtable[,setupCol][CTtable[,stationCol] == unique.tmp[[i]][1] &
-                                                     CTtable[,cameraCol] == unique.tmp[[i]][2]]))
+                                                   CTtable[,cameraCol]  == unique.tmp[[i]][2]]))
 
       date1 <- as.character(max(CTtable[,retrievalCol][CTtable[,stationCol] == unique.tmp[[i]][1] &
-                                                         CTtable[,cameraCol] == unique.tmp[[i]][2]]))
+                                                       CTtable[,cameraCol]  == unique.tmp[[i]][2]]))
 
       m[i, seq(from = match(date0 , colnames(m)),
                to = match(date1, colnames(m)), by = 1)] <- 1
@@ -148,9 +145,9 @@ cameraOperation <- function(CTtable,
         for(j in 1:length(cols.prob.to)){
 
           date.p0.tmp <- as.character(min(CTtable[CTtable[,stationCol] == unique.tmp[[i]][1] &
-                                                    CTtable[,cameraCol] == unique.tmp[[i]][2], cols.prob.from[j]]))
+                                                  CTtable[,cameraCol]  == unique.tmp[[i]][2], cols.prob.from[j]]))
           date.p1.tmp <- as.character(max(CTtable[CTtable[,stationCol] == unique.tmp[[i]][1] &
-                                                    CTtable[,cameraCol] == unique.tmp[[i]][2], cols.prob.to[j]]))
+                                                  CTtable[,cameraCol]  == unique.tmp[[i]][2], cols.prob.to[j]]))
 
 
           if(!is.na(date.p0.tmp) & !is.na(date.p1.tmp)){
@@ -180,8 +177,8 @@ cameraOperation <- function(CTtable,
         if(any(dat2.na == TRUE)){dat2[which(dat2.na == TRUE)] <- NA}
         rm(dat2.na)
 
-        if(sumUpCameras == FALSE){   # sum up cameras
-          dat2 <- ifelse(dat2 >= 2,1,dat2)
+        if(camerasIndependent == FALSE){   
+          dat2 <- ifelse(dat2 >= 2,1,dat2) 
         }
         dat2 <- dat2[match(unique(CTtable[,stationCol]), rownames(dat2)),]  # rearrange row order
         dat2 <- as.data.frame(dat2)

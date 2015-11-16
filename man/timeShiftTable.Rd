@@ -10,7 +10,7 @@ data(timeShiftTable)
 Sample camera trap time shift information
 }
 \details{
-In case the image Exif metadata timestamp was wrong systematically (e.g. because time was not set after changing batteries), it can be corrected using a \code{data.frame} in the following format using function \code{\link{timeShiftImages}}. For details on data format, please see there.
+In case the image Exif metadata timestamp was wrong systematically (e.g. because camera system time was not set after changing batteries), it can be corrected using a \code{data.frame} in the following format using function \code{\link{timeShiftImages}}. For details on data format, please see there.
 
 The variables are as follows:
 

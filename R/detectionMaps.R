@@ -12,18 +12,32 @@ detectionMaps <- function(CTtable,
                           plotR = TRUE,
                           writePNG = FALSE,
                           plotDirectory,
-                          createDir = FALSE,
-                          pngMaxPix = 1000){
+                          createPlotDir = FALSE,
+                          pngMaxPix = 1000,
+                          writeShapefile = FALSE,
+                          shapefileName,
+                          shapefileDirectory,
+                          shapefileProjection){
 
   stopifnot(stationCol %in% colnames(CTtable))
   stopifnot(stationCol %in% colnames(recordTable))
+  # check all stations in recordTable are matched in CTtable
+  if(all(recordTable[,stationCol] %in% CTtable[,stationCol]) == FALSE) {
+    stop(paste("items of stationCol in recordTable are not matched in stationCol of CTtable: ", paste(recordTable[-which(recordTable[,stationCol] %in% CTtable[,stationCol]),stationCol], collapse = ", ")))
+  }
+
   stopifnot(speciesCol %in% colnames(recordTable))
   stopifnot(c(Xcol, Ycol) %in% colnames(CTtable))
   if(any(is.na(CTtable[,Xcol])))stop("there are NAs in Xcol")
   if(any(is.na(CTtable[,Ycol])))stop("there are NAs in Ycol")
   if(any(is.na(CTtable[,stationCol])))stop("there are NAs in stationCol")
 
-  # data prep
+  if(writeShapefile == TRUE) {
+    stopifnot(hasArg(shapefileDirectory))
+    stopifnot(file.exists(shapefileDirectory))
+  }
+
+  # data preparation
   dat2 <- aggregate(CTtable[, c(Ycol, Xcol)], by = list(CTtable[,stationCol]), FUN = mean)    # get coordinates
   colnames(dat2)[1] <- stationCol
 
@@ -83,7 +97,7 @@ detectionMaps <- function(CTtable,
 
   if(isTRUE(writePNG)){
     if(hasArg(plotDirectory)){
-      if(isTRUE(createDir)){
+      if(isTRUE(createPlotDir)){
         dir.create(plotDirectory, recursive = TRUE, showWarnings = FALSE)
         setwd(plotDirectory)
       } else {
@@ -245,7 +259,23 @@ detectionMaps <- function(CTtable,
       }
     }
   }
+
   outtable <- data.frame(dat2, t3[,-1], n_species = t4[,-1])
   rownames(outtable) <- NULL
+  # write Shapefile
+  if(writeShapefile == TRUE){
+    if(hasArg(shapefileProjection)){proj.tmp <- shapefileProjection } else {proj.tmp <- NA}
+    if(hasArg(shapefileName)){layer.tmp <- shapefileName } else {layer.tmp <- paste("species_detection_", Sys.Date(), sep = "")}
+
+    spdf <- SpatialPointsDataFrame(coords = outtable[,c("Longitude", "Latitude")],
+                                   data = outtable,
+                                   proj4string = CRS(as.character(proj.tmp)))
+
+    writeOGR(obj = spdf,
+             dsn = shapefileDirectory,
+             layer = layer.tmp,
+             driver = "ESRI Shapefile")
+  }
+
   return(outtable)
 }

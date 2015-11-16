@@ -1,25 +1,36 @@
 Package: camtrapR
 Type: Package
-Title: Camera Trap Photograph Management and Preparation of Occupancy
-        Analyses
-Version: 0.97.1
-Date: 2015-08-03
-Author: Juergen Niedballa  [aut, cre],
-        Alexandre Courtiol  [aut]
-        Rahel Sollmann  [aut]
-        Andreas Wilting  [ctb, ths]
-        John Mathai  [ctb]
-        Seth Timothy Wong  [ctb]
-        An The Truong Nguyen  [ctb]
-        Azlan bin Mohamed  [ctb]
-        Andrew Tilker  [ctb]
-Maintainer: Juergen Niedballa <niedballa@izw-berlin.de>
+Title: Camera Trap Data Management and Preparation of Occupancy and
+        Spatial Capture-Recapture Analyses
+Version: 0.98.0
+Date: 2015-11-13
+Authors@R: c(
+        person("Juergen", "Niedballa", email = "niedballa@izw-berlin.de", role = c("aut", "cre")),
+        person("Alexandre", "Courtiol", role = "aut"),
+        person("Rahel", "Sollmann", role = "aut"),
+        person("John", "Mathai", role = "ctb"),
+        person("Seth Timothy", "Wong", role = "ctb"),
+        person("An The Truong", "Nguyen", role = "ctb"),
+        person("Azlan bin", "Mohamed", role = "ctb"),
+        person("Andrew", "Tilker", role = "ctb"),
+        person("Andreas", "Wilting", role = c("ctb", "ths"))
+        )
 Depends: R (>= 3.1.0)
-Imports: methods, overlap
+Imports: methods, overlap, secr, rgdal, sp
 Suggests: unmarked
-Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photographs, computes record databases and detection/non-detection matrices for occupancy analysis with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station) and can plot activity data using various functions (using package overlap and adapting function from the plotrix package).
+Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photographs, computes record databases and detection/non-detection matrices for occupancy and spatial capture-recapture analyses with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station) and can visualise activity data.
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2015-08-05 12:25:08 UTC; niedballa
+Packaged: 2015-11-16 12:21:22 UTC; niedballa
+Author: Juergen Niedballa [aut, cre],
+  Alexandre Courtiol [aut],
+  Rahel Sollmann [aut],
+  John Mathai [ctb],
+  Seth Timothy Wong [ctb],
+  An The Truong Nguyen [ctb],
+  Azlan bin Mohamed [ctb],
+  Andrew Tilker [ctb],
+  Andreas Wilting [ctb, ths]
+Maintainer: Juergen Niedballa <niedballa@izw-berlin.de>
 Repository: CRAN
-Date/Publication: 2015-08-05 14:41:03
+Date/Publication: 2015-11-16 16:20:08

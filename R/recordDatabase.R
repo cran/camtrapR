@@ -1,19 +1,27 @@
 recordDatabase <- function(inDir,
-                           includeCameras = FALSE,
+                           hasSpeciesFolders = TRUE,
+                           cameraID,
+                           camerasIndependent,
                            exclude,
                            minDeltaTime = 0,
                            timeZone,
+                           stationCol,
                            writecsv = FALSE,
                            outDir,
-                           metadataTags
+                           customMetadataTags,
+                           metadataHierarchyDelimitor = "|",
+                           metadataSpeciesTag,
+                           additionalMetadataTags
 )
 {
-  stationCol <- "Station"
+
+  if(hasArg(stationCol) == FALSE) stationCol <- "Station"
+  stopifnot(is.character(stationCol))
   speciesCol <- "Species"
 
   # check input
   if(hasArg(timeZone) == FALSE) {
-    print("timeZone is not specified. Assuming UTC")
+    warning("timeZone is not specified. Assuming UTC", call. = FALSE)
     timeZone <- "UTC"
   }
   if(!is.element(timeZone , OlsonNames())){
@@ -21,24 +29,40 @@ recordDatabase <- function(inDir,
   }
   if(Sys.which("exiftool") == "") stop("cannot find Exiftool")
 
-  if(hasArg(includeCameras)){
-    if(class(includeCameras) != "logical"){print("includeCameras must be of class 'logical'")}
-    cameraCol <- "Camera"
+  if(!is.logical(hasSpeciesFolders)) stop("hasSpeciesFolders must be of class 'logical'")
+
+  if(hasArg(metadataSpeciesTag)){
+    if(class(metadataSpeciesTag) != "character"){stop("metadataSpeciesTag must be of class 'character'")}
+    if(length(metadataSpeciesTag) != 1){stop("metadataSpeciesTag must be of lenght 1")}
   }
-  if(hasArg(includeCameras) == FALSE){
-    includeCameras = FALSE}
+
+  if(hasArg(cameraID)){
+    if(class(cameraID) != "character"){stop("cameraID must be of class 'character'")}
+    if(cameraID %in% c("filename", "directory") == FALSE) {stop("cameraID can only be 'filename', 'directory', or missing")}
+    if(class(camerasIndependent) != "logical"){stop("camerasIndependent must be of class 'logical'")}
+  } else { camerasIndependent <- FALSE
+  }
+  cameraCol <- "Camera"
+
 
   if(hasArg(outDir)){
-    if(class(outDir) != "character"){print("outDir must be of class 'character'")}
+    if(class(outDir) != "character"){stop("outDir must be of class 'character'")}
     if(file.exists(outDir) == FALSE) stop("outDir does not exist")
   }
 
   if(hasArg(exclude)){
-    if(class(exclude) != "character"){print("exclude must be of class 'character'")}
+    if(class(exclude) != "character"){stop("exclude must be of class 'character'")}
   }
-  if(hasArg(metadataTags)){
-    if(class(metadataTags) != "character"){print("metadataTags must be of class 'character'")}
+
+  if(hasArg(customMetadataTags)){
+    if(class(customMetadataTags) != "logical"){stop("customMetadataTags must be of class 'logical'")}
+    stopifnot(metadataHierarchyDelimitor %in% c("|", ":"))
+  } else {customMetadataTags <- FALSE}
+
+  if(hasArg(additionalMetadataTags)){
+    if(class(additionalMetadataTags) != "character"){stop("additionalMetadataTags must be of class 'character'")}
   }
+
 
   minDeltaTime <- as.integer(minDeltaTime)
   stopifnot(class(minDeltaTime) == "integer")
@@ -49,70 +73,156 @@ recordDatabase <- function(inDir,
   if(file.exists(inDir) == FALSE){stop("inDir does not exist")}
 
 
-  ######
+  # find image directories
   dirs <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
   dirs_short <- list.dirs(inDir, full.names = FALSE, recursive = FALSE)
   record.table <- data.frame(stringsAsFactors = FALSE)
 
-  for(i in 1:length(dirs)){
+  for(i in 1:length(dirs)){   # loop through station directories
 
-    # create command line and execute exiftool
-    if(hasArg(metadataTags)){
-      command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal',paste(" -",metadataTags,  collapse = "", sep = ""), ' -ext JPG "', dirs[i], '"', sep = "")
-      colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", metadataTags)
-    } else {
-      command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -ext JPG "', dirs[i], '"', sep = "")
-      colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal")
+
+
+    # check if specified metadata tags are present in images
+    if(hasArg(additionalMetadataTags) & hasSpeciesFolders == TRUE){
+      exiftags.tmp <- exifTagNames(inDir, whichSubDir = i)
+      if(all(additionalMetadataTags %in% exiftags.tmp) == FALSE) {
+        stop(paste("metadata tag was not found in the images:",
+                   paste(additionalMetadataTags[which(additionalMetadataTags %in% exiftags.tmp == FALSE)], collapse = ", "),
+                   list.files(dirs[i],
+                              full.names = TRUE,
+                              pattern = ".JPG$|.jpg$",
+                              recursive = TRUE)[1], sep = "\n"))
+      }
+      rm(exiftags.tmp)
     }
 
-    # some day, include the following (is faster, invokes Exiftool only once).
-    # particularly useful in many folders with few images
-    # no loop necessary!
+    # create command line and execute exiftool
+    if(customMetadataTags == TRUE){
 
-    #         if(hasArg(metadataTags)){
-    #           command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal', paste(" -",metadataTags,  collapse = "", sep = ""), ' -ext JPG "', paste(dirs, collapse = '" "'), '"', sep = "")
-    #         } else {
-    #           command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -ext JPG "', paste(dirs, collapse = '" "'), '"', sep = "")
-    #         }
+      if(hasArg(additionalMetadataTags)){
+        command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -HierarchicalSubject', paste(" -",additionalMetadataTags,  collapse = "", sep = ""), ' -ext JPG "', dirs[i], '"', sep = "")
+        colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", "HierarchicalSubject", additionalMetadataTags)
+      } else {
+        command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -HierarchicalSubject -ext JPG "',dirs[i], '"', sep = "")
+        colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", "HierarchicalSubject")
+      }
+
+    } else {
+
+      if(hasArg(additionalMetadataTags)){
+        command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal',paste(" -",additionalMetadataTags,  collapse = "", sep = ""), ' -ext JPG "', dirs[i], '"', sep = "")
+        colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", additionalMetadataTags)
+      } else {
+        command.tmp <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -ext JPG "', dirs[i], '"', sep = "")
+        colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal")
+      }
+    }
 
     tmp1 <-  strsplit(system(command.tmp, intern=TRUE), split = "\t")
 
+    # build matrix for image metadata (station i)
     metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
                                          ncol = length(colnames.tmp),
-                                         byrow = TRUE))
+                                         byrow = TRUE),
+                                  stringsAsFactors = FALSE)
 
     colnames(metadata.tmp) <- colnames.tmp
+
+    # now split HierarchicalSubject tags and add as columns to table
+    if(customMetadataTags == TRUE){
+
+      metadata.tagname <- "HierarchicalSubject"
+
+      metadata.tmp[,metadata.tagname] <- as.character(metadata.tmp[,metadata.tagname])
+      tmp2 <- strsplit(metadata.tmp[,metadata.tagname], split = ",")      # split items of "Subject" at comma
+      tmp3 <- lapply(tmp2, FUN = function(X){X[grep(pattern = metadataHierarchyDelimitor, x = X, fixed = TRUE)]})   # get only the ones with values
+
+
+      # get all unique metadata categories and delete spaces in tag names
+      list.tmp <- vector()
+      for(xy in 1:length(tmp3)){
+        list.tmp <- c(list.tmp, gsub(pattern = " ", replacement = "",
+                                     x =  unlist(lapply(strsplit(tmp3[[xy]], split = metadataHierarchyDelimitor, fixed = TRUE), FUN = function(Y){Y = Y[1]}))))
+      }
+      cols2add <- unique(list.tmp)    # these are the columns to add
+
+      if(length(cols2add) >= 1){
+        metadata.tmp <- data.frame(metadata.tmp, matrix(NA, ncol = length(cols2add), nrow = nrow(metadata.tmp)))
+        colnames(metadata.tmp)[seq((ncol(metadata.tmp) - length(cols2add) + 1),ncol(metadata.tmp))] <- cols2add
+
+        # add metadata as columns
+        for(xyz in 1:length(cols2add)){
+          metadata.tmp[,cols2add[xyz]] <- unlist(lapply(lapply(tmp3, FUN = function(X) {sapply(strsplit(X[grep(x = X, pattern = paste(cols2add[xyz], metadataHierarchyDelimitor, collapse = "", sep = ""), fixed = TRUE)], split = metadataHierarchyDelimitor, fixed = TRUE),
+                                                                                               FUN = function(Y){Y[2]})}), FUN = function(Z){paste(Z, collapse = ",") }))
+          metadata.tmp[which(metadata.tmp[,cols2add[xyz]] == ""), cols2add[xyz]] <- NA
+
+        }
+      }
+      which_cols_to_rename <- which(colnames(metadata.tmp) %in% cols2add)
+      rm(tmp2, tmp3)
+    }
+
     colnames(metadata.tmp) <- gsub(pattern = "[[:blank:]]", replacement = "", x = colnames(metadata.tmp))
     colnames(metadata.tmp) <- gsub(pattern = "[[:punct:]]", replacement = "", x = colnames(metadata.tmp))
+
+    if(customMetadataTags == TRUE){
+      colnames(metadata.tmp)[which_cols_to_rename] <- paste("metadata_", colnames(metadata.tmp)[which_cols_to_rename], sep = "")
+      rm(cols2add)
+    }
+
     rm(colnames.tmp, tmp1)
 
     if(length(metadata.tmp) == 0){            # omit station if no images found
 
       length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
-      print(paste(dirs[i], "seems to contain no images;", " found", length.tmp, "jpgs"))
+      print(paste(dirs[i], "seems to contain no images;", " found", length.tmp, "JPEGs"))
 
     } else {
 
       print(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
 
-      filenames.by.folder <- lapply(list.dirs(dirs[i], full.names =TRUE, recursive = FALSE),
-                                    FUN = list.files, pattern = ".jpg$|.JPG$", recursive = TRUE, ignore.case = TRUE)
-      names(filenames.by.folder) <- list.dirs(dirs[i], full.names =TRUE, recursive = FALSE)
 
-      metadata.tmp[,speciesCol] <-  gsub("/", "", rep(unlist(lapply(strsplit(names(filenames.by.folder), split = dirs[i], fixed = TRUE),
-                                                                    FUN = function(X){X[[2]]})),
-                                                      times = lapply(filenames.by.folder, length)))
-      rm(filenames.by.folder)
+      # add species names to metadata table (from folders or metadata, otherwise NA)
+      if(hasSpeciesFolders == TRUE){
+        metadata.tmp[,speciesCol] <-  sapply(strsplit(metadata.tmp$Directory, split = "/", fixed = TRUE), FUN = function(X){X[length(X)]})
+      } else {
+        if(customMetadataTags == TRUE & hasArg(metadataSpeciesTag)){
+          metadataSpeciesTag2 <- paste("metadata_", metadataSpeciesTag, sep = "")
+          if(metadataSpeciesTag2 %in% colnames(metadata.tmp)){
 
-      # convert character vector to time object and format for outfilename
-      metadata.tmp$DateTimeOriginal <- as.POSIXct(strptime(x = metadata.tmp$DateTimeOriginal, format = "%Y:%m:%d %H:%M:%S", tz = timeZone))
+            metadata.tmp[,speciesCol] <- metadata.tmp[,metadataSpeciesTag2]
+            metadata.tmp.nrow <- nrow(metadata.tmp)
+            species_records_to_remove <- which(is.na(metadata.tmp[,speciesCol]))
+            if(length(species_records_to_remove) >= 1){
+              metadata.tmp <- metadata.tmp[-species_records_to_remove,]      #remove records without species tag
+              warning(paste( dirs_short[i],":  removed", length(species_records_to_remove), "records out of", metadata.tmp.nrow,
+                             "because of missing species metadata tag"), call. = FALSE)
+            }
+            rm(species_records_to_remove, metadata.tmp.nrow)
+          } else {
+            stop(paste("station", dirs_short[i], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata.", sep = ""))
+          }
+        } else {
+          stop(paste("station", dirs_short[i], ":   cannot figure out species names (metadataSpeciesTag not specified or customMetadataTags == FALSE)"))
+        }
+      }
 
-      # add station and camera id (taken from photo filename. Make sure renaming is correct)
-      if(isTRUE(includeCameras)){
-        metadata.tmp <- cbind(metadata.tmp,
-                              dirs_short[i],
-                              sapply(strsplit(as.character(metadata.tmp$FileName), split = "__"), FUN = function(X){X[2]})
-        )
+
+      # add station and camera id to metadata table
+      if(hasArg(cameraID)){
+        if(cameraID == "filename"){
+          metadata.tmp <- cbind(metadata.tmp,
+                                dirs_short[i],
+                                sapply(strsplit(as.character(metadata.tmp$FileName), split = "__"), FUN = function(X){X[2]})      # assumes filenames: Station__Camera__Date/Time(Number).JPG
+          )
+        } else {
+          if(cameraID == "directory"){
+            metadata.tmp <- cbind(metadata.tmp,
+                                  dirs_short[i],
+                                  sapply(strsplit(metadata.tmp$Directory, split = "/", fixed = TRUE), FUN = function(X){X[length(X) - 1]})  # assumes directory structure: Station/Camera/Species
+            )
+          }
+        }
         colnames(metadata.tmp)[ncol(metadata.tmp) - 1] <- stationCol
         colnames(metadata.tmp)[ncol(metadata.tmp)] <- cameraCol
       } else {
@@ -121,12 +231,15 @@ recordDatabase <- function(inDir,
         colnames(metadata.tmp)[ncol(metadata.tmp)] <- stationCol
       }
 
-      # remove species in "excluded"
+      # remove species in argument "excluded"
       if(hasArg (exclude)){
         if(length(which(tolower(metadata.tmp[,speciesCol]) %in% tolower(exclude) == TRUE)) > 0) {  # if there is anything to remove
           metadata.tmp <- metadata.tmp[-which(tolower(metadata.tmp[,speciesCol]) %in% tolower(exclude)),]
         }
       }
+
+      # convert character vector extracted from images to time object and format for outfilename
+      metadata.tmp$DateTimeOriginal <- as.POSIXct(strptime(x = metadata.tmp$DateTimeOriginal, format = "%Y:%m:%d %H:%M:%S", tz = timeZone))
 
       if(nrow(metadata.tmp) >= 1){   # if anything left, do
 
@@ -138,9 +251,21 @@ recordDatabase <- function(inDir,
                                     delta.time.days = NA)
 
         for(xy in 1:nrow(metadata.tmp2)){
-          # time difference to all other records of same species at this station (at both cameras)
-          diff_tmp <- na.omit(difftime(metadata.tmp2$DateTimeOriginal[xy], metadata.tmp2$DateTimeOriginal[metadata.tmp2[,speciesCol] == metadata.tmp2[xy,speciesCol]],
+          # time difference to all other records of same species at this station (at all cameras)
+          if(camerasIndependent == TRUE){
+            diff_tmp <- na.omit(difftime(time1 = metadata.tmp2$DateTimeOriginal[xy],
+                                         time2 = metadata.tmp2$DateTimeOriginal[metadata.tmp2[,speciesCol] == metadata.tmp2[xy,speciesCol] & 
+                                                                                metadata.tmp2[,cameraCol]  == metadata.tmp2[xy,cameraCol] &
+                                                                                metadata.tmp2[,stationCol] == metadata.tmp2[xy,stationCol]
+                                                                                ],
+                                         units = "secs"))
+          } else {
+            diff_tmp <- na.omit(difftime(time1 = metadata.tmp2$DateTimeOriginal[xy], 
+                                         time2 = metadata.tmp2$DateTimeOriginal[metadata.tmp2[,speciesCol] == metadata.tmp2[xy,speciesCol] &
+                                                                                metadata.tmp2[,stationCol] == metadata.tmp2[xy,stationCol]
+                                                                                ],
                                        units = "secs"))
+          }
 
           if(length(diff_tmp) == 0){   # i.e. no other record
             metadata.tmp2$delta.time.secs[xy] <-  NA
@@ -161,22 +286,34 @@ recordDatabase <- function(inDir,
                               metadata.tmp2$delta.time.secs >= (minDeltaTime * 60) |
                               is.na(metadata.tmp2$delta.time.secs),]
 
-        # remove duplicates (if 2 images taken in same second of same species at one station, remove all but first)
-        d2 <- data.frame()
-        for(spec in unique(d1[,speciesCol])){
-          d1a <- subset(d1, d1[,speciesCol] == spec)
-          row_to_remove <- which(duplicated(d1a[d1a[,speciesCol] == spec,]$DateTimeOriginal))
-          if(length(row_to_remove) >= 1){
-            d1b <- d1a[-row_to_remove,]
-            d2 <- rbind(d2, d1b)
-            rm(d1b)
-          } else {
-            d2 <- rbind(d2, d1a)
+      # append table of station i's images metadata to global record table
+
+        # add potential new columns to record.table
+
+            if(i != 1){
+          which_cols_to_add_to_d1 <- seq(1, ncol(record.table))[-which(colnames(record.table) %in% colnames(d1))]   # columns in record.table but not in d1
+          
+          # if d1 lacks columns present in record.table, add them here (filled with NA)
+          if(length(which_cols_to_add_to_d1) >= 1){
+            d1 <- data.frame(d1, as.list(rep(NA, each = length(which_cols_to_add_to_d1))))
+            colnames(d1)[(ncol(d1) - length(which_cols_to_add_to_d1) + 1) :  ncol(d1)] <- colnames(record.table)[which_cols_to_add_to_d1]
           }
-          rm(d1a, row_to_remove)
+          
+          # now check which columns are present in d1 but not in record.table (new tag groups) and add these (filled with NA)
+          which_cols_to_add_to_record.table <- seq(1, ncol(d1))[-which(colnames(d1) %in% colnames(record.table))]  # columns present in d1 but not in record.table          
+          if(length(which_cols_to_add_to_record.table) >= 1){
+            record.table <- data.frame(record.table, as.list(rep(NA, each = length(which_cols_to_add_to_record.table))))
+            colnames(record.table)[(ncol(record.table) - length(which_cols_to_add_to_record.table) + 1) :  ncol(record.table)] <- colnames(d1)[which_cols_to_add_to_record.table]
+          }
+          d2 <- d1[,match(colnames(record.table), colnames(d1))]
+          rm(which_cols_to_add_to_d1, which_cols_to_add_to_record.table)
+        } else {
+          d2 <- d1
         }
+
         record.table <- rbind(record.table, d2)
-        rm(d1, d2)
+
+        suppressWarnings(rm(d1, d2))
       }
     }
   }
@@ -185,7 +322,7 @@ recordDatabase <- function(inDir,
     stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty. Maybe you excluded too many species?"))
   }
 
-  # rearrange table, add date and time as separate columns
+  # rearrange table, add date and time as separate columns. add additional column names as needed.
 
   record.table2  <-  data.frame(record.table[,c(stationCol,
                                                 speciesCol, "DateTimeOriginal")],
@@ -194,37 +331,43 @@ recordDatabase <- function(inDir,
                                 record.table[,c("delta.time.secs", "delta.time.mins", "delta.time.hours", "delta.time.days",
                                                 "Directory", "FileName")])
 
-  if(hasArg(metadataTags)){
-    record.table2 <- cbind(record.table2, record.table[,metadataTags])
-    colnames(record.table2)[(ncol(record.table2) - length(metadataTags) + 1) : ncol(record.table2)] <- metadataTags
+  metadata_columns <- which(colnames(record.table) %in% colnames(record.table2) == FALSE)
+
+  if(length(metadata_columns) >= 1){
+    record.table3 <- cbind(record.table2, record.table[,metadata_columns])
+    colnames(record.table3)[(ncol(record.table2) + 1) : ncol(record.table3)] <- colnames(record.table)[metadata_columns]
+  } else {record.table3 <- record.table2}
+
+
+
+  if(hasArg(cameraID)){
+    record.table3 <- data.frame(record.table3[,stationCol],
+                                record.table[,cameraCol],
+                                record.table3[,-which(colnames(record.table3) %in% c(stationCol, cameraCol))])
+    colnames(record.table3)[1] <- stationCol
+    colnames(record.table3)[2] <- cameraCol
   }
 
-  if(isTRUE(includeCameras)){
-    record.table2 <- data.frame(record.table2[,stationCol],
-                                camera = record.table[,cameraCol],
-                                record.table2[,2:ncol(record.table2)])
-    colnames(record.table2)[1] <- stationCol
-  }
+  record.table3 <- record.table3[with(record.table3, order(record.table3[,stationCol], record.table3[,speciesCol], DateTimeOriginal)), ]
+  rownames(record.table3) <- NULL
 
-  record.table2 <- record.table2[with(record.table2, order(record.table2[,stationCol], record.table2[,speciesCol], DateTimeOriginal)), ]
-
-  # add delta time in hours and days
-  record.table2$delta.time.secs <- round(record.table2$delta.time.secs, digits = 0)
-  record.table2$delta.time.mins <- round(record.table2$delta.time.secs / 60, digits = 0)
-  record.table2$delta.time.hours <- round(record.table2$delta.time.mins/60, digits = 1)
-  record.table2$delta.time.days <- round(record.table2$delta.time.mins/60/24, digits = 1)
+  # compute delta time in hours and days
+  record.table3$delta.time.secs <- round(record.table3$delta.time.secs, digits = 0)
+  record.table3$delta.time.mins <- round(record.table3$delta.time.secs / 60, digits = 0)
+  record.table3$delta.time.hours <- round(record.table3$delta.time.mins/60, digits = 1)
+  record.table3$delta.time.days <- round(record.table3$delta.time.mins/60/24, digits = 1)
 
   # save table
   if(writecsv == TRUE){
     outtable_filename <- paste("record_database_", minDeltaTime, "min_deltaT_", Sys.Date(), ".csv", sep = "")
     if(hasArg(outDir) == FALSE){
       setwd(inDir)
-      write.csv(record.table2, file = outtable_filename)
+      write.csv(record.table3, file = outtable_filename)
     } else {
 
       setwd(outDir)
-      write.csv(record.table2, file = outtable_filename)
+      write.csv(record.table3, file = outtable_filename)
     }
   }
-  return(record.table2)
+  return(record.table3)
 }

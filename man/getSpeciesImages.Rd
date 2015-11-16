@@ -11,8 +11,7 @@ This function will fetch all images of a particular species at all camera trap s
 getSpeciesImages(species, 
   inDir, 
   outDir, 
-  stationSubfolders = FALSE, 
-  emptyOutDir = FALSE
+  stationSubfolders = FALSE
   )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -29,14 +28,11 @@ Directory in which to save species images (in a species subdirectory)
   \item{stationSubfolders}{
 logical. within the newly created species directory in \code{outDir}, create station directories for images?
 }
-  \item{emptyOutDir}{
-logical. If TRUE, all .jpg images in the species folder in \code{outDir} will be deleted prior to copying. If FALSE, nothing will be deleted (default)
-}
 }
 \details{
 Before running the function, first rename the images using function \code{\link{imageRename}} to provide unique file names and prevent several images from having the same name (if generic names like "DCIM0001.jpg" are used).
 \code{inDir} must contain station directories, which in turn contain species image subdirectories of name \code{species}.
-If \code{emptyOutDir} is TRUE, all .jpg images will be deleted from the target folder \code{outDir/species} recursively (in case there are station subdirectories). This may cause data loss, so please be careful. If \code{emptyOutDir} is FALSE and the target directory contains any .jpg images, an error will inform you and nothing will be copied, overwritten or deleted.
+
 }
 \value{
 A \code{data.frame} with old and new file locations and the copy status (\code{copy_ok}; TRUE if copying was successful).
@@ -57,11 +53,11 @@ wd_images_ID_copy <- paste(getwd(), "sample_species_images", sep = "/")
 
 species_to_copy <- "VTA"    # = Viverra tangalunga, Malay Civet
 
-specImagecopy <- getSpeciesImages(species = species_to_copy,
-  inDir = wd_images_ID,
-  outDir = wd_images_ID_copy,
-  stationSubfolders = FALSE,
-  emptyOutDir = FALSE
+specImagecopy <- getSpeciesImages(species           = species_to_copy,
+                                  inDir             = wd_images_ID,
+                                  outDir            = wd_images_ID_copy,
+                                  stationSubfolders = FALSE,
+                                  emptyOutDir       = FALSE
   )
 }
 }

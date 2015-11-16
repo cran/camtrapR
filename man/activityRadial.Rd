@@ -5,7 +5,7 @@
 Radial plots of single-species activity
 }
 \description{
-The function generates a radial plot of species diel activity using an adapted version of function \code{\link[plotrix]{radial.plot}} from package \pkg{\link[plotrix]{plotrix}} (without the need to install the package). Records are aggregated by hour. The number of independent events is used as input, which in turn is based on the argument \code{minDeltaTime} in \code{\link{recordDatabase}}.
+The function generates a radial plot of species diel activity using an adapted version of function \code{\link[plotrix]{radial.plot}} from package \pkg{plotrix} (without the need to install the package). Records are aggregated by hour. The number of independent events is used as input, which in turn is based on the argument \code{minDeltaTime} in \code{\link{recordDatabase}}.
 }
 \usage{
   activityRadial(recordTable, 
@@ -98,13 +98,13 @@ data(recordDatabaseSample)
 
 species4activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 
-activityRadial(recordTable = recordDatabaseSample,
-  species = species4activity,
-  all.species = FALSE,
-  speciesCol = "Species",
-  recordDateTimeCol = "DateTimeOriginal",
-  plotR = TRUE,
-  writePNG = FALSE,
-  lwd = 5
+activityRadial(recordTable       = recordDatabaseSample,
+               species           = species4activity,
+               all.species       = FALSE,
+               speciesCol        = "Species",
+               recordDateTimeCol = "DateTimeOriginal",
+               plotR             = TRUE,
+               writePNG          = FALSE,
+               lwd               = 5
 )
 }

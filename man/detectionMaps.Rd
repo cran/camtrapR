@@ -5,7 +5,7 @@
 Generate maps of species richness and species presence by station
 }
 \description{
-Generates maps of species presence for all species that were recorded and the number of species by station. Output can be in R and/or in png.
+Generates maps of species presence for all species that were recorded and the number of species by station. Output can be R graphics, PNG graphics or a shapefile for use in GIS software.
 }
 \usage{
 detectionMaps(CTtable, 
@@ -22,14 +22,18 @@ detectionMaps(CTtable,
   plotR = TRUE, 
   writePNG = FALSE, 
   plotDirectory, 
-  createDir = FALSE,       
-  pngMaxPix = 1000
+  createPlotDir = FALSE,       
+  pngMaxPix = 1000,
+  writeShapefile = FALSE,
+  shapefileName,
+  shapefileDirectory,
+  shapefileProjection
 )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{CTtable}{
-  data.frame. contains station and camera coordinates
+  data.frame. contains station IDs and coordinates
 }
   \item{Xcol}{
   character. name of the column specifying x coordinates in \code{CTtable}
@@ -47,15 +51,15 @@ detectionMaps(CTtable,
   character. name of the column specifying species in \code{recordTable}
 }
   \item{writePNG}{
-  logical. Create pngs of the plots?
+  logical. Create PNGs of the plots?
 }
   \item{plotR}{
   logical. Create plots in R graphics device?
 }
   \item{plotDirectory}{
-  character. Path of the pngs
+  character. Directory in which to save the PNGs
 }
-  \item{createDir}{
+  \item{createPlotDir}{
   logical. Create \code{plotDirectory}?
 }
   \item{richnessPlot}{
@@ -76,9 +80,22 @@ detectionMaps(CTtable,
   \item{pngMaxPix}{
   integer. number of pixels in pngs on the longer side
 }
+  \item{writeShapefile}{
+  logical. Create a shapefile from the output?
+}
+  \item{shapefileName}{
+  character. Name of the shapefile to be saved. If empty, a name will be generated automatically.
+}
+  \item{shapefileDirectory}{
+  character. Directory in which to save the shapefile.
+}
+  \item{shapefileProjection}{
+  character. A character string of projection arguments to use in the shapefile.
+}
 }
  \details{
 The column name \code{stationCol} must be identical in \code{CTtable} and \code{recordTable}.
+Shapefile creation depends on the packages \pkg{sp} and \pkg{rgdal}. \code{shapefileProjection} must be a valid argument of \code{\link[sp]{CRS}}. If \code{shapefileProjection} is undefined, the resulting shapefile will lack a coordinate reference system.
  }
 \value{
 A \code{data.frame} with station coordinates, numbers of events by species at each station and total species number by station. In addition and optionally, R graphics or png image files.
@@ -104,21 +121,23 @@ data(camtraps)
 # load record database
 data(recordDatabaseSample)
 
-
 # create maps
-Mapstest <- detectionMaps(CTtable = camtraps,
-  recordTable = recordDatabaseSample,
-  Xcol = "utm_x",
-  Ycol = "utm_y",
-  stationCol = "Station",
-  speciesCol = "Species",
-  writePNG = FALSE,
-  plotR = TRUE,
-  printLabels = TRUE,
-  richnessPlot = TRUE,
-  addLegend = TRUE
+Mapstest <- detectionMaps(CTtable      = camtraps,
+                          recordTable  = recordDatabaseSample,
+                          Xcol         = "utm_x",
+                          Ycol         = "utm_y",
+                          stationCol   = "Station",
+                          speciesCol   = "Species",
+                          writePNG     = FALSE,
+                          plotR        = TRUE,
+                          printLabels  = TRUE,
+                          richnessPlot = TRUE,
+                          addLegend    = TRUE
 )
+}
 
+\references{
+A great resource for \code{\link[sp]{CRS}} arguments is \url{http://spatialreference.org/}. Use the Proj4 string as \code{shapefileProjection} argument.
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
