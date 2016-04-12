@@ -1,6 +1,6 @@
 activityHistogram <- function(recordTable,
                               species,
-                              all.species = FALSE,
+                              allSpecies = FALSE,
                               speciesCol = "Species",
                               recordDateTimeCol = "DateTimeOriginal",
                               recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
@@ -11,9 +11,16 @@ activityHistogram <- function(recordTable,
                               pngMaxPix = 1000,
                               ...){
 
-  stopifnot(is.logical(c(all.species, writePNG, plotR, createDir)))
-  if(all.species == FALSE){stopifnot(hasArg(species))}
-  stopifnot(species %in% recordTable[,speciesCol])
+  wd0 <- getwd()
+  mar0 <- par()$mar
+  on.exit(setwd(wd0))
+  on.exit(par(mar = mar0), add = TRUE)
+
+  stopifnot(is.logical(c(allSpecies, writePNG, plotR, createDir)))
+  if(allSpecies == FALSE){
+    stopifnot(hasArg(species))
+    stopifnot(species %in% recordTable[,speciesCol])
+  }
   recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol], format = recordDateTimeFormat, tz = "UTC")
   if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
 
@@ -36,10 +43,10 @@ activityHistogram <- function(recordTable,
         stopifnot(file.exists(plotDirectory))
         setwd(plotDirectory)
       }
-    } else {stop("please set plotDirectory")}
+    } else {stop("writePNG is TRUE. Please set plotDirectory")}
   }
 
-  if(all.species == FALSE){
+  if(allSpecies == FALSE){
     subset_species <- subset(recordTable, recordTable[,speciesCol] == species)
     subset_species$Hour <- subset_species$Hour + 0.1   # otherwise both 0 and 1 will be in histogram class 0
 
@@ -47,7 +54,7 @@ activityHistogram <- function(recordTable,
       png(filename = paste("activity_histogram_", species, "_", Sys.Date(), ".png", sep = ""),
           width = pngWidth, height = pngHeight, units = "px", res = 96, type = "cairo")
       hist(subset_species$Hour, breaks = hist_breaks,
-           col = "gray",
+           col  = col_bars,
            main = paste("Activity of", species),
            xlab = xlab.tmp,
            axes = FALSE,
@@ -55,12 +62,15 @@ activityHistogram <- function(recordTable,
       axis(1, at = seq(0,24, by = 3))
       axis(2)
       box()
+      mtext(paste("number of records:", length(subset_species$Hour)), side = 3, line = 0)
       dev.off()
     }
 
     if(isTRUE(plotR)){
-      hist(subset_species$Hour, breaks = hist_breaks,
-           col = col_bars, freq = TRUE,
+      hist(subset_species$Hour,
+           breaks = hist_breaks,
+           col = col_bars,
+           freq = TRUE,
            main = paste("Activity of", species),
            xlab = xlab.tmp,
            axes = FALSE,
@@ -68,6 +78,7 @@ activityHistogram <- function(recordTable,
       axis(1, at = seq(0,24, by = 3))
       axis(2)
       box()
+      mtext(paste("number of records:", length(subset_species$Hour)), side = 3, line = 0)
     }
 
 
@@ -83,8 +94,9 @@ activityHistogram <- function(recordTable,
       if(isTRUE(writePNG)){
         png(filename = paste("activity_histogram_", spec.tmp, "_", Sys.Date(), ".png", sep = ""),
             width = pngWidth, height = pngHeight, units = "px", res = 96, type = "cairo")
-        hist(subset_species$Hour, breaks = hist_breaks,
-             col = "gray",
+        hist(subset_species$Hour,
+             breaks = hist_breaks,
+             col  = col_bars,
              main = paste("Activity of", spec.tmp),
              xlab = xlab.tmp,
              axes = FALSE,
@@ -92,12 +104,14 @@ activityHistogram <- function(recordTable,
         axis(1, at = seq(0,24, by = 3))
         axis(2)
         box()
+        mtext(paste("number of records:", length(subset_species$Hour)), side = 3, line = 0)
         dev.off()
       }
 
       if(isTRUE(plotR)){
-        hist(subset_species$Hour, breaks = hist_breaks,
-             col = "gray",
+        hist(subset_species$Hour,
+             breaks = hist_breaks,
+             col  = col_bars,
              main = paste("Activity of", spec.tmp),
              xlab = xlab.tmp,
              axes = FALSE,
@@ -105,13 +119,14 @@ activityHistogram <- function(recordTable,
         axis(1, at = seq(0,24, by = 3))
         axis(2)
         box()
+        mtext(paste("number of records:", length(subset_species$Hour)), side = 3, line = 0)
       }
       subset_species_list[[i]] <- subset_species$DateTime2
       names(subset_species_list)[i] <- spec.tmp
     }
   }
 
-  if(all.species == FALSE){
+  if(allSpecies == FALSE){
     return(invisible(subset_species$DateTime2))
   } else {
     return(invisible(subset_species_list))

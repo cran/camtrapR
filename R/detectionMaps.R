@@ -4,6 +4,7 @@ detectionMaps <- function(CTtable,
                           Ycol,
                           stationCol = "Station",
                           speciesCol = "Species",
+                          speciesToShow,
                           richnessPlot = TRUE,
                           speciesPlots = TRUE,
                           addLegend = TRUE,
@@ -19,14 +20,25 @@ detectionMaps <- function(CTtable,
                           shapefileDirectory,
                           shapefileProjection){
 
+  wd0 <- getwd()
+  opar <- par(no.readonly = TRUE)
+  on.exit(setwd(wd0))
+  on.exit(par(opar), add = TRUE)
+						  
   stopifnot(stationCol %in% colnames(CTtable))
   stopifnot(stationCol %in% colnames(recordTable))
+  
+  CTtable[,stationCol] <- as.character(CTtable[,stationCol])
+  recordTable[,stationCol] <- as.character(recordTable[,stationCol])
+  
   # check all stations in recordTable are matched in CTtable
   if(all(recordTable[,stationCol] %in% CTtable[,stationCol]) == FALSE) {
     stop(paste("items of stationCol in recordTable are not matched in stationCol of CTtable: ", paste(recordTable[-which(recordTable[,stationCol] %in% CTtable[,stationCol]),stationCol], collapse = ", ")))
   }
 
   stopifnot(speciesCol %in% colnames(recordTable))
+  recordTable[,speciesCol] <- as.character(recordTable[,speciesCol])
+  
   stopifnot(c(Xcol, Ycol) %in% colnames(CTtable))
   if(any(is.na(CTtable[,Xcol])))stop("there are NAs in Xcol")
   if(any(is.na(CTtable[,Ycol])))stop("there are NAs in Ycol")
@@ -36,17 +48,23 @@ detectionMaps <- function(CTtable,
     stopifnot(hasArg(shapefileDirectory))
     stopifnot(file.exists(shapefileDirectory))
   }
+  
+  if(hasArg(speciesToShow)){
+    stopifnot(is.character(speciesToShow))
+    if(any(!speciesToShow %in% recordTable[,speciesCol])) stop(" these speciesToShow are not in speciesCol of recordTable:   ", paste(speciesToShow[!speciesToShow %in% recordTable[,speciesCol]], collapse = ", "), call. = FALSE)
+    recordTable <- recordTable[recordTable[,speciesCol] %in% speciesToShow,]
+  }
 
   # data preparation
   dat2 <- aggregate(CTtable[, c(Ycol, Xcol)], by = list(CTtable[,stationCol]), FUN = mean)    # get coordinates
   colnames(dat2)[1] <- stationCol
 
-  t1 <- aggregate(recordTable[, speciesCol], by = list(recordTable[,stationCol]), FUN = table)   # number of species records by station
-  t2 <- data.frame(as.character(t1[,1]), t1[,2])
-  colnames(t2)[1] <- stationCol
-
+  t1 <- aggregate(recordTable[, speciesCol], by = list(recordTable[,stationCol]), FUN = table, simplify = FALSE)   # number of species records by station
+  t2 <- data.frame(as.character(t1[,1]), matrix(unlist(t1$x), nrow = length(unique(recordTable[,stationCol])), byrow = TRUE))
+  colnames(t2) <- c(stationCol, names(t1[,2][[1]]))
+  
   t3 <- t2[match(toupper(as.character(dat2[,stationCol])), toupper(as.character(t2[,stationCol]))),]    # matching IDs between recordTable and CTtable
-  cex.t3 <- data.frame(t3[,1], apply(t3[,-1],2,function(x){x/max(x, na.rm = TRUE)}))
+  cex.t3 <- data.frame(t3[,1], apply(data.frame(t3[,-1]),2,function(x){x/max(x, na.rm = TRUE)}))
   colnames(cex.t3)[1] <- stationCol
 
   t4 <- data.frame(t3[,1], n_species = apply(as.data.frame(ifelse(t3[,-1] >=1, 1, 0)), 1, FUN = sum))    # number of species by station
@@ -79,8 +97,6 @@ detectionMaps <- function(CTtable,
   x.range <- extendrange(r = range(range(dat2[Xcol])), f = range.expand.factor)
   y.range <- extendrange(r = range(range(dat2[Ycol])), f = range.expand.factor)
 
-  opar <- par(no.readonly = TRUE)
-  on.exit(par(opar))
   par(mar = par.mar.tmp,
       xpd = TRUE,
       xaxs = "i")
@@ -267,7 +283,7 @@ detectionMaps <- function(CTtable,
     if(hasArg(shapefileProjection)){proj.tmp <- shapefileProjection } else {proj.tmp <- NA}
     if(hasArg(shapefileName)){layer.tmp <- shapefileName } else {layer.tmp <- paste("species_detection_", Sys.Date(), sep = "")}
 
-    spdf <- SpatialPointsDataFrame(coords = outtable[,c("Longitude", "Latitude")],
+    spdf <- SpatialPointsDataFrame(coords = outtable[,c(Xcol, Ycol)],
                                    data = outtable,
                                    proj4string = CRS(as.character(proj.tmp)))
 
@@ -277,5 +293,5 @@ detectionMaps <- function(CTtable,
              driver = "ESRI Shapefile")
   }
 
-  return(outtable)
+  return(invisible(outtable))
 }

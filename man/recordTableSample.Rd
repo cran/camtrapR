@@ -1,13 +1,13 @@
 \docType{data}
-\name{recordDatabaseSample}
-\alias{recordDatabaseSample}
-\title{Sample species record database from camera trap images}
+\name{recordTableSample}
+\alias{recordTableSample}
+\title{Sample species record table from camera trap images}
 \format{A data frame with 39 rows and 11 variables}
 \usage{
-data(recordDatabaseSample)
+data(recordTableSample)
 }
 \description{
-Sample species record database from camera trap images generate with function \code{\link{recordDatabase}} from the sample images in the package.
+Sample species record table from camera trap images generated from the sample images in the package with the function \code{\link{recordTable}} .
 }
 \details{
 

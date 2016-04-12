@@ -14,8 +14,10 @@ activityOverlap <- function(recordTable,
                             add.rug = TRUE,
                             ...){
 
-  mar0 <- c(5.1, 4.1, 4.1, 2.1)
-  on.exit(par(mar = mar0))
+  wd0 <- getwd()
+  mar0 <- par()$mar
+  on.exit(setwd(wd0))
+  on.exit(par(mar = mar0), add = TRUE)
 
   stopifnot(is.logical(c(writePNG, plotR, createDir)))
   stopifnot(hasArg(speciesA))
@@ -35,8 +37,10 @@ activityOverlap <- function(recordTable,
   subset_speciesA <- subset(recordTable, recordTable[,speciesCol] == speciesA)
   subset_speciesB <- subset(recordTable, recordTable[,speciesCol] == speciesB)
 
-  if(any(is.na( c(subset_speciesA$Time.rad, subset_speciesB$Time.rad))))stop("NAs produced in converting to radial time. Sorry, that's a bug.")
+  if(any(is.na( c(subset_speciesA$Time.rad, subset_speciesB$Time.rad))))stop("NAs produced in converting to radial time. Sorry, that's a bug. Please report it.")
 
+  n_record_string <- paste("number of records:", paste(nrow(subset_speciesA), nrow(subset_speciesB), sep = " / "))
+  
   # set graphics  parameters and out directory
   overlapEst.tmp <- overlap::overlapEst(A = subset_speciesA$Time.rad, B = subset_speciesB$Time.rad)
 
@@ -49,9 +53,9 @@ activityOverlap <- function(recordTable,
   y_usr_factor <- 0.22
 
   dots <- list(...)
-  if(!is.null(dots[['linetype']])){lty.tmp <- dots[['linetype']]} else {lty.tmp <- c(1, 2)}
+  if(!is.null(dots[['linetype']])){ lty.tmp <- dots[['linetype']]}  else {lty.tmp <- c(1, 2)}
   if(!is.null(dots[['linewidth']])){lwd.tmp <- dots[['linewidth']]} else {lwd.tmp <- c(1, 1)}
-  if(!is.null(dots[['linecol']])){col.tmp <- dots[['linecol']]} else {col.tmp <- c("black", "blue")}
+  if(!is.null(dots[['linecol']])){  col.tmp <- dots[['linecol']]}   else {col.tmp <- c("black", "blue")}
 
 
   if(isTRUE(writePNG)){
@@ -63,7 +67,7 @@ activityOverlap <- function(recordTable,
         stopifnot(file.exists(plotDirectory))
         setwd(plotDirectory)
       }
-    } else {stop("please set plotDirectory")}
+    } else {stop("writePNG is TRUE. Please set plotDirectory")}
   }
 
   if(isTRUE(writePNG)){
@@ -88,9 +92,9 @@ activityOverlap <- function(recordTable,
              lwd = lwd.tmp,
              col = col.tmp,
              bg = "white"
-
       )
     }
+    mtext(n_record_string, side = 3, line = 0)            
     dev.off()
   }
 
@@ -116,6 +120,8 @@ activityOverlap <- function(recordTable,
              bg = "white"
       )
     }
+    mtext(n_record_string, side = 3, line = 0)            
+    
     return(invisible(plot.values))
   }
 }

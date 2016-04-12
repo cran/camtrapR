@@ -10,7 +10,7 @@ The function generates a histogram of species diel activity in 1-hour intervals.
 \usage{
 activityHistogram(recordTable, 
 	species, 
-	all.species = FALSE, 
+	allSpecies = FALSE, 
 	speciesCol = "Species", 
 	recordDateTimeCol = "DateTimeOriginal", 
 	recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S", 
@@ -24,40 +24,40 @@ activityHistogram(recordTable,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{recordTable}{
-	data.frame. the record table created by \code{\link{recordDatabase}}
+	data.frame. the record table created by \code{\link{recordTable}}
 }
   \item{species}{
 Name of the single species for which to create a histogram of activity
 }
-  \item{all.species}{
-logical. If TRUE, plots are created for all species. This overrides argument \code{species}
+  \item{allSpecies}{
+logical. Create plots for all species in \code{speciesCol} of \code{recordTable}? Overrides argument \code{species}
 }
   \item{speciesCol}{
-	character. name of the column specifying species in \code{recordTable}
+	character. name of the column specifying species names in \code{recordTable}
 }
   \item{recordDateTimeCol}{
 	character. name of the column specifying date and time in \code{recordTable}
 }
   \item{recordDateTimeFormat}{
-	format of column \code{recordDateTimeCol} in \code{recordTable}
+	character. format of column \code{recordDateTimeCol} in \code{recordTable}
 }
   \item{plotR}{
-	logical. Create plots in R graphics device?
+logical. Show plots in R graphics device?
 }
  \item{writePNG}{
 	logical. Create pngs of the plots?
 }
   \item{plotDirectory}{
-	character. Path of the pngs
+	character. Directory in which to create png plots if \code{writePNG = TRUE}
 }
   \item{createDir}{
 	logical. Create \code{plotDirectory}?
 }
   \item{pngMaxPix}{
-	integer. number of pixels in pngs along x axis
+	integer. image size of png (pixels along x-axis)
 }
   \item{\dots}{
-	additional arguments to be passed to function \code{hist}
+	additional arguments to be passed to function \code{\link[graphics]{hist}}
 }
 }
 \details{
@@ -69,7 +69,7 @@ If \code{allSpecies == TRUE}, all species' vectors are returned in an invisible 
  }
 
 \note{ 
-If you have a sufficiently large number of records you may wish to consider using \code{\link{activityDensity}} instead. Please be aware that the function (like the other activity... function of this package) use clock time. If your survey was long enough to see changes in sunrise and sunset times, this may result in biased representations of species activity.
+If you have a sufficiently large number of records you may wish to consider using \code{\link{activityDensity}} instead. Please be aware that this function (like the other activity... function of this package) use clock time. If your survey was long enough to see changes in sunrise and sunset times, this may result in biased representations of species activity.
 }
 
 \author{
@@ -83,13 +83,13 @@ Juergen Niedballa
 }
 \examples{
 
-# load record database
-data(recordDatabaseSample)
+# load record table
+data(recordTableSample)
 
 # generate activity histogram
 species4activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 
-activityHistogram (recordTable = recordDatabaseSample,
+activityHistogram (recordTable = recordTableSample,
                    species     = species4activity,
-                   all.species = FALSE)
+                   allSpecies = FALSE)
 }

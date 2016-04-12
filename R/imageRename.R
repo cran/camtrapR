@@ -1,34 +1,39 @@
 imageRename <- function(inDir,
                         outDir,
-                        hasCameraSubfolders,
+                        hasCameraFolders,
                         keepCameraSubfolders,
                         copyImages = FALSE,
                         writecsv = FALSE){
 
-  stationCol = "Station"
-  cameraCol = "Camera"
+  wd0 <- getwd()
+  on.exit(setwd(wd0))
+  
+  file.sep <- .Platform$file.sep
+  
+  stationCol <- "Station"
+  cameraCol  <- "Camera"
 
   # check call for consistency
   stopifnot(is.logical(copyImages))
   stopifnot(is.logical(writecsv))
-  stopifnot(is.logical(hasCameraSubfolders))
+  stopifnot(is.logical(hasCameraFolders))
   
-    if(isTRUE(hasCameraSubfolders)){
+    if(isTRUE(hasCameraFolders)){
       stopifnot(hasArg(keepCameraSubfolders))
       stopifnot(is.logical(keepCameraSubfolders))
    } else {
     keepCameraSubfolders <- FALSE
    }
-   if(hasArg(hasCameraSubfolders) & hasArg(keepCameraSubfolders)){
-    if(keepCameraSubfolders == TRUE & hasCameraSubfolders == FALSE){stop("If hasCameraSubfolders is FALSE, keepCameraSubfolders must be FALSE too")}
+   if(hasArg(hasCameraFolders) & hasArg(keepCameraSubfolders)){
+    if(keepCameraSubfolders == TRUE & hasCameraFolders == FALSE){stop("If hasCameraFolders is FALSE, keepCameraSubfolders must be FALSE too")}
    }
   
   
   stopifnot(length(inDir) == 1)
   if(hasArg(outDir)){
     stopifnot(length(outDir) == 1)
-    if(isTRUE(all(unlist(strsplit(tolower(inDir), split = "/")) %in%
-                  unlist(strsplit(tolower(outDir), split = "/"))))) stop("outDir may not be identical to or a subdirectory of inDir")
+    if(isTRUE(all(unlist(strsplit(tolower(inDir), split = file.sep)) %in%
+                  unlist(strsplit(tolower(outDir), split = file.sep))))) stop("outDir may not be identical to or a subdirectory of inDir")
 
     list.files.tmp <- list.files(outDir, recursive = TRUE)
     if(copyImages == TRUE & length(list.files.tmp) >= 1) stop("outDir must be empty if you wish to copy images")
@@ -40,7 +45,7 @@ imageRename <- function(inDir,
   } else {
     if(isTRUE(grepl("/$", inDir))) stop("inDir may not end with /")
   }
-  if(Sys.which("exiftool") == "") stop("cannot find Exiftool")
+  if(Sys.which("exiftool") == "") stop("cannot find ExifTool")
   if(isTRUE(writecsv) & hasArg(outDir) == FALSE) stop("writecsv is TRUE. Please specify outDir")
 
 
@@ -65,8 +70,8 @@ imageRename <- function(inDir,
   for(i in which(lapply(list_n_files, length) >= 1)){     # for all non-empty directories
 
     # check if there are any images not in camera trap subfolders
-    if(hasCameraSubfolders == TRUE && length(list.files(dirs[i], pattern = ".jpg$|.JPG$", recursive = FALSE)) >= 1){
-      stop(paste("Directory ", dirs[i], " contains images not sorted into Camera Trap subfolders. Check argument 'hasCameraSubfolders'"))
+    if(hasCameraFolders == TRUE && length(list.files(dirs[i], pattern = ".jpg$|.JPG$", recursive = FALSE)) >= 1){
+      stop(paste("Directory ", dirs[i], " contains images not sorted into Camera Trap subfolders. Check argument 'hasCameraFolders'"))
     }
 
     # run exiftool to get image date and time
@@ -84,12 +89,12 @@ imageRename <- function(inDir,
 
     if(length(metadata.tmp) == 0){
       length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
-      print(paste(dirs[i], "seems to contain no images;", " found", length.tmp, "jpgs"))    # give message if station directory contains no jpgs
+      warning(paste(dirs[i], "seems to contain no images;", " found", length.tmp, "jpgs"))    # give message if station directory contains no jpgs
     } else {
 
-      print(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
+      message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
 
-      if(isTRUE(hasCameraSubfolders)){
+      if(isTRUE(hasCameraFolders)){
         filenames_by_subfolder <- lapply(as.list(list.dirs(dirs[i], full.names =TRUE, recursive = FALSE)),
                                          FUN = list.files, pattern = ".jpg$|.JPG$", recursive = TRUE, ignore.case = TRUE)
         metadata.tmp$CameraID <- rep(list.dirs(dirs[i], full.names = FALSE, recursive = FALSE),
@@ -114,12 +119,12 @@ imageRename <- function(inDir,
       if(length(na.date.rows) != 0){
         #metadata.tmp.na.date <- metadata.tmp[na.date.rows,]
         warning(paste("couldn't read DateTimeOriginal tag of ",
-                    paste(metadata.tmp2$Directory,  metadata.tmp2$FileName, sep = "/")[na.date.rows]))
+                    file.path(metadata.tmp2$Directory,  metadata.tmp2$FileName)[na.date.rows]))
         metadata.tmp <- data.frame(metadata.tmp, DateReadable = NA)
-        metadata.tmp$DateReadable[-na.date.rows] <- 1
-        metadata.tmp$DateReadable[na.date.rows] <- 0
+        metadata.tmp$DateReadable[-na.date.rows] <- TRUE
+        metadata.tmp$DateReadable[na.date.rows] <- FALSE
       } else {
-        metadata.tmp$DateReadable <- 1
+        metadata.tmp$DateReadable <- TRUE
       }
       rm(na.date.rows)
 
@@ -130,7 +135,7 @@ imageRename <- function(inDir,
       # find images taken within 1 minute of one another (to append number)
       metadata.tmp$DateTimeOriginal2$sec <- 0
 
-      if(isTRUE(hasCameraSubfolders)){
+      if(isTRUE(hasCameraFolders)){
         metadata.tmp.split <- split(x = metadata.tmp, f = list(metadata.tmp[,cameraCol],
                                                                as.POSIXct(metadata.tmp$DateTimeOriginal2)
         ), drop = TRUE)
@@ -146,8 +151,8 @@ imageRename <- function(inDir,
       })
 
       metadata.tmp2 <- do.call("rbind", metadata.tmp.split2)    # reassemble
-      if(any(metadata.tmp$DateReadable == 0)){
-        metadata.tmp2 <- rbind(cbind(metadata.tmp[metadata.tmp$DateReadable == 0,], minute.append = NA) ,metadata.tmp2)
+      if(any(metadata.tmp$DateReadable == FALSE)){
+        metadata.tmp2 <- rbind(cbind(metadata.tmp[metadata.tmp$DateReadable == FALSE,], minute.append = NA) ,metadata.tmp2)
       }
       rm(metadata.tmp.split, metadata.tmp.split2)
 
@@ -160,13 +165,13 @@ imageRename <- function(inDir,
       # create outfilename
       if(isTRUE(copyImages)){
         if(keepCameraSubfolders == TRUE){
-          metadata.tmp2$outDir <- paste(outDir, metadata.tmp2[,stationCol], metadata.tmp2[,cameraCol], sep = "/")
+          metadata.tmp2$outDir <- file.path(outDir, metadata.tmp2[,stationCol], metadata.tmp2[,cameraCol])
         } else {
-          metadata.tmp2$outDir <- paste(outDir, metadata.tmp2[,stationCol], sep = "/")
+          metadata.tmp2$outDir <- file.path(outDir, metadata.tmp2[,stationCol])
         }
       }
 
-      if(isTRUE(hasCameraSubfolders)){
+      if(isTRUE(hasCameraFolders)){
         metadata.tmp2$filename_new <- paste(paste(metadata.tmp2[,stationCol],
                                                   metadata.tmp2[,cameraCol],
                                                   paste(metadata.tmp2$DateTime_for_filename, "(",metadata.tmp2$minute.append, ")", sep = ""),
@@ -182,15 +187,15 @@ imageRename <- function(inDir,
       # copy images
       if(isTRUE(copyImages)){
         if(keepCameraSubfolders == TRUE){
-          wd_out_tmp <- paste(outDir, dirs_short[i], unique(metadata.tmp2[,cameraCol]), sep = "/")
+          wd_out_tmp <- file.path(outDir, dirs_short[i], unique(metadata.tmp2[,cameraCol]))
         } else {
-          wd_out_tmp <- paste(outDir, dirs_short[i], sep = "/")
+          wd_out_tmp <- file.path(outDir, dirs_short[i])
         }
         sapply(wd_out_tmp, dir.create, recursive = TRUE)
-        metadata.tmp2$CopyStatus[metadata.tmp2$DateReadable == 1] <- file.copy(from = apply(metadata.tmp2[metadata.tmp2$DateReadable == 1, c("Directory", "FileName")], MARGIN = 1, FUN = paste, collapse = "/"),
-                                                                               to = apply(metadata.tmp2[metadata.tmp2$DateReadable == 1, c("outDir", "filename_new")], MARGIN = 1, FUN = paste, collapse = "/"),
+        metadata.tmp2$CopyStatus[metadata.tmp2$DateReadable == TRUE] <- file.copy(from = apply(metadata.tmp2[metadata.tmp2$DateReadable == TRUE, c("Directory", "FileName")], MARGIN = 1, FUN = paste, collapse = file.sep),
+                                                                               to = apply(metadata.tmp2[metadata.tmp2$DateReadable == TRUE, c("outDir", "filename_new")], MARGIN = 1, FUN = paste, collapse = file.sep),
                                                                                overwrite = FALSE)
-        metadata.tmp2$CopyStatus[metadata.tmp2$DateReadable == 0] <- FALSE
+        metadata.tmp2$CopyStatus[metadata.tmp2$DateReadable == FALSE] <- FALSE
         rm(wd_out_tmp)
 
 

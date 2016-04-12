@@ -7,10 +7,10 @@
 data(camtraps)
 }
 \description{
-General camera trap station information
+Example camera trap station information table
 }
 \details{
-This is a general example of a \code{data.frame} that holds information about camera trap stations, e.g. setup and retrieval dates and coordinates. If more than 1 camera was set up at a station (e.g. 2 facing each other), a camera ID column can be added, with camera-specific information instead of station-specific information.
+This is a general example of how information about camera trap stations are arranged in camtrapR. It contains setup and retrieval dates and coordinates. If more than 1 camera was set up at a station (e.g. 2 cameras facing each other), a camera ID column must be added, with camera-specific information instead of station-specific information.
 If cameras malfunctioned repeatedly, additional pairs of problem columns can be added, e.g. "Problem2_from" and "Problem2_to" etc..
 
 The variables are as follows:
@@ -21,8 +21,8 @@ The variables are as follows:
  \item utm_x.   x coordinate of station (easting)
  \item Setup_date.   camera trap setup date
  \item Retrieval_date.   camera trap retrieval date
- \item Problem1_from.   date of beginning of camera malfunction
- \item Problem1_to.   date of end of camera malfunction
+ \item Problem1_from.   first day of camera malfunction
+ \item Problem1_to.   last day of camera malfunction
  }
 }
 

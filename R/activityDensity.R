@@ -1,6 +1,6 @@
 activityDensity <- function(recordTable,
                             species,
-                            all.species = FALSE,
+                            allSpecies = FALSE,
                             speciesCol = "Species",
                             recordDateTimeCol = "DateTimeOriginal",
                             recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
@@ -13,8 +13,14 @@ activityDensity <- function(recordTable,
                             ...
 )
 {
-  stopifnot(is.logical(c(all.species, writePNG, plotR, createDir)))
-  if(all.species == FALSE) {
+
+  wd0 <- getwd()
+  mar0 <- par()$mar
+  on.exit(setwd(wd0))
+  on.exit(par(mar = mar0), add = TRUE)
+
+  stopifnot(is.logical(c(allSpecies, writePNG, plotR, createDir)))
+  if(allSpecies == FALSE) {
     stopifnot(species %in% recordTable[,speciesCol])
     stopifnot(hasArg(species))
   }
@@ -40,15 +46,16 @@ activityDensity <- function(recordTable,
         setwd(plotDirectory)
       }
     } else {
-      stop("please set plotDirectory")}
+      stop("writePNG is TRUE. Please set plotDirectory")}
   }
 
   pngWidth <- pngMaxPix
   pngHeight <- round(pngMaxPix * 0.8)
 
-  if(all.species == FALSE){
+  if(allSpecies == FALSE){
 
     subset_species <- subset(recordTable, recordTable[,speciesCol] == species)
+
     if(isTRUE(writePNG)){
       png(filename = paste("activity_density_", species, "_", Sys.Date(), ".png", sep = ""),
           width = pngWidth, height = pngHeight, units = "px", res = 96, type = "cairo")
@@ -56,6 +63,7 @@ activityDensity <- function(recordTable,
                   main = paste("Activity of", species),
                   rug = add.rug,
                   ...)
+      mtext(paste("number of records:", nrow(subset_species)), side = 3, line = 0)
       dev.off()
     }
     if(isTRUE(plotR)){
@@ -63,6 +71,7 @@ activityDensity <- function(recordTable,
                   main = paste("Activity of", species),
                   rug = add.rug,
                   ...)
+    mtext(paste("number of records:", nrow(subset_species)), side = 3, line = 0)
     }
 
   } else {
@@ -76,7 +85,7 @@ activityDensity <- function(recordTable,
 
       subset_species <- subset(recordTable, recordTable[,speciesCol] == spec.tmp)
       if(nrow(subset_species) == 1){
-        print(paste(spec.tmp, "had only 1 record, cannot estimate density"))
+        warning(paste(spec.tmp, "had only 1 record, cannot estimate density"))
       } else {
         if(isTRUE(writePNG)){
           png(filename = paste("activity_density_", spec.tmp, "_", Sys.Date(), ".png", sep = ""),
@@ -85,6 +94,7 @@ activityDensity <- function(recordTable,
                       main = paste("Activity of", spec.tmp),
                       rug = add.rug,
                       ...)
+          mtext(paste("number of records:", nrow(subset_species)), side = 3, line = 0)
           dev.off()
         }
 
@@ -93,13 +103,14 @@ activityDensity <- function(recordTable,
                       main = paste("Activity of", spec.tmp),
                       rug = add.rug,
                       ...)
+          mtext(paste("number of records:", nrow(subset_species)), side = 3, line = 0)
         }
       }
       subset_species_list[[i]] <- subset_species$Time.rad
       names(subset_species_list)[i] <- spec.tmp
     }
   }
-  if(all.species == FALSE){
+  if(allSpecies == FALSE){
     return(invisible(subset_species$Time.rad))
   } else {
     return(invisible(subset_species_list))

@@ -1,110 +1,224 @@
 appendSpeciesNames <- function(inDir,
-                               hasCameraSubfolders,
+                               IDfrom,
+                               hasCameraFolders,
+                               metadataSpeciesTag,
+                               metadataHierarchyDelimitor = "|",
                                removeNames = FALSE,
                                writecsv = FALSE
 )
 {
+  wd0 <- getwd()
+  on.exit(setwd(wd0))
+  # check inpuit
   stopifnot(is.logical(removeNames))
   stopifnot(is.logical(writecsv))
-  stopifnot(is.logical(hasCameraSubfolders))
+  stopifnot(is.logical(hasCameraFolders))
 
-  dirs <- list.dirs(inDir, recursive = FALSE)
+  file.sep <- .Platform$file.sep
+  
+  if(class(IDfrom) != "character"){stop("IDfrom must be of class 'character'")}
+  if(IDfrom %in% c("metadata", "directory") == FALSE) stop("'IDfrom' must be 'metadata' or 'directory'")
+
+  if(IDfrom == "metadata"){    
+    if(metadataHierarchyDelimitor %in% c("|", ":") == FALSE) stop("'metadataHierarchyDelimitor' must be '|' or ':'")
+    metadata.tagname <- "HierarchicalSubject"
+
+    if(!hasArg(metadataSpeciesTag)) {stop("'metadataSpeciesTag' must be defined if IDfrom = 'metadata'")}
+    if(class(metadataSpeciesTag) != "character"){stop("metadataSpeciesTag must be of class 'character'")}
+    if(length(metadataSpeciesTag) != 1){stop("metadataSpeciesTag must be of length 1")}
+  }
+
+multiple_tag_separator = "__"
+
+  ## find station directories
+  dirs       <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
+  dirs_short <- list.dirs(inDir, full.names = FALSE, recursive = FALSE)
 
   renaming.table <- data.frame()
-  # loop over all subfolders of  main directory
+  nrow.metadata.tmp <- vector()
+
+
+  # loop over all station directories
   for(i in 1:length(dirs)){
 
-    dirlist.i <- list.dirs(dirs[i], full.names =TRUE, recursive = FALSE)      # list directories in station directory
+    if(IDfrom == "directory"){     # ID via species directories
 
-    if(hasCameraSubfolders == FALSE){
-      filenames.by.folder <- lapply(dirlist.i,
-                                    FUN = list.files,
-                                    pattern = ".jpg$|.JPG$",
-                                    recursive = TRUE,
-                                    ignore.case = TRUE)
-      names(filenames.by.folder) <- dirlist.i
-    } else {
-      dirlist.k <- list.dirs(dirlist.i, full.names =TRUE, recursive = FALSE)
+      dirlist.i <- list.dirs(dirs[i], full.names = TRUE, recursive = FALSE)      # list directories in station directory (camera or species)
 
-      filenames.by.folder <- lapply(dirlist.k,
-                                    FUN = list.files,
-                                    pattern = ".jpg$|.JPG$",
-                                    recursive = TRUE,
-                                    ignore.case = TRUE)
-      names(filenames.by.folder) <- dirlist.k
-      rm(dirlist.k)
-    }
 
-    rm(dirlist.i)
-    #######
+      if(hasCameraFolders == FALSE){
+        filenames.by.folder <- lapply(dirlist.i,                 # list species directories
+                                      FUN         = list.files,
+                                      pattern     = ".jpg$|.JPG$",
+                                      recursive   = TRUE,
+                                      ignore.case = TRUE)
+        names(filenames.by.folder) <- dirlist.i
 
-    folders.tmp <- rep(names(filenames.by.folder),
-                       times = lapply(filenames.by.folder,
-                                      length))
-    species.tmp <- rep(unlist(lapply(strsplit(names(filenames.by.folder),
-                                              split = "/",
-                                              fixed = TRUE),
-                                     FUN = function(X){X[length(X)]})),
-                       times = lapply(filenames.by.folder, length))
+      } else {
+        dirlist.k <- list.dirs(dirlist.i, full.names = TRUE, recursive = FALSE)
 
-    if(hasCameraSubfolders == TRUE){
-      camera.tmp <- rep(unlist(lapply(strsplit(names(filenames.by.folder),
-                                               split = "/",
-                                               fixed = TRUE),
-                                      FUN = function(X){X[length(X) - 1]})),
-                        times = lapply(filenames.by.folder, length))
-    }
+        filenames.by.folder <- lapply(dirlist.k,                   # list species directories in camera directories
+                                      FUN         = list.files,
+                                      pattern     = ".jpg$|.JPG$",
+                                      recursive   = TRUE,
+                                      ignore.case = TRUE)
+        names(filenames.by.folder) <- dirlist.k
+        rm(dirlist.k)
+      }
 
-    if(hasCameraSubfolders == FALSE){
-      renaming.table <- rbind(renaming.table, data.frame(directory = folders.tmp,
-                                                         filename_old = unlist(filenames.by.folder),
-                                                         species = species.tmp))
-    } else {
-      renaming.table <- rbind(renaming.table, data.frame(directory = folders.tmp,
-                                                         filename_old = unlist(filenames.by.folder),
-                                                         species = species.tmp,
-                                                         camera = camera.tmp))
-    }
-    rownames(renaming.table) <- seq(1,nrow(renaming.table), by = 1)
-  }
+      rm(dirlist.i)
 
-  # construct new filename
-  if(removeNames == FALSE){
-    renaming.table$filename_new <- paste(paste(gsub(pattern = ".jpg|.JPG$",
-                                                    replacement = "",
-                                                    x = renaming.table$filename_old,
-                                                    ignore.case = TRUE),
-                                               renaming.table$species,
-                                               sep = "__"),
-                                         ".JPG", sep = "")
-  }
-  if(removeNames == TRUE){
-    renaming.table$filename_new <- gsub(pattern = paste(paste("__",
-                                                              unique(renaming.table$species),
-                                                              sep = ""),
-                                                        collapse = "|"),
-                                        replacement = "",
-                                        x = renaming.table$filename_old,
-                                        ignore.case = TRUE)
-  }
+      folders.tmp <- rep(names(filenames.by.folder),
+                         times = lapply(filenames.by.folder, FUN = length))
+
+      species.tmp <- rep(unlist(lapply(strsplit(names(filenames.by.folder),
+                                                split = file.sep,
+                                                fixed = TRUE),
+                                       FUN = function(X){X[length(X)]})),
+                         times = lapply(filenames.by.folder, length))
+
+      if(hasCameraFolders == TRUE){
+        camera.tmp <- rep(unlist(lapply(strsplit(names(filenames.by.folder),
+                                                 split = file.sep,
+                                                 fixed = TRUE),
+                                        FUN = function(X){X[length(X) - 1]})),
+                          times = lapply(filenames.by.folder, length))
+      }
+
+      if(hasCameraFolders == FALSE){
+        renaming.table <- rbind(renaming.table, data.frame(directory    = folders.tmp,
+                                                           filename_old = unlist(filenames.by.folder),
+                                                           species      = species.tmp))
+      } else {
+        renaming.table <- rbind(renaming.table, data.frame(directory    = folders.tmp,
+                                                           filename_old = unlist(filenames.by.folder),
+                                                           species      = species.tmp,
+                                                           camera       = camera.tmp))
+      }
+      rownames(renaming.table) <- NULL
+
+
+    } else {     #  if ID via metadata
+
+
+      command.tmp  <- paste('exiftool -t -q -r -f -Directory -FileName -HierarchicalSubject -ext JPG "', dirs[i], '"', sep = "")
+      colnames.tmp <- c("Directory", "FileName", "HierarchicalSubject")
+
+
+      # run exiftool and make data frame
+      tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
+
+      metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
+                                           ncol  = length(colnames.tmp),
+                                           byrow = TRUE),
+                                    stringsAsFactors = FALSE)
+
+      colnames(metadata.tmp) <- colnames.tmp
+
+
+      if(class(metadata.tmp) == "data.frame"){
+        # if(IDfrom == "directory"){
+          # message(paste(dirs_short[i], ": ", nrow(metadata.tmp), "images"))
+        # }
+
+        # store number of images
+        nrow.metadata.tmp[[i]] <- nrow(metadata.tmp)
+
+        # add metadata
+        metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
+                                              metadata.tagname           = metadata.tagname,
+                                              metadataHierarchyDelimitor = metadataHierarchyDelimitor,
+                                              multiple_tag_separator     = multiple_tag_separator)
+
+        # assign species ID
+        metadata.tmp <- assignSpeciesID (intable                = metadata.tmp,
+                                         IDfrom                 = "metadata",
+                                         metadataSpeciesTag     = metadataSpeciesTag,
+                                         speciesCol             = "species",
+                                         dirs_short             = dirs_short,
+                                         i_tmp                  = i,
+                                         multiple_tag_separator = "_&_"   # this is different from the one defined above to prevent (!) separating multiple entries in the same image: Species will be something like "Leopard Cat__Malay Badger"
+        )
+
+        # assign camera ID
+        if(hasCameraFolders == TRUE){
+          if(IDfrom == "directory"){
+            metadata.tmp$camera  <- sapply(strsplit(metadata.tmp$Directory, split = file.sep, fixed = TRUE), FUN = function(X){X[length(X) - 1]})
+          } else {
+            metadata.tmp$camera  <- sapply(strsplit(metadata.tmp$Directory, split = file.sep, fixed = TRUE), FUN = function(X){X[length(X)]})
+          }
+        }
+
+        # add station ID and assemble table
+        metadata.tmp <- cbind(station = rep(dirs_short[i], times = nrow(metadata.tmp)),
+                              metadata.tmp)
+
+
+
+        if(hasCameraFolders == TRUE){
+          renaming.table <- rbind(renaming.table, data.frame(directory    = metadata.tmp$Directory,
+                                                             filename_old = metadata.tmp$FileName,
+                                                             species      = metadata.tmp$species,
+                                                             camera       = metadata.tmp$camera))
+        } else {
+          renaming.table <- rbind(renaming.table, data.frame(directory    = metadata.tmp$Directory,
+                                                             filename_old = metadata.tmp$FileName,
+                                                             species      = metadata.tmp$species))
+        }
+        rownames(renaming.table) <- NULL
+
+      } # end if(class(metadata.tmp) == "data.frame"){
+    }   # end ID via metadata
+  }     # end for (i...)
+
+      # construct new filename
+      if(removeNames == FALSE){
+        renaming.table$filename_new <- paste(paste(gsub(pattern     = ".jpg|.JPG$",
+                                                        replacement = "",
+                                                        x           = renaming.table$filename_old,
+                                                        ignore.case = TRUE),
+                                                   renaming.table$species,
+                                                   sep   = "__"),
+                                             ".JPG", sep = "")
+      }
+      if(removeNames == TRUE){
+        # find all the species names ("__SpeciesName") and remove
+        # it not  work if you changed species ID after assigning species names
+        renaming.table$filename_new <- gsub(pattern     = paste(paste("__", unique(renaming.table$species),
+                                                                      sep      = ""),
+                                                                      collapse = "|"),
+                                            replacement = "",
+                                            x           = renaming.table$filename_old,
+                                            ignore.case = TRUE)
+      }
+
 
   # rename
-  renaming.table$renaming_ok <- file.rename(from = paste(renaming.table$directory, renaming.table$filename_old, sep = "/"),
-                                            to = paste(renaming.table$directory, renaming.table$filename_new, sep = "/"))
+  file.rename(from = file.path(renaming.table$directory, renaming.table$filename_old),
+              to   = file.path(renaming.table$directory, renaming.table$filename_new))
+
+  renaming.table$renamed <- renaming.table$filename_old != renaming.table$filename_new
+
   # write outtable
   if(writecsv == TRUE){
     if(removeNames == TRUE){
       filename.tmp <- paste("renaming_table_UNDO_", Sys.Date(), ".csv", sep = "")
-    }
-    if(removeNames == FALSE){
+    } else {
       filename.tmp <- paste("renaming_table_", Sys.Date(), ".csv", sep = "")
     }
     setwd(inDir)
     write.csv(renaming.table, file = filename.tmp, row.names = FALSE)
   }
 
-  print(paste("renamed", sum(renaming.table$renaming_ok), "out of", nrow(renaming.table), "images in", inDir))
+
+
+  if(IDfrom == "directory"){
+    message(paste("renamed", sum(renaming.table$renamed), "out of", nrow(renaming.table), "images in", inDir))
+  } else {
+    message(paste("renamed", sum(renaming.table$renamed), 
+      "out of", nrow(renaming.table), "images with species ID out of", sum(unlist(nrow.metadata.tmp), na.rm = TRUE), "images in", inDir))
+  }
+
   return(renaming.table)
 
 }
-

@@ -2,10 +2,10 @@
 \alias{detectionMaps}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Generate maps of species richness and species presence by station
+Generate maps of observed species richness and species presences by station
 }
 \description{
-Generates maps of species presence for all species that were recorded and the number of species by station. Output can be R graphics, PNG graphics or a shapefile for use in GIS software.
+Generates maps of observed species richness and species presence by species and station. Output can be R graphics, PNG graphics or a shapefile for use in GIS software.
 }
 \usage{
 detectionMaps(CTtable, 
@@ -14,6 +14,7 @@ detectionMaps(CTtable,
   Ycol, 
   stationCol = "Station", 
   speciesCol = "Species", 
+  speciesToShow,
   richnessPlot = TRUE, 
   speciesPlots = TRUE,
   addLegend = TRUE,
@@ -45,10 +46,13 @@ detectionMaps(CTtable,
   character. name of the column specifying station ID in \code{CTtable} and \code{recordTable}
 }
   \item{recordTable}{
-  data.frame. the record table created by \code{\link{recordDatabase}}
+  data.frame. the record table created by \code{\link{recordTable}}
 }
   \item{speciesCol}{
   character. name of the column specifying species in \code{recordTable}
+}
+\item{speciesToShow}{
+  character. Species to include in the maps. If missing, all species in \code{recordTable} will be included.
 }
   \item{writePNG}{
   logical. Create PNGs of the plots?
@@ -94,11 +98,12 @@ detectionMaps(CTtable,
 }
 }
  \details{
-The column name \code{stationCol} must be identical in \code{CTtable} and \code{recordTable}.
+The column name \code{stationCol} must be identical in \code{CTtable} and \code{recordTable} and station IDs must match.
+
 Shapefile creation depends on the packages \pkg{sp} and \pkg{rgdal}. \code{shapefileProjection} must be a valid argument of \code{\link[sp]{CRS}}. If \code{shapefileProjection} is undefined, the resulting shapefile will lack a coordinate reference system.
  }
 \value{
-A \code{data.frame} with station coordinates, numbers of events by species at each station and total species number by station. In addition and optionally, R graphics or png image files.
+An invisible \code{data.frame} with station coordinates, numbers of events by species at each station and total species number by station. In addition and optionally, R graphics or png image files.
 }
 
 \author{
@@ -118,12 +123,12 @@ Juergen Niedballa
 # load station information
 data(camtraps)
 
-# load record database
-data(recordDatabaseSample)
+# load record table
+data(recordTableSample)
 
 # create maps
 Mapstest <- detectionMaps(CTtable      = camtraps,
-                          recordTable  = recordDatabaseSample,
+                          recordTable  = recordTableSample,
                           Xcol         = "utm_x",
                           Ycol         = "utm_y",
                           stationCol   = "Station",

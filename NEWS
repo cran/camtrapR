@@ -1,3 +1,60 @@
+Changes in camtrapR 0.99.0
+=======================
+
+new functions
+------------
+
+  o checkSpeciesNames: checks a vector of species names (common or scientific) against the ITIS database via package 'taxize'
+  o checkSpeciesIdentification: expanded from former function checkSpeciesFolders (now defunct). Can check identification if metadata tags were used for species identification. 
+  o createStationFolders: Create camera trap station directories, possibly with camera subdirectories, for storing raw images (was not included in NAMESPACE of version 0.98.0, therefore invisible. Thanks to Patrick Lorch and Brent Pease for notification)
+  
+renamed functions
+------------
+
+  o recordDatabase           -> recordTable
+  o recordDatabaseIndividual -> recordTableIndividual
+  
+  
+renamed data sets
+------------
+
+  o recordDatabaseSample           -> recordTableSample
+  o recordDatabaseIndividualSample -> recordTableIndividualSample
+  
+  
+new features
+------------
+
+  o detectionHistory and spatialDetectionHistory: 
+	- detection histories can begin on any specified date, station-specific setup date or day the first station was set up (to that end argument "beginWithDay1" was changed to "day1")
+	- a buffer between setup and the first occasion can be applied (argument 'buffer').
+  o spatialDetectionHistory: 
+	- output can be given as counts or binary (argument "output")
+	- an RMark data frame can be created using argument makeRMarkInput
+  o extended support for identification via metadata tags (in functions appendSpeciesNames, getSpeciesImages)
+  o exifTagNames: can return metadata, not only metadata tag names (new argument "returnMetadata")
+  o createStationFolders: new argument "createinDir".
+  o detecionMaps: new argument "speciesToShow" to make maps for certain species only
+  o activity plot functions show number of records that were used
+  
+bugfixes
+------------  
+  
+  o surveyReport returned an error when there were stations without records.
+  o detecionMaps: Xcol and Ycol have arbitrary names now.
+  
+other changes
+------------
+
+  o arguments "customMetadataTags" and hasSpeciesFolders/ hasIndividualFolders was removed and replaced with argument "IDfrom"
+  o metadata tags assigned in image management software are always extracted and tabulated in recordTable functions (making argument "customMetadataTags" obsolete)
+  o some functions changed the user's working directory. Fixed. Thanks to Patrick Lorch for notification.
+  o argument "hasCameraSubfolders" was renamed to "hasCameraFolders" (functions appendSpeciesNames, checkSpeciesIdentification, createSpeciesFolders, imageRename, timeShiftImages)
+  o in all 4 activity plot functions, argument "all.species" was renamed to "allSpecies"
+  o argument "recordTable" in spatialDetectionHistory was renamed to "recordTableIndividual" to make the difference from "recordTable" in "detectionHistory" clearer
+
+
+  
 Changes in camtrapR 0.98.0
 =======================
 

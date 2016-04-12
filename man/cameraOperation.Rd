@@ -2,10 +2,10 @@
 \alias{cameraOperation}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Create a camera operability matrix
+Create a camera trap station operability matrix
 }
 \description{
-Construct a matrix of daily camera operability for use in \code{\link{detectionHistory}} and \code{\link{spatialDetectionHistory}}, where is needed for calculating trapping effort per occasion. If there were several cameras per station, the matrix can contain camera- or station-specific trap operation information.
+Construct a matrix of daily camera trap station operability for use in \code{\link{detectionHistory}} and \code{\link{spatialDetectionHistory}}, where it is needed for calculating trapping effort per occasion. If several cameras were deployed per station, the matrix can contain camera- or station-specific trap operation information.
 }
 \usage{
 cameraOperation(CTtable, 
@@ -46,10 +46,10 @@ cameraOperation(CTtable,
   logical. If TRUE, camera operability matrix is computed by camera, not by station (requires \code{cameraCol})
 }
   \item{allCamsOn}{
-  logical. If TRUE, all cameras of a station need to be operational for a station to be operational (only relevant if \code{byCamera} is FALSE). Output values will be 1/0/NA only (all cameras at a station operational/ at least 1 camera not operational/no camera set up)
+  logical. If TRUE, all cameras of a station need to be operational for a station to be operational (only relevant if \code{byCamera} is FALSE). Output values will be 1/0/NA only (all cameras at a station operational/ at least 1 camera not operational/ no camera set up)
 }
   \item{camerasIndependent}{
-  logical. Sum up number of active camera traps by station? Only if \code{byCamera} is FALSE and \code{allCamsOn} is FALSE. If \code{camerasIndependent} is TRUE, output values will the number of operational cameras at a station. If \code{camerasIndependent} is FALSE, the value is 1 if at least 1 camera was operational, otherwise 0. In both cases, values are NA if no camera was set up.
+  logical. Return number of active camera traps by station? Only if \code{byCamera} is FALSE and \code{allCamsOn} is FALSE. If \code{camerasIndependent} is TRUE, output values will the number of operational cameras at a station. If \code{camerasIndependent} is FALSE, the value is 1 if at least 1 camera was operational, otherwise 0. In both cases, values are NA if no camera was set up.
   }
   \item{dateFormat}{
   character. The format of columns \code{setupCol} and \code{retrievalCol}. Should be interpretable by \code{as.Date}
@@ -62,17 +62,16 @@ cameraOperation(CTtable,
 }
 }
 \details{
-\code{cameraCol} is NULL by default. The function will check if there is more than 1 entry for any station in \code{CTtable} and returns an error if TRUE. In that case \code{cameraCol} needs to be specified to identify individual cameras within a station.
+\code{cameraCol} is NULL by default. The function then assumes there was 1 camera per station \code{CTtable}. In more than 1 camera was deployed per station, \code{cameraCol} needs to be specified to identify individual cameras within a station.
 \code{dateFormat} defaults to "YYYY-MM-DD", e.g. "2014-10-31". See \code{\link[base]{strptime}} for formatting options.
-If \code{hasProblems} is TRUE, the function tries to find columns \code{ProblemX_from} and \code{ProblemX_to} in \code{CTtable}. \code{X} designates consecutive numbers from 1 to n in which a camera or station was not operational. If \code{hasProblems} is FALSE, cameras are assumed to have been operational uninterruptedly from setup to retrieval (see \code{\link{camtraps}} for details).
-\code{allCamsOn} only has an effect if there was more than 1 camera at a station. If it is set to TRUE, all cameras at a station need to be operational for the station to be considered operational. If FALSE, at least 1 active station renders the station operational.
-Argument \code{camerasIndependent} defines if cameras at a station are considered independent (it thus only has an effect if there was more than 1 camera at a station). Independence occurs if an observation at one camera does not increase the probability for detection at another camera (cameras face different trails at a distance of one another). Non-independence occurs if any animal observation is likely to be made by both cameras (as would be the case with 2 cameras facing each other).
-If \code{camerasIndependent} is TRUE, 2 active cameras at a station will give a station operation value of 2, i.e., 2 independent trap nights at 1 station. If \code{camerasIndependent} is FALSE, 2 active cameras will return value 1, i.e., 1 trap nights at 1 station (which is made up of 2 )
-
+If \code{hasProblems} is TRUE, the function tries to find columns \code{ProblemX_from} and \code{ProblemX_to} in \code{CTtable}. \code{X} is a consecutive number from 1 to n, specifying periods in which a camera or station was not operational. If \code{hasProblems} is FALSE, cameras are assumed to have been operational uninterruptedly from setup to retrieval (see \code{\link{camtraps}} for details).
+\code{allCamsOn} only has an effect if there was more than 1 camera at a station. If TRUE, for the station to be considered operational, all cameras at a station need to be operational. If FALSE, at least 1 active camera renders the station operational.
+Argument \code{camerasIndependent} defines if cameras record animals independently (it thus only has an effect if there was more than 1 camera at a station). This is the case if an observation at one camera does not increase the probability for detection at another camera (cameras face different trails at a distance of one another). Non-independence occurs if an animal is likely to trigger both camers (as would be the case with 2 cameras facing each other).
+If \code{camerasIndependent} is TRUE, 2 active cameras at a station will result in a station operation value of 2 in the resulting matrix, i.e., 2 independent trap days at 1 station and day. If \code{camerasIndependent} is FALSE, 2 active cameras will return value 1, i.e., 1 trap night at 1 station per day.
 }
 \value{
-  A matrix. Row names indicate Station ID (camera ID if \code{byCamera = TRUE}), column names are dates. \cr
-Legend: NA: camera(s) not set up, 0: camera(s) not operational, 1 (or higher): number of operational camera(s)/camera(s) were operational (depending on \code{camerasIndependent} and \code{allCamsOn})  
+  A matrix. Row names indicate Station IDs (camera ID if \code{byCamera = TRUE}), column names are dates. \cr
+Legend: NA: camera(s) not set up, 0: camera(s) not operational, 1 (or higher): number of operational camera(s) or an indicator for whether the station was operational (depending on \code{camerasIndependent} and \code{allCamsOn})  
 }
 % \references{
 % ~put references to the literature/web site here ~
@@ -81,10 +80,8 @@ Legend: NA: camera(s) not set up, 0: camera(s) not operational, 1 (or higher): n
 Juergen Niedballa
 }
  \note{
-Setting \code{camerasIndependent} according to the sampling situation is important for function \code{\link{detectionHistory}}, if sampling effort (the number of active trap nights in a occasion) is to be computed and included as a detection covariate in models. If 2 cameras face each other, the second one does not increase detection probability compared to 1 camera only (if both are triggered reliably by species). In contrast, if cameras at a station do not face each other, the user may choose to consider detections at the cameras independent of one another by setting \code{camerasIndependent} to TRUE. The user may then set \code{camerasIndependent} in this function to TRUE and set \code{includeEffort} in \code{\link{detectionHistory}} to TRUE and use the resulting effort matrix as an observation covariate in occupancy modelling.
+Setting \code{camerasIndependent} according to the sampling situation is important for the functions \code{\link{detectionHistory}} and \code{\link{spatialDetectionHistory}}, if sampling effort (the number of active trap nights in a occasion) is to be computed and returned.
  }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 % \seealso{
 % ~~objects to See Also as \code{\link{help}}, ~~~

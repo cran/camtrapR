@@ -1,13 +1,13 @@
 \docType{data}
-\name{recordDatabaseIndividualSample}
-\alias{recordDatabaseIndividualSample}
-\title{Sample single-species record database with custom metadata from camera trap images}
+\name{recordTableIndividualSample}
+\alias{recordTableIndividualSample}
+\title{Sample single-species record table with custom metadata from camera trap images}
 \format{A data frame with 21 rows and 17 variables}
 \usage{
-data(recordDatabaseIndividualSample)
+data(recordTableIndividualSample)
 }
 \description{
-Sample single-species record database from camera trap images generate with function \code{\link{recordDatabaseIndividual}} from the tagged sample images in the package.
+Sample single-species record table with individual IDs from the tagged sample images in the package. Generated with function \code{\link{recordTableIndividual}}.
 }
 \details{
 

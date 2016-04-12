@@ -2,10 +2,10 @@
 \alias{surveyReport}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Create a report about camera trap surveys and species detections
+Create a report about s camera trapping survey and species detections
 }
 \description{
-This function creates a report about camera trap surveys and species captures from a camera information table and a record database (generated with \code{\link{recordDatabase}}).
+This function creates a report about a camera trapping survey and species records. It uses a camera trap station information table and a record table (generated with \code{\link{recordTable}}) as input. Output tables can be saved and a zip file for simple data sharing can be created easily.
 }
 \usage{
 surveyReport (recordTable,
@@ -19,13 +19,16 @@ surveyReport (recordTable,
   CTHasProblems = FALSE,
   recordDateTimeCol = "DateTimeOriginal",
   recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
-  sinkpath
+  Xcol,
+  Ycol,
+  sinkpath,
+  makezip
 )
 }
 
 \arguments{
   \item{recordTable}{
-   data.frame containing a species record database as calculated by \code{\link{recordDatabase}}
+   data.frame containing a species record table as calculated by \code{\link{recordTable}}
 }
   \item{CTtable}{
    data.frame containing information about location and trapping period of camera trap stations
@@ -57,15 +60,23 @@ surveyReport (recordTable,
   \item{recordDateTimeFormat}{
   character. The date/time format of column \code{recordDateTimeCol} in \code{recordTable}. 
 }
+  \item{Xcol}{
+  character. name of the column specifying x coordinates in \code{CTtable}. Used to create detection maps if \code{makezip} is TRUE. (optional)
+}
+  \item{Ycol}{
+  character. name of the column specifying y coordinates in \code{CTtable}. Used to create detection maps if \code{makezip} is TRUE. (optional)
+}
   \item{sinkpath}{
-character. The directory into which the survey report is saved (optional)
+  character. The directory into which the survey report is saved (optional)
+}
+  \item{makezip}{
+  logical. Create a zip file containing tables, plots and maps in \code{sinkpath}?
 }
 }
 \details{
 
-The value of \code{CTDateFormat} should be an interpretable by \code{\link[base]{as.Date}}
-\code{CTDateFormat} defaults to "YYYY-MM-DD", e.g. "2014-10-31". See \code{\link[base]{strptime}} for how to format date and time strings in R.
-If \code{CTHasProblems} is set to TRUE the function tries to find columns \code{ProblemX_from} and \code{ProblemX_to} in \code{CTtable} (\code{X} designates numbers from 1 to n in which a camera or station was not operational). If there are no such columns all stations are assumed to have been operational from setup to retrieval.
+The value of \code{CTDateFormat} should be interpretable by \code{\link[base]{as.Date}}. \code{CTDateFormat} defaults to "YYYY-MM-DD", e.g. "2014-10-31". See \code{\link[base]{strptime}} for how to format date and time strings in R.
+If \code{CTHasProblems} is set to TRUE, the function tries to find columns \code{ProblemX_from} and \code{ProblemX_to} in \code{CTtable} (\code{X} designates numbers from 1 to n in which a camera or station was not operational). If there are no such columns all stations are assumed to have been operational uninterruptedly from setup to retrieval.
 }
 \value{
  An invisible list containing 5 \code{data.frames}. 
@@ -77,7 +88,9 @@ If \code{CTHasProblems} is set to TRUE the function tries to find columns \code{
   \item{events_by_station2}{number of events for all species at all stations (including species that were not recorded)}
   
     
-The output will be saved to a .txt file if \code{sinkpath} is defined.
+The output will be saved to a .txt file if \code{sinkpath} is defined. 
+
+If \code{makezip} is TRUE, a zip file will be created in \code{sinkpath}. It contains single-species activity plots, detection maps (if \code{Xcol} and \code{Ycol} are defined), the survey report tables, the record table and the camera trap station table, and an example R script.
 }
 
 \author{
@@ -90,13 +103,13 @@ Juergen Niedballa
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{recordDatabase}}
+\code{\link{recordTable}}
 }
 \examples{
 data(camtraps)
-data(recordDatabaseSample)
+data(recordTableSample)
 
-reportTest <- surveyReport (recordTable          = recordDatabaseSample,
+reportTest <- surveyReport (recordTable          = recordTableSample,
                             CTtable              = camtraps,
                             speciesCol           = "Species",
                             stationCol           = "Station",
@@ -117,7 +130,7 @@ reportTest[[5]]    # number of species events by station including 0s (non-obser
 
 # with camera problems
 
-reportTest_problem <- surveyReport (recordTable          = recordDatabaseSample,
+reportTest_problem <- surveyReport (recordTable          = recordTableSample,
                                     CTtable              = camtraps,
                                     speciesCol           = "Species",
                                     stationCol           = "Station",
@@ -132,7 +145,7 @@ reportTest_problem$survey_dates
 
 \dontrun{
 # run again with sinkpath defined
-reportTest <- surveyReport (recordTable          = recordDatabaseSample,
+reportTest <- surveyReport (recordTable          = recordTableSample,
                             CTtable              = camtraps,
                             speciesCol           = "Species",
                             stationCol           = "Station",
@@ -144,7 +157,8 @@ reportTest <- surveyReport (recordTable          = recordDatabaseSample,
                             sinkpath             = getwd())
 
 # have a look at the text file
-readLines(list.files(getwd(), pattern = ".txt$", full.names = TRUE))
+readLines(list.files(getwd(), pattern = paste("survey_report_", Sys.Date(), ".txt", sep = ""), 
+					 full.names = TRUE))
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

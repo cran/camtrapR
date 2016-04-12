@@ -12,18 +12,20 @@ cameraOperation <- function(CTtable,
                             outDir){
 
   # check and prepare input
-
+  wd0 <- getwd()
+  on.exit(setwd(wd0))
+    
   stopifnot(hasArg(stationCol))
-  stopifnot(is.character(stationCol))
   stopifnot(length(stationCol) == 1)
+  CTtable[,stationCol] <- as.character(CTtable[,stationCol])
 
   stopifnot(hasArg(setupCol))
-  stopifnot(is.character(setupCol))
   stopifnot(length(setupCol) == 1)
+  CTtable[,setupCol] <- as.character(CTtable[,setupCol])
 
   stopifnot(hasArg(retrievalCol))
-  stopifnot(is.character(retrievalCol))
   stopifnot(length(retrievalCol) == 1)
+  CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
 
   stopifnot(is.logical(writecsv))
   stopifnot(is.logical(hasProblems))
@@ -42,6 +44,8 @@ cameraOperation <- function(CTtable,
 
   if(hasArg(cameraCol)){
     if(hasArg(byCamera) == FALSE) stop("if cameraCol is set, byCamera must be specified")
+    CTtable[,cameraCol] <- as.character(CTtable[,cameraCol])
+    stopifnot(cameraCol %in% colnames(CTtable))
     stopifnot(is.logical(byCamera))
     if(byCamera == FALSE){
       if(hasArg(allCamsOn) == FALSE) stop("if cameraCol is set and byCamera is FALSE, allCamsOn must be specified")
@@ -53,16 +57,8 @@ cameraOperation <- function(CTtable,
     }
   }
 
-  if(hasArg(cameraCol)){
-    stopifnot(cameraCol %in% colnames(CTtable))
-    CTtable[,cameraCol] <- as.character(CTtable[,cameraCol])
-  }
 
   stopifnot(c(stationCol, setupCol, retrievalCol) %in% colnames(CTtable))
-
-  CTtable[,stationCol] <- as.character(CTtable[,stationCol])
-  CTtable[,setupCol] <- as.character(CTtable[,setupCol])
-  CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
 
   if(any(is.na(CTtable[,setupCol])))stop("there are NAs in setupCol")
   if(any(is.na(CTtable[,retrievalCol])))stop("there are NAs in retrievalCol")
@@ -77,7 +73,7 @@ cameraOperation <- function(CTtable,
   CTtable[,retrievalCol] <- as.Date(CTtable[,retrievalCol], format = dateFormat)
 
   if(hasArg(outDir)){
-    if(class(outDir) != "character"){print("outDir must be of class 'character'")}
+    if(class(outDir) != "character"){stop("outDir must be of class 'character'")}
     if(file.exists(outDir) == FALSE) stop("outDir does not exist")
   }
 
@@ -215,9 +211,9 @@ cameraOperation <- function(CTtable,
             date.p1.tmp <- as.character(max(CTtable[CTtable[,stationCol] == unique.tmp[i], cols.prob.to[j]]))
 
             if(!is.na(date.p0.tmp) & !is.na(date.p1.tmp)){
-              if(date.p1.tmp < date.p0.tmp)stop(paste("Station", unique.tmp[i], ", Problem ", j, ": 'to' is smaller than 'from'", sep = ""))
-              if(date.p1.tmp > date1)stop(paste("Station", unique.tmp[i], ", Problem ", j, ": is outside date range of setup and retrieval", sep = ""))
-              if(date.p0.tmp < date0)stop(paste("Station", unique.tmp[i], ", Problem ", j, ": is outside date range of setup and retrieval", sep = ""))
+              if(date.p1.tmp < date.p0.tmp) stop(paste("Station", unique.tmp[i], ", Problem ", j, ": 'to' is smaller than 'from'", sep = ""))
+              if(date.p1.tmp > date1)       stop(paste("Station", unique.tmp[i], ", Problem ", j, ": is outside date range of setup and retrieval", sep = ""))
+              if(date.p0.tmp < date0)       stop(paste("Station", unique.tmp[i], ", Problem ", j, ": is outside date range of setup and retrieval", sep = ""))
 
               m[match(unique.tmp[i], rownames(m)), seq(from = match(date.p0.tmp , colnames(m)),
                                                        to = match(date.p1.tmp, colnames(m)), by = 1)] <- 0

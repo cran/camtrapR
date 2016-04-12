@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
+
+<meta name="date" content="2016-04-05" />
+
+<title>Organising raw camera trap images in camtrapR</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Organising raw camera trap images in camtrapR</h1>
+<h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
+<h4 class="date"><em>2016-04-05</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#workflow">Workflow</a></li>
+<li><a href="#general-sampling-situation">General sampling situation</a></li>
+<li><a href="#nomenclature">Nomenclature</a></li>
+<li><a href="#exiftool">ExifTool</a><ul>
+<li><a href="#exiftool-for-windows">ExifTool for Windows</a></li>
+<li><a href="#exiftool-performance">ExifTool performance</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#camera-trap-station-information">Camera trap station information</a><ul>
+<li><a href="#column-names-and-data-format">Column names and data format</a></li>
+</ul></li>
+<li><a href="#organising-raw-camera-trap-images">Organising raw camera trap images</a><ul>
+<li><a href="#saving-raw-images-on-your-hard-disk">Saving raw images on your hard disk</a></li>
+<li><a href="#shifting-date-and-time-of-images">Shifting date and time of images</a></li>
+<li><a href="#renaming-images">Renaming images</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p><strong>camtrapR</strong> provides functions for organising and managing camera trap images and for the preparation of occupancy and (spatial) capture-recapture analyses. Currently the package handles JPG images only. Because of inconsistent metadata structure, there is no support for video files yet.</p>
+<p>The vignettes demonstrate the <strong>camtrapR</strong> workflow using the sample data set that is included in the package. Sample data were generated in a camera trapping survey in Sabah, Malaysian Borneo (A. Mohamed <em>et al. J. Mammal.</em>, 94, 82-89; 2013).</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(camtrapR)</code></pre>
+<div id="workflow" class="section level2">
+<h2>Workflow</h2>
+<p>The workflow in camptrapR is made up of a number of function that build upon one another in a logical sequence. Here is a list of function grouped by work steps in the order in which they should be run. Details on all functions are provided below, in the other vignettes and the function help files.</p>
+<ul>
+<li>Organising raw images</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>createStationFolders</code></li>
+<li><code>timeShiftImages</code> (only if necessary)</li>
+<li><code>imageRename</code></li>
+</ol>
+<ul>
+<li>Species identification and data extraction</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>checkSpeciesNames</code></li>
+<li><code>createSpeciesFolders</code></li>
+<li><code>checkSpeciesIdentification</code></li>
+<li><code>appendSpeciesNames</code></li>
+<li><code>exifTagNames</code></li>
+<li><code>recordTable</code></li>
+</ol>
+<ul>
+<li>Data exploration and visualisation (species-level)</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>detectionMaps</code></li>
+<li><code>activityHistogram</code></li>
+<li><code>activityDensity</code></li>
+<li><code>activityRadial</code></li>
+<li><code>activityOverlap</code></li>
+<li><code>surveyReport</code></li>
+</ol>
+<ul>
+<li>Individual identification and data extraction</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>getSpeciesImages</code></li>
+<li><code>recordTableIndividual</code></li>
+</ol>
+<ul>
+<li>Preparing input for subsequent analyses</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>cameraOperation</code></li>
+<li><code>detectionHistory</code> (for occupancy analyses)</li>
+<li><code>spatialDetectionHistory</code> (for spatial capture-recapture analyses)</li>
+</ol>
+</div>
+<div id="general-sampling-situation" class="section level2">
+<h2>General sampling situation</h2>
+<p>camtrapR was designed for camera trapping surveys in which an array of camera trap stations (each consisting of one or more camera traps per station) is operated in a study area. The vignettes will provide a guideline for how to use camtrapR in different sampling situations.</p>
+</div>
+<div id="nomenclature" class="section level2">
+<h2>Nomenclature</h2>
+<p>To facilitate understanding here is a glossary on how we use specific terms. It is standard camera trapping nomenclature.</p>
+<ul>
+<li>station: a station is a locality containing one or more camera traps (often a pair of two)</li>
+<li>camera trap: refers to the individual camera unit. One or more (often two) constitute a station</li>
+<li>occasion: a distinct sampling event of 1 or more days</li>
+<li>effort: number of active trapping days per station and occasion</li>
+</ul>
+</div>
+<div id="exiftool" class="section level2">
+<h2>ExifTool</h2>
+<p>camtrapR relies on the free and open-source software <strong>ExifTool</strong> written by Phil Harvey to extract metadata from images. ExifTool is freely available from <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/" class="uri">http://www.sno.phy.queensu.ca/~phil/exiftool/</a> and runs on Windows, Linux and MacOS. In order to use it, your system must be able to find the software. On MacOS, Linux and Unix it needs installation and should afterwards be found by the system without problems. Installation instruction can be found here: <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/install.html" class="uri">http://www.sno.phy.queensu.ca/~phil/exiftool/install.html</a>.</p>
+<div id="exiftool-for-windows" class="section level3">
+<h3>ExifTool for Windows</h3>
+<p>On Windows, ExifTool does not need installation. In order for Windows to be able to find ExifTool, follow the instructions found here: <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/install.html" class="uri">http://www.sno.phy.queensu.ca/~phil/exiftool/install.html</a>. Be sure to download the stand-alone executable. The download file is a .zip which you need to unzip, rename the contained .exe file to exiftool.exe and place it in, e.g., C:/Windows. Windows will be able to find ExifTool if exiftool.exe is placed in a directory that is contained in Window’s PATH variable (e.g. C:/Windows).</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check which directories are in PATH (not shown here)</span>
+<span class="kw">Sys.getenv</span>(<span class="st">&quot;PATH&quot;</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check if the system can find ExifTool</span>
+<span class="kw">Sys.which</span>(<span class="st">&quot;exiftool&quot;</span>)</code></pre>
+<pre><code>##                    exiftool 
+## &quot;C:\\Windows\\exiftool.exe&quot;</code></pre>
+<p>If exiftool.exe cannot be placed in a PATH directory (e.g. due to limited user privileges), users can place exiftool.exe in any directory and then add that directory to PATH temporarily for use in the running R session using the function <code>exiftoolPath</code>. This is necessary if the directory containing exiftool.exe is not in PATH by default.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># this is a dummy example assuming the directory structure: C:/Path/To/Exiftool/exiftool.exe</span>
+exiftool_dir &lt;-<span class="st"> &quot;C:/Path/To/Exiftool&quot;</span>        
+<span class="kw">exiftoolPath</span>(<span class="dt">exiftoolDir =</span> exiftool_dir)</code></pre>
+<p>Afterwards, Windows (via R) should be able to find ExifTool during the active session.</p>
+</div>
+<div id="exiftool-performance" class="section level3">
+<h3>ExifTool performance</h3>
+<p>ExifTool is the performance bottleneck of the package functions. It can extract metadata at a rate of about 160 images per second (approx. 10,000 images per minute, measured on a laptop computer running Windows 7, Intel Core i5-2410M / 2.3 GHz, 6 GB RAM). Performance tends to be lower when ExifTool is first called and increases afterwards; and it decreases in situations with numerous camera trap stations with few images each (because ExifTool is called separately on every station directory).</p>
+<p>In a future release, we plan to offer support for the metadata extraction library. Preliminary test showed that performance increased 2-3 fold.</p>
+</div>
+</div>
+</div>
+<div id="camera-trap-station-information" class="section level1">
+<h1>Camera trap station information</h1>
+<p>Before looking at how images are handled, let’s first familiarise ourselves with how information about camera trap stations are stored. Camera trap station information are tabulated in a simple data frame with 1 row per station (if there was 1 camera per station) or 1 row per camera (if there was more than 1 camera per station). Information to be stored in this table are: station (and camera) IDs, geographic coordinates, setup and retrieval dates and possible dates when camera were not operational (because of malfunction, animal interference, empty batteries, full memory cards etc.). The table can be generated standard spreadsheet software and loaded into R.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is a sample camera trap station table</span>
+<span class="kw">data</span>(<span class="st">&quot;camtraps&quot;</span>)
+camtraps</code></pre>
+<pre><code>##    Station  utm_y  utm_x Setup_date Retrieval_date Problem1_from
+## 1 StationA 604000 526000 02/04/2009     14/05/2009              
+## 2 StationB 606000 523000 03/04/2009     16/05/2009              
+## 3 StationC 607050 525000 04/04/2009     17/05/2009    12/05/2009
+##   Problem1_to
+## 1            
+## 2            
+## 3  17/05/2009</code></pre>
+<p>Note that the sample data contain only one camera per station. Thus, there is no need to differentiate between station and camera IDs. If there was more than one camera per station, an additional column for camera IDs would be needed. Consequently, there would be one row for each camera and thus several rows per station.</p>
+<div id="column-names-and-data-format" class="section level2">
+<h2>Column names and data format</h2>
+<p>Column names are not prescribed to allow users freedom in naming their data the way they wish (with one exception detailed below). In the sample table, ‘Station’ contains station IDs, ‘utm_y’ and ‘utm_x’ contain the station’s geographic coordinates. ‘Setup_date’ and ‘Retrieval_date’ are the dates the stations were set up and retrieved from the field. All of these may have user-defined names. ‘Problem1_from’ and ‘Problem1_to’ are optional columns to specify periods in which cameras/stations were not operational. Additional pairs of columns such as ‘Problem2_from’ and ‘Problem2_to’ etc. can be added if cameras/stations malfunctioned repeatedly. Their names must follow the pattern given here.</p>
+<p>All dates in this table (setup, retrieval and problem columns) can be formatted in any way that function <code>as.Date</code> can understand. <strong>camtrapR</strong> by default assumes the standard format “YYYY-MM-DD”, e.g. “2015-12-31”. In the sample data, we use another format for demonstration purposes. Date format must be consistent between the date columns.</p>
+<p>Data type of the ID and date columns in the table must be <code>character</code> or <code>factor</code>. Please don’t use data type <code>Date</code>. You can turn data type <code>Date</code> into <code>character</code> using <code>as.character</code>.</p>
+</div>
+</div>
+<div id="organising-raw-camera-trap-images" class="section level1">
+<h1>Organising raw camera trap images</h1>
+<p>After collecting images from camera traps, the images are saved into a directory structure like this:</p>
+<blockquote>
+<p>rawImages/stationA</p>
+</blockquote>
+<blockquote>
+<p>rawImages/stationB</p>
+</blockquote>
+<p>If there was more than 1 camera per station, the station directories must contain camera subdirectories, e.g.</p>
+<blockquote>
+<p>rawImages/stationA/camera1</p>
+</blockquote>
+<blockquote>
+<p>rawImages/stationA/camera2</p>
+</blockquote>
+<p>If you have more than 1 camera per station but don’t separate the images from different cameras at this stage, you will not be able to do so at a later point. Later in the workflow, you can decide whether you would like to keep them separate or merge them (in the function <code>imageRename</code>).</p>
+<p>Generally, you should not work on your raw data and instead keep them as a backup. If you rename you images with <code>imageRename</code>, whole camtrapR workflow will take place in a copy of the images to prevent data loss.</p>
+<p>Another important point is not to save any other data besides images in image directories. It may interfere with the operation of the package and ExifTool.</p>
+<div id="saving-raw-images-on-your-hard-disk" class="section level2">
+<h2>Saving raw images on your hard disk</h2>
+<p>The directories for the raw images can be created automatically using the function <code>createStationFolders</code> and the camera trap station table. As mentioned above, images can either be stored in station directories (if there was 1 camera per station) or in station/camera directories (if there was &gt;1 camera per station). The behaviour is controlled by the function argument <code>cameras</code>. It specifies the camera ID column in the camera trap information table. if it is defined, camera subdirectories will be created within the station directories.</p>
+<p>Here is an example in which station directories without camera subdirectories are created.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create a temporary dummy directory for tests</span>
+<span class="co"># (normally, you'd set up an empty directory in a proper place, e.g. .../myStudy/rawImages)</span>
+wd_createStationDir &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;createStationFoldersTest&quot;</span>)
+
+<span class="co"># create station directories in  wd_createStationDir</span>
+StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStationFolders</span> (<span class="dt">inDir       =</span> wd_createStationDir,
+                                              <span class="dt">stations    =</span> <span class="kw">as.character</span>(camtraps$Station), 
+                                              <span class="dt">createinDir =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>## created 3 directories</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">StationFolderCreate1</code></pre>
+<pre><code>##    station
+## 1 StationA
+## 2 StationB
+## 3 StationC
+##                                                                                 directory
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createStationFoldersTest/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createStationFoldersTest/StationB
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createStationFoldersTest/StationC
+##   created exists
+## 1    TRUE   TRUE
+## 2    TRUE   TRUE
+## 3    TRUE   TRUE</code></pre>
+<p><strong>IMPORTANT:</strong> Please note that in this vignette station directories are set up in a temporary directory. That does not make any sense in real life and is done here solely to demonstrate how the functions works. So please don’t do this at home! Instead, always work in permanent directories!</p>
+<p>Once the directories are created, you can copy over your images from the memory cards.</p>
+</div>
+<div id="shifting-date-and-time-of-images" class="section level2">
+<h2>Shifting date and time of images</h2>
+<p>There are situations in which the date and time of your images may be incorrect. Imagine you forgot to set the system time in one of your cameras or reset the time accidentally. Or think of a bug in the camera software that causes years to be wrong as happened in the cameras of a major manufacturer at the turn of the year 2015/2016. Another situation in which images times may need a little shift is when users wish to synchronise the record times between camera pairs.</p>
+<p>In any case, systematic offsets of date and time recorded by cameras can be corrected easily. The function <code>timeShiftImages</code> does just that by utilising the date/time shift module of ExifTool. All you need is a table containing the time offset in a certain format, i.e.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(timeShiftTable)
+timeShiftTable</code></pre>
+<pre><code>##    Station camera    timeshift sign
+## 1 StationA     NA  1:0:0 0:0:0    -
+## 2 StationB     NA 0:0:0 12:0:0    +</code></pre>
+<p>There is a <code>station</code> column with station IDs, <code>camera</code> is NA because there was 1 camera per station only in our example, <code>timeshift</code> is the amount by which to shift the time of all images at that station, and <code>sign</code> specifies the direction in which to shift time. Setting <code>sign</code> to <code>+</code> sets image time ahead by the amount specified in <code>timeshift</code>, <code>-</code> sets image times back. <code>timeshift</code> format is “year:month:day hour:minute:second”, i.e. “1:0:0 0:0:0” is a shift of exactly 1 year and “0:0:0 12:10:01” 12 hours and 10 minutes and 1 second. In the above table, time stampes of images taken at StationA are shifted back by 1 year, and images taken at StationB are shifted ahead by 12 hours.</p>
+<p>The function <code>timeShiftImages</code> should be run directly after saving the raw images on the hard disk.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy sample images to another location (so we don't mess around in the package directory)</span>
+wd_images_raw &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/raw_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
+<span class="kw">file.copy</span>(<span class="dt">from =</span> wd_images_raw, <span class="dt">to =</span> <span class="kw">tempdir</span>() , <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">wd_images_raw_copy &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;raw_images&quot;</span>)
+
+timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</span>(<span class="dt">inDir                =</span> wd_images_raw_copy,
+                                 <span class="dt">timeShiftTable       =</span> timeShiftTable,
+                                 <span class="dt">stationCol           =</span> <span class="st">&quot;Station&quot;</span>,
+                                 <span class="dt">hasCameraFolders     =</span> <span class="ot">FALSE</span>,
+                                 <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
+                                 <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
+)</code></pre>
+<pre><code>## C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpoHGsk6/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpoHGsk6/raw_images/StationB</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre>
+<pre><code>##                                                                   directory
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images/StationB
+##               n_directories                  n_images
+## 1     1 directories scanned     3 image files updated
+## 2     1 directories scanned     3 image files updated</code></pre>
+<p>ExifTool has now updated the time tag of all images in the directories specified in the <code>timeShiftTable</code>. The original images are preserved as XYZ.JPG_original files (XYZ being the original file name). By setting argument <code>undo = TRUE</code>, the orginals are restored and the modified images are deleted. The function will check if the number of JPG_original files and JPG files in folders is identical. If not, the function will not work. It does not check for consistency of file names.</p>
+<pre class="sourceCode r"><code class="sourceCode r">timeshift_undo &lt;-<span class="st"> </span><span class="kw">timeShiftImages</span>(<span class="dt">inDir               =</span> wd_images_raw_copy,
+                                 <span class="dt">timeShiftTable       =</span> timeShiftTable,
+                                 <span class="dt">stationCol           =</span> <span class="st">&quot;Station&quot;</span>,
+                                 <span class="dt">hasCameraFolders     =</span> <span class="ot">FALSE</span>,
+                                 <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
+                                 <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>,
+                                 <span class="dt">undo                 =</span> <span class="ot">TRUE</span>
+)
+
+timeshift_undo</code></pre>
+<pre><code>##                                                                   directory
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images/StationB
+##   n_images_undo
+## 1             3
+## 2             3</code></pre>
+</div>
+<div id="renaming-images" class="section level2">
+<h2>Renaming images</h2>
+<p>Raw images are copied from the raw image directories into a new location and renamed at the same time. The renamed file names follow this pattern (depending on whether there was one or more cameras per station):</p>
+<blockquote>
+<p>StationID__Date__Time(X).JPG</p>
+</blockquote>
+<blockquote>
+<p>StationID__CameraID__Date__Time(X).JPG</p>
+</blockquote>
+<p>Station ID and camera ID are derived from the raw image directory structure created earlier with <code>createStationFolders</code> Date and time are taken from image Exif metadata (read using ExifTool). (X) is a numeric identifier that is assigned to all images taken at the same station (and camera, if applicable) within one minute. This is to avoid identical image names if images were taken in the same second (or in the same minute, if cameras record time in hours and minutes only).</p>
+<p>Again, please be aware that temporary directories are used in the example. Set <code>outDir</code> to a permanent directory.</p>
+<pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># raw image location</span>
+wd_images_raw &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/raw_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)      
+  <span class="co"># destination for renamed images to be copied to</span>
+wd_images_raw_renamed &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;raw_images_renamed&quot;</span>)       
+
+renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span>(<span class="dt">inDir               =</span> wd_images_raw,
+                               <span class="dt">outDir              =</span> wd_images_raw_renamed,       
+                               <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
+                               <span class="dt">copyImages          =</span> <span class="ot">TRUE</span>
+  )</code></pre>
+<pre><code>## StationA : 3 images</code></pre>
+<pre><code>## StationB : 3 images</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
+<span class="kw">head</span>(renaming.table2)</code></pre>
+<pre><code>##                                                                                                 Directory
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/raw_images/StationB
+##      FileName  Station Camera    DateTimeOriginal DateReadable
+## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
+## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
+## 3 IMG0003.JPG StationA     NA 2009-04-22 20:19:00         TRUE
+## 4 IMG0001.JPG StationB     NA 2009-04-05 00:11:00         TRUE
+## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
+## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
+##                                                                              outDir
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images_renamed/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images_renamed/StationA
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images_renamed/StationA
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images_renamed/StationB
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images_renamed/StationB
+## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/raw_images_renamed/StationB
+##                            filename_new CopyStatus
+## 1 StationA__2009-04-10__05-07-00(1).JPG       TRUE
+## 2 StationA__2009-04-21__00-40-00(1).JPG       TRUE
+## 3 StationA__2009-04-22__20-19-00(1).JPG       TRUE
+## 4 StationB__2009-04-05__00-11-00(1).JPG       TRUE
+## 5 StationB__2009-04-05__23-13-00(1).JPG       TRUE
+## 6 StationB__2009-04-07__00-23-00(1).JPG       TRUE</code></pre>
+<p>So, the first image, “IMG0001.JPG” was renamed to “StationA__2009-04-10__05-07-00(1).JPG“. Here is what the columns mean:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">column</th>
+<th align="left">content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>Directory</code></td>
+<td align="left">the raw image directory</td>
+</tr>
+<tr class="even">
+<td align="left"><code>FileName</code></td>
+<td align="left">raw image file name</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>Station</code></td>
+<td align="left">the station the image was taken at</td>
+</tr>
+<tr class="even">
+<td align="left"><code>Camera</code></td>
+<td align="left">the camera ID (here NA because there were no camera subdirectories )</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>DateTimeOriginal</code></td>
+<td align="left">Date and time in R-readable format</td>
+</tr>
+<tr class="even">
+<td align="left"><code>DateReadable</code></td>
+<td align="left">whether the date could be read from the metadata or not (TRUE = yes)</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>outDir</code></td>
+<td align="left">the directory the renamed image was copied to</td>
+</tr>
+<tr class="even">
+<td align="left"><code>filename_new</code></td>
+<td align="left">the new file name</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>CopyStatus</code></td>
+<td align="left">whether the images was copied successfully (TRUE = yes)</td>
+</tr>
+</tbody>
+</table>
+<p>At this point you created a copy of you raw images and renamed them. The next step is species identification covered in the next vignette.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

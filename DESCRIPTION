@@ -2,8 +2,8 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 0.98.0
-Date: 2015-11-13
+Version: 0.99.0
+Date: 2016-04-11
 Authors@R: c(
         person("Juergen", "Niedballa", email = "niedballa@izw-berlin.de", role = c("aut", "cre")),
         person("Alexandre", "Courtiol", role = "aut"),
@@ -16,12 +16,15 @@ Authors@R: c(
         person("Andreas", "Wilting", role = c("ctb", "ths"))
         )
 Depends: R (>= 3.1.0)
-Imports: methods, overlap, secr, rgdal, sp
-Suggests: unmarked
+Imports: methods, overlap, secr, rgdal, sp, taxize
+Suggests: unmarked, knitr, rmarkdown
+VignetteBuilder: knitr
+SystemRequirements: ExifTool
+        (http://www.sno.phy.queensu.ca/~phil/exiftool/)
 Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photographs, computes record databases and detection/non-detection matrices for occupancy and spatial capture-recapture analyses with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station) and can visualise activity data.
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2015-11-16 12:21:22 UTC; niedballa
+Packaged: 2016-04-11 15:32:32 UTC; niedballa
 Author: Juergen Niedballa [aut, cre],
   Alexandre Courtiol [aut],
   Rahel Sollmann [aut],
@@ -33,4 +36,4 @@ Author: Juergen Niedballa [aut, cre],
   Andreas Wilting [ctb, ths]
 Maintainer: Juergen Niedballa <niedballa@izw-berlin.de>
 Repository: CRAN
-Date/Publication: 2015-11-16 16:20:08
+Date/Publication: 2016-04-12 06:19:36

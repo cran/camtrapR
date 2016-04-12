@@ -5,11 +5,14 @@
 Add or remove species names from JPEG image filenames
 }
 \description{
-Function to add or remove species names from JPEG image filenames. Images must be sorted into station directories and species subdirectories prior to running the function.
+Add or remove species names from JPEG image filenames. It makes it easier to find images of a species.
 }
 \usage{
 appendSpeciesNames(inDir, 
-  hasCameraSubfolders,
+  IDfrom,
+  hasCameraFolders,
+  metadataSpeciesTag,
+  metadataHierarchyDelimitor = "|",
   removeNames = FALSE, 
   writecsv = FALSE
 )
@@ -18,10 +21,19 @@ appendSpeciesNames(inDir,
 \arguments{
 
   \item{inDir}{
-  character. Directory containing station directories with renamed and identified images in species directories (e.g. inDir/StationA/Species1)
+  character. Directory containing camera trap images sorted into station subdirectories (e.g. inDir/StationA/)
 }
-  \item{hasCameraSubfolders}{
-  logical. Do the station directories contain camera subdirectories (e.g. inDir/StationA/camera1/Species1)?
+  \item{IDfrom}{
+  character. Read species ID from image metadata ("metadata") of from species directory names ("directory")?
+}
+  \item{hasCameraFolders}{
+  logical. Do the station subdirectories of \code{inDir} have camera-subdirectories (e.g. inDir/StationA/CameraA1; inDir/StationA/CameraA2)?
+}
+\item{metadataSpeciesTag}{
+  character. The species ID tag name in image metadata (if IDfrom = "metadata").
+}
+\item{metadataHierarchyDelimitor}{
+  character. The character delimiting hierarchy levels in image metadata tags in field "HierarchicalSubject". Either "|" or ":". 
 }
   \item{removeNames}{
  logical. remove appended species names?
@@ -32,8 +44,9 @@ appendSpeciesNames(inDir,
 }
 
 \details{
- Species names can be appended or removed. If species names were appended several times by accident, they can all be removed by running the function with \code{removeNames = TRUE}. Before running the function, you may want to run \code{\link{checkSpeciesFolders}} to detect possible misidentifications. As an example, the function would change an image file name from "StationA__2015-05-41__20-59-59(1).JPG" to "StationA__2015-05-41__20-59-59(1)__Species Name.JPG".
+Species names can be appended or removed from image filenames. Before running the function, you may want to run \code{\link{checkSpeciesIdentification}} to detect possible misidentifications. As an example, the function would change an image file name from "StationA__2015-05-41__20-59-59(1).JPG" to "StationA__2015-05-41__20-59-59(1)__Species Name.JPG". If species names were appended several times by accident, they can all be removed by running the function with \code{removeNames = TRUE}
 }
+
 \value{
 A \code{data.frame} containing the old and new file names and directories.
 }
@@ -56,19 +69,23 @@ Juergen Niedballa
 # copy sample images to another location (so we don't mess around in the package directory)
 wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
 file.copy(from = wd_images_ID, to = getwd(), recursive = TRUE)       
-wd_images_ID_copy <- paste(getwd(), "sample_images", sep = "/")
+wd_images_ID_copy <- file.path(getwd(), "sample_images")
 
 # append species names
-SpecNameAppend1 <- appendSpeciesNames(inDir       = wd_images_ID_copy,
-                                      removeNames = FALSE,
-                                      writecsv    = FALSE)
+SpecNameAppend1 <- appendSpeciesNames(inDir            = wd_images_ID_copy,
+                                      IDfrom           = "directory",
+                                      hasCameraFolders = FALSE,
+                                      removeNames      = FALSE,
+                                      writecsv         = FALSE)
   
 SpecNameAppend1
 
 # remove species names
-SpecNameRemove1 <- appendSpeciesNames(inDir       = wd_images_ID_copy,
-                                      removeNames = TRUE,
-                                      writecsv    = FALSE)
+SpecNameRemove1 <- appendSpeciesNames(inDir            = wd_images_ID_copy,
+                                      IDfrom           = "directory",
+                                      hasCameraFolders = FALSE,
+                                      removeNames      = TRUE,
+                                      writecsv         = FALSE)
   
 SpecNameRemove1
 }

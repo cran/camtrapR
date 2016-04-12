@@ -5,7 +5,7 @@
 Add a directory to PATH temporarily
 }
 \description{
-Temporarily adds a directory to environmental variable PATH for system calls from within R. This allows Windows users to store Exiftool.exe anywhere on their hard drive. It is not needed on Linux or Mac OS machines.
+Temporarily adds a directory to the environmental variable PATH for system calls from within R. This allows Windows users to store exiftool.exe anywhere on their hard drive. It is not needed on Linux or MacOS machines.
 }
 \usage{
 exiftoolPath(exiftoolDir)
@@ -15,10 +15,12 @@ exiftoolPath(exiftoolDir)
   \item{exiftoolDir}{
 character. the directory in the file system containing exiftool.exe.
 }
+
 }
 \details{
-Several functions within this package depend on Exiftool. Under Windows, if the exiftool.exe is not in a directory path specified in PATH, it cannot be used. This can be solved by adding it for temporary use within the running R process.
+Several functions within this package depend on ExifTool. Under Windows, exiftool.exe cannot be used if it is not in a directory path specified in PATH. This can be solved by adding the directory containing exiftool.exe for temporary use within the running R process.
 }
+
 \value{
   invisible logical indicating whether \code{exiftoolDir} was added to PATH successfully (in the running R process).
 }
@@ -38,7 +40,7 @@ The directories in PATH can be queried by \code{Sys.getenv("PATH")}.
 % ~~objects to See Also as \code{\link{help}}, ~~~
 % }
 \examples{
-exiftool_dir <- "C:/PathToExiftool"
+exiftool_dir <- "C:/Path/To/Exiftool"
 exiftoolPath(exiftoolDir = exiftool_dir)
 
 # check if it has been added to PATH

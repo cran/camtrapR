@@ -28,7 +28,7 @@ This function plots kernel density estimates of two species' diel activity data 
 
 \arguments{
   \item{recordTable}{
-  data.frame. the record table created by \code{\link{recordDatabase}}
+  data.frame. the record table created by \code{\link{recordTable}}
 }
   \item{speciesA}{
   Name of species 1
@@ -37,16 +37,16 @@ This function plots kernel density estimates of two species' diel activity data 
   Name of species 2
 }
  \item{speciesCol}{
-  character. name of the column specifying species in \code{recordTable}
+  character. name of the column specifying species names in \code{recordTable}
 }
   \item{recordDateTimeCol}{
   character. name of the column specifying date and time in \code{recordTable}
 }
   \item{recordDateTimeFormat}{
-  format of column \code{recordDateTimeCol} in \code{recordTable}
+  character. format of column \code{recordDateTimeCol} in \code{recordTable}
 }
   \item{plotR}{
-  logical. Create plots in R graphics device?
+  logical. Show plots in R graphics device?
 }
  \item{writePNG}{
   logical. Create pngs of the plots?
@@ -58,13 +58,13 @@ This function plots kernel density estimates of two species' diel activity data 
   character. Position of the legend (keyword)
 }
   \item{plotDirectory}{
-  character. Path of the pngs
+  character. Directory in which to create png plots if \code{writePNG = TRUE}
 }
   \item{createDir}{
   logical. Create \code{plotDirectory}?
 }
   \item{pngMaxPix}{
-  integer. number of pixels in pngs along x axis
+  integer. image size of png (pixels along x-axis)
 }
   \item{add.rug}{
   logical. add a rug to the plot?
@@ -77,7 +77,7 @@ This function plots kernel density estimates of two species' diel activity data 
 \code{...} can be graphical parameters, e.g. \code{linetype}, \code{linewidth}, \code{linecol}.
 }
 \value{
-Returns invisibly the \code{data.frame} with plot coordinates from \code{\link[overlap]{overlapPlot}}.
+Returns invisibly the \code{data.frame} with plot coordinates returned by \code{\link[overlap]{overlapPlot}}.
 }
 \references{
 Mike Meredith and Martin Ridout (2014). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.2.4. \url{http://CRAN.R-project.org/package=overlap} \cr
@@ -97,15 +97,15 @@ Please be aware that the function (like the other activity... function of this p
 \url{http://www.kent.ac.uk/smsas/personal/msr/overlap.html}
 }
 \examples{
-# load record database
-data(recordDatabaseSample)
+# load record table
+data(recordTableSample)
 
 # define species of interest
 speciesA_for_activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 speciesB_for_activity <- "PBE"    # = Prionailurus bengalensis, Leopard Cat
 
 # create activity overlap plot
-activityOverlap (recordTable = recordDatabaseSample,
+activityOverlap (recordTable = recordTableSample,
                  speciesA    = speciesA_for_activity,
                  speciesB    = speciesB_for_activity,
                  writePNG    = FALSE,

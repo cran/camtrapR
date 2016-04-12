@@ -1,11 +1,11 @@
 createSpeciesFolders <- function(inDir,
-                                 hasCameraSubfolders,
+                                 hasCameraFolders,
                                  species,
                                  removeFolders = FALSE){
 
   stopifnot(is.character(species))
   stopifnot(is.logical(removeFolders))
-  stopifnot(is.logical(hasCameraSubfolders))
+  stopifnot(is.logical(hasCameraFolders))
   if(file.exists(inDir) == FALSE) stop("inDir does not exist")
 
   dirs <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
@@ -13,10 +13,10 @@ createSpeciesFolders <- function(inDir,
 
   if(length(dirs) == 0) stop("inDir has no (station) subdirectories")
 
-  if(hasCameraSubfolders == TRUE){
-    dirs.to.create <- paste(rep(list.dirs(dirs, recursive = FALSE), each = length(species)), species, sep = "/")
+  if(hasCameraFolders == TRUE){
+    dirs.to.create <- file.path(rep(list.dirs(dirs, recursive = FALSE), each = length(species)), species)
   } else {
-    dirs.to.create <- paste(rep(dirs, each = length(species)), species, sep = "/")
+    dirs.to.create <- file.path(rep(dirs, each = length(species)), species)
   }
 
   if(removeFolders == FALSE){
@@ -26,9 +26,9 @@ createSpeciesFolders <- function(inDir,
                            exists = file.exists(dirs.to.create))
     rownames(dat.out1) <- NULL
 
-    print(paste("created", sum(tmp.create == TRUE), "directories"))
+    message(paste("created", sum(tmp.create == TRUE), "directories"))
     if(sum(tmp.create == FALSE) != 0){
-      print(paste(sum(tmp.create == FALSE & file.exists(dirs.to.create)), "directories already existed"))
+      message(paste(sum(tmp.create == FALSE & file.exists(dirs.to.create)), "directories already existed"))
     }
     return(dat.out1)
 
@@ -51,12 +51,12 @@ createSpeciesFolders <- function(inDir,
                            still.exists = file.exists(dirs.to.delete))
 
     if(length(which.to.delete)!= 0){
-      print(paste("deleted", sum(dat.out2$still.exists == FALSE), "empty directories"))
+      message(paste("deleted", sum(dat.out2$still.exists == FALSE), "empty directories"))
     }
 
     if(length(which.not.to.delete)!= 0){
       cat("\n")
-      print(paste("could not delete", sum(dat.out2$still.exists == TRUE), "non-empty directories"))
+      message(paste("could not delete", sum(dat.out2$still.exists == TRUE), "non-empty directories"))
     }
     return(dat.out2)
   }

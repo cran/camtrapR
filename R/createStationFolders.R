@@ -1,10 +1,17 @@
 createStationFolders <- function(inDir,
                                  stations,
-                                 cameras
+                                 cameras,
+                                 createinDir
                                  ){
 
 # check input
- if(file.exists(inDir) == FALSE) stop("inDir does not exist")
+
+if(hasArg(createinDir) == FALSE) createinDir <- FALSE
+stopifnot(is.logical(createinDir))
+
+if(createinDir == FALSE & file.exists(inDir) == FALSE)  stop("inDir does not exist")
+if(createinDir == TRUE  & file.exists(inDir) == FALSE)  dir.create(inDir, recursive = TRUE)
+
   stopifnot(is.character(stations))
   if(hasArg(cameras)){
   stopifnot(is.character(cameras))
@@ -13,7 +20,7 @@ createStationFolders <- function(inDir,
  
  # create directories
    if(hasArg(cameras)){
-  dirs.to.create <- paste(inDir, stations, cameras, sep = "/")
+  dirs.to.create <- file.path(inDir, stations, cameras)
   
   tmp.create <- suppressWarnings(sapply(dirs.to.create, FUN = dir.create, showWarnings = TRUE, recursive = TRUE))
     dat.out1 <- data.frame(station = stations, 
@@ -23,16 +30,16 @@ createStationFolders <- function(inDir,
                            exists = file.exists(dirs.to.create))
     rownames(dat.out1) <- NULL
 
-    print(paste("created", sum(tmp.create == TRUE), "directories"))
+    message(paste("created", sum(tmp.create == TRUE), "directories"))
     if(sum(tmp.create == FALSE) != 0){
-      print(paste(sum(tmp.create == FALSE & file.exists(dirs.to.create)), "directories already existed"))
+      message(paste(sum(tmp.create == FALSE & file.exists(dirs.to.create)), "directories already existed"))
     }
     return(dat.out1)
 
  } else {
  
  if(any(duplicated(stations))) stop("duplicates in stations are not allowed if cameras is not defined")
-  dirs.to.create <- paste(inDir, stations, sep = "/")
+  dirs.to.create <- file.path(inDir, stations)
   
   
     tmp.create <- suppressWarnings(sapply(dirs.to.create, FUN = dir.create, showWarnings = TRUE, recursive = TRUE))
@@ -42,9 +49,9 @@ createStationFolders <- function(inDir,
                            exists = file.exists(dirs.to.create))
     rownames(dat.out2) <- NULL
 
-    print(paste("created", sum(tmp.create == TRUE), "directories"))
+    message(paste("created", sum(tmp.create == TRUE), "directories"))
     if(sum(tmp.create == FALSE) != 0){
-      print(paste(sum(tmp.create == FALSE & file.exists(dirs.to.create)), "directories already existed"))
+      message(paste(sum(tmp.create == FALSE & file.exists(dirs.to.create)), "directories already existed"))
     }
     return(dat.out2)
 }

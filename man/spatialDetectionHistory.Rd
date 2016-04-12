@@ -5,13 +5,14 @@
 Generate a \code{capthist} object for spatial capture-recapture analyses from camera-trapping data
 }
 \description{
-This function generates spatial detection histories of individuals of a species for spatial capture-recapture analyses with package \code{\link[secr]{secr}}. Data are stored in a \code{\link[secr]{capthist}} object. The \code{\link[secr]{capthist}} object contains detection histories, camera-trap station location and possibly individual and station-level covariates. Detection histories can have adjustable occasion length and occasion start time (other than midnight).
+This function generates spatial detection histories of individuals of a species for spatial capture-recapture analyses with package \code{\link[secr]{secr}}. Data are stored in a \code{\link[secr]{capthist}} object. The \code{\link[secr]{capthist}} object contains detection histories, camera-trap station location and possibly individual and station-level covariates. Detection histories can have adjustable occasion length and occasion start time (as in the function \code{\link{detectionHistory}}]).
 }
 \usage{
-spatialDetectionHistory(recordTable, 
+spatialDetectionHistory(recordTableIndividual, 
   species, 
   camOp, 
   CTtable,
+  output,
   stationCol = "Station", 
   speciesCol = "Species",
   Xcol,
@@ -24,17 +25,19 @@ spatialDetectionHistory(recordTable,
   occasionLength, 
   occasionStartTime = 0, 
   maxNumberDays,
-  beginWithDay1,
-  includeEffort,
-  scaleEffort,
+  day1,
+  buffer,
+  includeEffort = TRUE,
+  scaleEffort = FALSE,
   binaryEffort,
-  timeZone
+  timeZone,
+  makeRMarkInput
 )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{recordTable}{
-  data.frame. the record table created by \code{\link{recordDatabaseIndividual}} (or \code{\link{recordDatabase}})
+  \item{recordTableIndividual}{
+  data.frame. the record table with individual IDs created by \code{\link{recordTableIndividual}}
 }
   \item{species}{
   character. the species for which to compute the detection history
@@ -43,13 +46,16 @@ spatialDetectionHistory(recordTable,
   The camera operability matrix as created by \code{\link{cameraOperation}} 
 }
   \item{CTtable}{
-  data.frame. contains station IDs and coordinates
+  data.frame. contains station IDs and coordinates. Same as used in \code{\link{cameraOperation}}.
+}
+  \item{output}{
+  character. Return individual counts ("count") or binary observations ("binary")?
 }
   \item{stationCol}{
-  character. name of the column specifying Station ID in \code{recordTable} and \code{CTtable}
+  character. name of the column specifying Station ID in \code{recordTableIndividual} and \code{CTtable}
 }
   \item{speciesCol}{
-  character. name of the column specifying species in \code{recordTable}
+  character. name of the column specifying species in \code{recordTableIndividual}
 }
   \item{Xcol}{
   character. name of the column specifying x coordinates in \code{CTtable}
@@ -61,16 +67,16 @@ spatialDetectionHistory(recordTable,
   character. name of the column(s) specifying station-level covariates in \code{CTtable}
 }
   \item{individualCol}{
-  character. name of the column specifying individual IDs in \code{recordTable}
+  character. name of the column specifying individual IDs in \code{recordTableIndividual}
 }
   \item{individualCovariateCols}{
-  character. name of the column(s) specifying individual covariates in \code{recordTable}
+  character. name of the column(s) specifying individual covariates in \code{recordTableIndividual}
 }
  \item{recordDateTimeCol}{
-  character. name of the column specifying date and time in \code{recordTable}
+  character. name of the column specifying date and time in \code{recordTableIndividual}
 }
   \item{recordDateTimeFormat}{
-  format of column \code{recordDateTimeCol} in \code{recordTable}
+  format of column \code{recordDateTimeCol} in \code{recordTableIndividual}
 }
   \item{occasionLength}{
   integer. occasion length in days
@@ -81,8 +87,11 @@ spatialDetectionHistory(recordTable,
   \item{maxNumberDays}{
   integer. maximum number of trap days per station (optional)
 }
-  \item{beginWithDay1}{
-  logical. If TRUE, each station's detection history will begin at its respective setup day. If FALSE, occasions for all station will begin on the day the first station was set up.
+  \item{day1}{
+  character. When should occasions begin: station setup date ("setup"), first day of survey ("survey"), a specific date (e.g. "2015-12-31")?
+}
+ \item{buffer}{
+  integer. Makes the first occasion begin a number of days after station setup. (optional)
 }
   \item{includeEffort}{
   logical. Include trapping effort (number of active camera trap days per station and occasion) as usage in \code{\link[secr]{capthist}}  object?
@@ -96,17 +105,29 @@ spatialDetectionHistory(recordTable,
   \item{timeZone}{
   character. must be an argument of \code{\link[base]{OlsonNames}}
 }
+ \item{makeRMarkInput}{
+  logical. If \code{FALSE}, output will be a data frame for RMark. If \code{FALSE} or not specified, a secr \code{\link[secr]{capthist}} object
+}
 
 }
 \details{
-  The function creates a \code{\link[secr]{capthist}} object by combining three different objects: 1) a record table of identified individuals of a species, 2) a camera trap station table with trap coordinates and 3) a camera operation matrix computed with \code{\link{cameraOperation}}. The record table must contain a column with individual IDs and optionally individual covariates. The camera trap station table must contain station coordinates and optionally station-level covariates. The camera operation matrix provides the dates stations were active or not.
-\code{beginWithDay1} defines if each stations detection history will begin on that station's setup day (\code{beginWithDay1 = TRUE}) or if all station's detection histories have a common origin (the day the first station was set up, \code{beginWithDay1 = TRUE}). 
+The function creates a \code{\link[secr]{capthist}} object by combining three different objects: 1) a record table of identified individuals of a species, 2) a camera trap station table with station coordinates and 3) a camera operation matrix computed with \code{\link{cameraOperation}}. The record table must contain a column with individual IDs and optionally individual covariates. The camera trap station table must contain station coordinates and optionally station-level covariates. The camera operation matrix provides the dates stations were active or not and the number of active stations.
+
+\code{day1} defines if each stations detection history will begin on that station's setup day (\code{day1 = "station"}) or if all station's detection histories have a common origin (the day the first station was set up if \code{day1 = "survey"} or a fixed date if, e.g. \code{day1 = "2015-12-31"}). 
+
 \code{includeEffort} controls whether an effort matrix is computed or not. If TRUE, effort will be used for object \code{\link[secr]{usage}}) information in a \code{\link[secr]{traps}}). \code{scaleEffort} and \code{binaryEffort} further define the behaviour. 
-The number of days that are aggregated is controlled by \code{occasionLength}, which must be between 1 and half the number of days in \code{camOp}.
-\code{occasionStartTime} can be used to make occasions begin another hour than midnight (the default). This may be relevant for nocturnal animals, in which 1 whole night would be considered an occasion.     
+
+The number of days that are aggregated is controlled by \code{occasionLength}. \code{occasionStartTime} can be used to make occasions begin another hour than midnight (the default). This may be relevant for nocturnal animals, in which 1 whole night would be considered an occasion.
+Output can be returned as individual counts per occasion (\code{output = "count"}) or as binary observation (\code{output = "binary"}).
+
+\code{\link[secr]{capthist}} objects (as created by \code{\link{spatialDetectionHistory}} for spatial capture-recapture analyses) expect the units of coordinates (\code{Xcol} and \code{col} in \code{CTtable}) to be meters.
 }
 \value{
-A \code{\link[secr]{capthist}} object.
+Output depends on argument \code{makeRMarkInput}:
+
+\item{\code{makeRMarkInput = FALSE}}{A \code{\link[secr]{capthist}} object}
+\item{\code{makeRMarkInput = TRUE}}{A data frame for use in RMark}
+
 }
 % \references{
 % ~put references to the literature/web site here ~
@@ -122,10 +143,11 @@ Juergen Niedballa
 
  \seealso{
 \pkg{secr}
+\pkg{RMark}
  }
 \examples{
 
-data(recordDatabaseIndividualSample)
+data(recordTableIndividualSample)
 data(camtraps)
 
 # create camera operation matrix (with problems/malfunction)
@@ -138,25 +160,27 @@ camop_problem <- cameraOperation(CTtable      = camtraps,
                                  dateFormat   = "\%d/\%m/\%Y"
 )
 
-sdh <- spatialDetectionHistory(recordTable          = recordDatabaseIndividualSample, 
-                               species              = "LeopardCat",    
-                               camOp                = camop_problem, 
-                               CTtable              = camtraps,
-                               stationCol           = "Station", 
-                               speciesCol           = "Species",
-                               Xcol                 = "utm_x",
-                               Ycol                 = "utm_y",
-                               individualCol        = "Individual",
-                               recordDateTimeCol    = "DateTimeOriginal",
-                               recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
-                               occasionLength       = 10, 
-                               beginWithDay1        = FALSE,
-                               includeEffort        = TRUE,
-                               timeZone             = "Asia/Kuala_Lumpur"
+sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSample, 
+                               species               = "LeopardCat",    
+                               camOp                 = camop_problem, 
+                               CTtable               = camtraps,
+                               output                = "binary",
+                               stationCol            = "Station",
+                               speciesCol            = "Species",
+                               Xcol                  = "utm_x",
+                               Ycol                  = "utm_y",
+                               individualCol         = "Individual",
+                               recordDateTimeCol     = "DateTimeOriginal",
+                               recordDateTimeFormat  = "\%Y-\%m-\%d \%H:\%M:\%S",
+                               occasionLength        = 10, 
+                               day1                  = "survey",
+                               includeEffort         = TRUE,
+                               timeZone              = "Asia/Kuala_Lumpur"
   )
   
-# missing space in species = "LeopardCat" was introduced by recordDatabaseIndividual 
-# (because of CRAN package policies. You can have spaces in your directory names)
+# missing space in species = "LeopardCat" was introduced by recordTableIndividual 
+# (because of CRAN package policies. 
+# In your data you can have spaces in your directory names)
 
   summary(sdh)
   plot(sdh, tracks = TRUE)

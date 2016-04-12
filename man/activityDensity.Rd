@@ -10,7 +10,7 @@ The function plots a kernel density estimation of species diel activity using fu
 \usage{
 activityDensity(recordTable, 
   species,
-  all.species = FALSE,
+  allSpecies = FALSE,
   speciesCol = "Species",
   recordDateTimeCol = "DateTimeOriginal",
   recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
@@ -26,37 +26,37 @@ activityDensity(recordTable,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{recordTable}{
-  data.frame. the record table created by \code{\link{recordDatabase}}
+  data.frame. the record table created by \code{\link{recordTable}}
 }
   \item{species}{
-  Name of the single species for which to create an kernel density plot of activity
+  Name of the species for which to create an kernel density plot of activity
 }
-  \item{all.species}{
-  logical. If TRUE, plots are created for all species in \code{recordTable}. This overrides argument \code{species}
+  \item{allSpecies}{
+  logical. Create plots for all species in \code{speciesCol} of \code{recordTable}? Overrides argument \code{species}
 }
  \item{speciesCol}{
-  character. name of the column specifying species in \code{recordTable}
+  character. name of the column specifying species names in \code{recordTable}
 }
   \item{recordDateTimeCol}{
   character. name of the column specifying date and time in \code{recordTable}
 }
   \item{recordDateTimeFormat}{
-  format of column \code{recordDateTimeCol} in \code{recordTable}
+  character. format of column \code{recordDateTimeCol} in \code{recordTable}
 }
   \item{plotR}{
-  logical. Create plots in R graphics device?
+ logical. Show plots in R graphics device?
 }
  \item{writePNG}{
   logical. Create pngs of the plots?
 }
   \item{plotDirectory}{
-  character. Directory to save the pngs if \code{writePNG = TRUE}
+  character. Directory in which to create png plots if \code{writePNG = TRUE}
 }
   \item{createDir}{
   logical. Create \code{plotDirectory} if \code{writePNG = TRUE}?
 }
   \item{pngMaxPix}{
-  integer. number of pixels in the png along the x axis
+  integer. image size of png (pixels along x-axis)
 }
   \item{add.rug}{
   logical. add a rug to the plot?
@@ -69,7 +69,7 @@ activityDensity(recordTable,
   \code{species} must be in the \code{speciesCol} of \code{recordTable}.
 }
 \value{
-  It returns invisibly a vector of species record observation times in radians, ie. scaled to  [\eqn{0, 2\pi}].
+  Returns invisibly a vector of species record observation times in radians, i.e. scaled to  [\eqn{0, 2\pi}].
 If \code{allSpecies == TRUE}, all species' vectors are returned in an invisible named list.
 }
 \references{
@@ -87,22 +87,23 @@ Juergen Niedballa
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
+\code{\link{activityHistogram}}, \code{\link{activityRadial}}, \code{\link{activityOverlap}}
 \url{http://www.kent.ac.uk/smsas/personal/msr/overlap.html}
 }
 \examples{
-# load record database
-data(recordDatabaseSample)
+# load record table
+data(recordTableSample)
 
 species4activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 
-activityDensity(recordTable = recordDatabaseSample,
+activityDensity(recordTable = recordTableSample,
                 species     = species4activity)
 
 
 # all species at once
 
-activityDensity(recordTable = recordDatabaseSample,
-                all.species = TRUE,
+activityDensity(recordTable = recordTableSample,
+                allSpecies  = TRUE,
                 writePNG    = FALSE,
                 plotR       = TRUE,
                 add.rug     = TRUE)
