@@ -27,7 +27,7 @@ recordTable(inDir,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{inDir}{
-  character. Directory containing station directories with renamed and identified images in species subdirectories (e.g. inDir/StationA/SpeciesA).
+  character. Directory containing station directories. It must either contain images in species subdirectories (e.g. inDir/StationA/SpeciesA) or images with species metadata tags (without species directories, e.g. inDir/StationA).
 }
   \item{IDfrom}{
   character. Read species ID from image metadata ("metadata") of from species directory names ("directory")?

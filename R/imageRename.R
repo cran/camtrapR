@@ -119,7 +119,7 @@ imageRename <- function(inDir,
       if(length(na.date.rows) != 0){
         #metadata.tmp.na.date <- metadata.tmp[na.date.rows,]
         warning(paste("couldn't read DateTimeOriginal tag of ",
-                    file.path(metadata.tmp2$Directory,  metadata.tmp2$FileName)[na.date.rows]))
+                    paste(file.path(metadata.tmp$Directory,  metadata.tmp$FileName)[na.date.rows], collapse = ", ")))
         metadata.tmp <- data.frame(metadata.tmp, DateReadable = NA)
         metadata.tmp$DateReadable[-na.date.rows] <- TRUE
         metadata.tmp$DateReadable[na.date.rows] <- FALSE

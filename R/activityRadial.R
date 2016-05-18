@@ -22,12 +22,12 @@ activityRadial <- function(recordTable,
     stopifnot(hasArg(species))
     stopifnot(species %in% recordTable[,speciesCol])
   }
+  
+  tz <- "UTC"
 
-  recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol], format = recordDateTimeFormat, tz = "UTC")
+  recordTable$DateTime2 <- strptime(as.character(recordTable[,recordDateTimeCol]), format = recordDateTimeFormat, tz = tz)
   if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
   if(any(is.na(recordTable$DateTime2))) stop("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat")
-  recordTable$Date2 <- as.Date(recordTable$DateTime2)
-  #recordTable$Time2 <- format(recordTable$DateTime2, format = "%H:%M:%S", usetz = FALSE)
   recordTable$Time2 <- as.POSIXlt(recordTable$DateTime2)$hour
   recordTable[,speciesCol] <- as.character(recordTable[,speciesCol])
 

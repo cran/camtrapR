@@ -291,60 +291,139 @@ addNewColumnsToGlobalTable <- function(intable,
 
 
 #####################################################
-
-
-
-
-
-
-
 # for detectionHistory functions
+
+
+createDateRangeTable <- function(cam.op, 
+                                 subset_species_tmp, 
+                                 buffer_tmp,
+                                 stationCol_tmp,
+                                 day1_tmp,
+                                 occasionStartTime_tmp,
+                                 maxNumberDays_tmp,
+                                 timeZone_tmp)
+                                 {
+
+  cam.tmp.min <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})    # 1st day of each station
+  cam.tmp.max <- apply(cam.op, MARGIN = 1, function(X){max(which(!is.na(X)))})    # last day of each station
+
+  rec.tmp.min  <- aggregate(as.Date(subset_species_tmp$DateTime2, tz = timeZone_tmp),
+                            list(subset_species_tmp[,stationCol_tmp]),
+                            FUN = min)
+  rec.tmp.max  <- aggregate(as.Date(subset_species_tmp$DateTime2, tz = timeZone_tmp),
+                            list(subset_species_tmp[,stationCol_tmp]),
+                            FUN = max)
+
+
+
+  date_ranges <- data.frame(rec.min = rec.tmp.min[match(rownames(cam.op), rec.tmp.min[,1]), 2],       # first record
+                            rec.max = rec.tmp.max[match(rownames(cam.op), rec.tmp.max[,1]), 2],       # last record
+                            cam.min = as.POSIXct(colnames(cam.op)[cam.tmp.min], tz = timeZone_tmp),   # station setup date
+                            cam.max = as.POSIXct(colnames(cam.op)[cam.tmp.max], tz = timeZone_tmp)    # station retrieval date
+  )
+  
+  rownames(date_ranges) <- rownames(cam.op)
+  
+    # check if images were taken between setup and retrieval dates (Error if images outside station date range)
+  if(any(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE)) stop(paste("record date outside camera operation date range: ",
+                                                                                                                          paste(rownames(date_ranges)[which(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp))], collapse = ", " )))
+  if(any(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE)) stop(paste("record date outside camera operation date range: ",
+                                                                                                                          paste(rownames(date_ranges)[which(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp))], collapse = ", " )))
+  
+  # define when first occasion begins (to afterwards remove prior records in function    cleanSubsetSpecies)
+  if(!hasArg(buffer_tmp)) buffer_tmp <- 0
+
+  #if(day1_tmp == "station") {
+    date_ranges$start_first_occasion <- date_ranges$cam.min + buffer_tmp * 86400 + occasionStartTime_tmp * 3600     #each stations setup  + buffer + starttime
+  #  } else {
+  #    if(day1_tmp == "survey") {
+    date_ranges$start_first_occasion_survey <- min(date_ranges$cam.min) + buffer_tmp * 86400 + occasionStartTime_tmp * 3600    # first station's setup  + buffer + starttime
+  #      } else {
+        
+        if(day1_tmp %in% c("survey", "station") == FALSE) {
+          if(as.Date(day1_tmp, tz = timeZone_tmp) < min(as.Date(date_ranges$cam.min,  tz = timeZone_tmp))) stop(paste("day1 (", day1_tmp, ") is before the first station's setup date (",  min(as.Date(date_ranges$cam.min,  tz = timeZone_tmp)), ")", sep = ""))
+          if(as.Date(day1_tmp, tz = timeZone_tmp) > max(as.Date(date_ranges$cam.max,  tz = timeZone_tmp))) stop(paste("day1 (", day1_tmp, ") is after the last station's retrieval date (",  max(as.Date(date_ranges$cam.max,  tz = timeZone_tmp)), ")", sep = ""))
+          date_ranges$start_first_occasion <- as.POSIXlt(day1_tmp, tz = timeZone_tmp) + occasionStartTime_tmp * 3600
+        }
+      
+    
+  
+    # define when last occasion ends
+    date_ranges$end_of_retrieval_day <- as.POSIXct(paste(date_ranges$cam.max, "23:59:59"), tz = timeZone_tmp, format = "%Y-%m-%d %H:%M:%S")    # end of retrieval day
+
+ # if maxNumberDays is defined, find which is earlier: start + maxNumberDays or station retrieval?
+  if(hasArg(maxNumberDays_tmp)) {   
+    
+    if(day1_tmp %in% c("survey", "station") == FALSE){
+      # count maximum number days from the beginning of each station's 1st occasion
+      date_ranges$start_first_occasion_plus_maxNumberDays <- date_ranges$start_first_occasion_survey + (maxNumberDays_tmp * 86400) - 1   # -1 second ensures that last occasion does not spill into next day if occasionStartTime = 0
+    } else {
+    # count maximum number days from the beginning of survey's 1st occasion
+      date_ranges$start_first_occasion_plus_maxNumberDays <- date_ranges$start_first_occasion + (maxNumberDays_tmp * 86400) - 1   # -1 second ensures that last occasion does not spill into next day if occasionStartTime = 0
+    }
+    
+   for(xy in 1:nrow(date_ranges)){
+      date_ranges$end_last_occasion[xy] <- min(date_ranges$end_of_retrieval_day[xy], date_ranges$start_first_occasion_plus_maxNumberDays[xy])   # use smaller value
+      }
+      attributes(date_ranges$end_last_occasion) <- attributes(date_ranges$start_first_occasion)   # assign the attributes: POSIX + time zone (to convert from numeric value back to date/time)
+    } else {
+      date_ranges$end_last_occasion <- date_ranges$end_of_retrieval_day
+    }
+  
+
+  return(date_ranges)
+
+  }
+  
+  
+  
 
 
 adjustCameraOperationMatrix <- function(cam.op,
                                         date_ranges2,
-                                        day1_2,
-                                        occasionStartTime2,
-                                        maxNumberDays2 = NULL,
-                                        buffer2 = NULL){
+                                        timeZone_tmp,
+                                        day1_2
+                                        ){
 
 
-  #######################
-  # adjust camera operation matrix if occasionStartTime2 != 0: make last day NA (it spills into next day in which camera was not set up)
 
-  if(occasionStartTime2 != 0){
+if(any(date_ranges2$start_first_occasion > date_ranges2$end_last_occasion)){
+  remove.these.stations <- which(date_ranges2$start_first_occasion > date_ranges2$end_last_occasion)
+  if(length(remove.these.stations) == nrow(date_ranges2)) stop("In all stations, the occasions begin after retrieval. Choose a smaller buffer argument.")
+    cam.op [remove.these.stations, ] <- NA
+}
 
-    for(k in 1:nrow(cam.op)){
-      tmp <- as.vector(cam.op[k,])    # extract camop vector for station k
 
-      tmp[max(which(!is.na(tmp)))]  <- NA                                                     # set last operational day of camOp NA
-      tmp[sort(unique(c(grep(pattern = 0, x = tmp), grep(pattern = 0, x = tmp) - 1)))] <- 0   # if station was not operational, set both affected days 0 (the day and the following)
-      tmp[which(is.na(as.vector(cam.op[k,])))] <- NA                                          # make sure no additional 0s where there used to be NAs (1st entry)
+##################################
+# set values before beginning of first occasion NA in camera operation matrix (so effort is 0 before): only relevant if buffer was used
+ first_col_to_keep2  <- match(as.character(as.Date(date_ranges2$start_first_occasion, tz = timeZone_tmp)), colnames(cam.op))
+ 
 
-      cam.op[k,]  <- tmp    # reintroduce that vector into cam op matrix
-      rm(tmp)
-    }
+   for(xxx in 1:length(first_col_to_keep2)){
+     if(first_col_to_keep2[xxx] > 1){         # if it does not begin on 1st day of camera operation matrix
+        cam.op[xxx, seq(1, first_col_to_keep2[xxx]-1)] <- NA
+     }
   }
 
-  ################################################
-  #  adjust camera operation matrix if not beginning with 1st day of survey
+# set values after end of last occasion NA in camera operation matrix (so effort is 0 afterwards)
+ last_col_to_keep2  <- match(as.character(as.Date(date_ranges2$end_last_occasion, tz = timeZone_tmp)), colnames(cam.op))
+ 
 
-  # if day1_2 == "survey",  cam.op needs no change because it begins on the 1st day of the survey
-  if(day1_2 == "survey"){
-    if(!is.null(buffer2)){
-      cam.tmp.min <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})
+   for(yyy in 1:length(last_col_to_keep2)){
+     if(last_col_to_keep2[yyy]+1 < ncol(cam.op)){   # if it does not end on last day of camera operation matrix
+        cam.op[yyy, seq(last_col_to_keep2[yyy]+1, ncol(cam.op))] <- NA
+     }
+  }
+  
+  
+####################################
+# trim camera operation matrix (taking into account buffer, occasionStartTime, maxNumberDays)
+# based on data frame   date_ranges   computed by    createDateRangeTable
 
-      for(grr in 1:nrow(cam.op)){
-        cam.op[grr, seq(1, cam.tmp.min[grr] + buffer2 - 1)] <- NA
-      }
-      rm(cam.tmp.min)
-      cam.op <- cam.op[,-which(apply(cam.op, 2, FUN = function(x){all(is.na(x))}))]   # remove leading NA introduced by buffer2
-    }
-  } else {
-    if(day1_2 == "station") {    # 1st day of each station
+  if(day1_2 == "station") {    # 1st day of each station OR some specified date
 
-      cam.tmp.min <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})
-      cam.tmp.max <- apply(cam.op, MARGIN = 1, function(X){max(which(!is.na(X)))})    # last day of each station
+      cam.tmp.min <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})    # first occasion of each station
+      cam.tmp.max <- apply(cam.op, MARGIN = 1, function(X){max(which(!is.na(X)))})    # last occasion of each station
 
       diff.days.tmp <- cam.tmp.max - cam.tmp.min
 
@@ -354,49 +433,77 @@ adjustCameraOperationMatrix <- function(cam.op,
 
       # make all stations begin in 1st column
       for(l in 1:nrow(cam.op)){
-        cam.op2[l, 1:(diff.days.tmp[l]+1)] <- as.vector(cam.op[l,cam.tmp.min[l]:cam.tmp.max[l]])
+        if(is.finite(diff.days.tmp[l])){
+          cam.op2[l, 1:(diff.days.tmp[l]+1)] <- as.vector(cam.op[l,cam.tmp.min[l]:cam.tmp.max[l]])
+        }
       }
 
-      # if buffer2 is defined, remove leading columns
-      if(!is.null(buffer2)){
-        cam.op2 <- cam.op2[,-seq(1,buffer2)]
+      if(day1_2 == "station") {
+        colnames(cam.op2) <- paste("day", 1:ncol(cam.op2), sep = "")
       }
-      colnames(cam.op2) <- paste("day", 1:ncol(cam.op2), sep = "")
+      
       rownames(cam.op2) <- rownames(cam.op)
 
-      cam.op <- cam.op2
-      rm(cam.tmp.min, cam.tmp.max, cam.op2, diff.days.tmp)
-    }  else {
-      # 1st day = specific date
-      if(class(as.Date(day1_2)) == "Date") {
-        if(as.Date(day1_2) < min(as.Date(date_ranges2$cam.min)) | as.Date(day1_2) > max(as.Date(date_ranges2$cam.max))) {
-          stop(paste("day1_2 (", day1_2, ") is outside the range of days sampled: ", min(as.Date(date_ranges2$cam.min)), " - ", max(as.Date(date_ranges2$cam.max)), sep = ""))
-        }
-        cam.op <- cam.op [,match(day1_2, colnames(cam.op)) : ncol(cam.op)]
-      }
-    }
-  }
+      cam.op <- cam.op2 
+  
+      
+  } else {
 
-
-  #######################
-  # if maxNumberDays2 is defined, make everything after that NA in cam.op
-  if(!is.null(maxNumberDays2)){
-    first_day <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})
-    for(j in 1:nrow(cam.op)){
-      if(first_day[j] + maxNumberDays2 - 1 <= ncol(cam.op)){
-        # record.hist   [j, seq(rec.min.tmp[j] + maxNumberDays2, ncol(cam.op), 1)] <- NA
-        cam.op [j, seq(from = first_day[j] + maxNumberDays2,
-                       to = ncol(cam.op),
-                       by = 1)] <- NA
-      }
-    }
-    cam.op <- cam.op[,-which(apply(cam.op, 2, FUN = function(x){all(is.na(x))}))]   # remove tailing NAs introduced by maxNumberDays2
-    rm(j, first_day)
-  }
-
-  return(cam.op)
+    
+# remove all columns of cam.op that were before beginning of 1st occasion
+ first_col_to_keep <- match(as.character(min(as.Date(date_ranges2$start_first_occasion, tz = timeZone_tmp))), colnames(cam.op))
+if(!is.na(first_col_to_keep)){
+ if(first_col_to_keep != 1){
+  cam.op <- cam.op[,-seq(1, (first_col_to_keep-1))]
+ }
 }
 
+# remove all columns of cam.op that were after end of last occasion / after retrieval of last camera
+ last_col_to_keep  <- match(as.character(max(as.Date(date_ranges2$end_last_occasion, tz = timeZone_tmp))), colnames(cam.op))
+ if(!is.na(last_col_to_keep)){
+   if(last_col_to_keep != ncol(cam.op)){
+    cam.op <- cam.op[,-seq((last_col_to_keep + 1), ncol(cam.op))]
+   }
+}
+
+}
+return(cam.op)
+}
+
+
+
+cleanSubsetSpecies <- function(subset_species2 ,
+                               stationCol2,
+                               date_ranges2
+                               ){
+
+  nrow_subset_species2 <- nrow(subset_species2)
+
+    
+    # remove records that were taken before beginning of first occasion (because of buffer, occasionStartTime, day1)
+  corrected_start_time_by_record <- date_ranges2$start_first_occasion[match(subset_species2[,stationCol2], rownames(date_ranges2))]
+
+  remove.these <- which(subset_species2$DateTime2 < corrected_start_time_by_record)
+    if(length(remove.these) >= 1){
+      subset_species2 <- subset_species2[-remove.these,]
+      warning(paste(length(remove.these), "records out of", nrow_subset_species2, "were removed because they were taken within the buffer period or before occasionStartTime on the 1st day"), call. = FALSE)
+      if(nrow(subset_species2) == 0) stop("No more records left. The detection history would be empty.")
+      rm(corrected_start_time_by_record, remove.these)
+    }
+
+# remove records that were taken after end of last occasion (because of maxNumberDays)
+corrected_end_time_by_record <- date_ranges2$end_last_occasion[match(subset_species2[,stationCol2], rownames(date_ranges2))]
+
+  remove.these2 <- which(subset_species2$DateTime2 > corrected_end_time_by_record)
+    if(length(remove.these2) >= 1){
+      subset_species2 <- subset_species2[-remove.these2,]
+      warning(paste(length(remove.these2), "records out of", nrow_subset_species2, "were removed because they were taken after the end of the last occasion"), call. = FALSE)
+      if(nrow(subset_species2) == 0) stop("No more records left. The detection history would be empty.")
+      rm(corrected_end_time_by_record, remove.these2)
+    }
+
+  return(subset_species2)
+}
 
 
 
@@ -415,13 +522,13 @@ calculateTrappingEffort <- function(cam.op,
 
     index <- 1
     for(m in 1:(ncol(effort))){
-      # columns to aggregate
+      # index for columns to aggregate
       if(index + occasionLength2 <= ncol(cam.op)){
         index.tmp <- index : (index + occasionLength2 - 1)
       } else {
         index.tmp <- index : ncol(cam.op)
       }
-      effort[, m] <- apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = sum, na.rm = TRUE)
+      effort[, m] <- apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = sum, na.rm = TRUE)                                                          # calculate effort as sum of active days per occasion
       effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {sum(is.na(X))}) == length(index.tmp), NA, effort[,m])   # if full occasion NA in cam.op, make effort NA
       if(includeEffort2 == FALSE){
         effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {any(is.na(X))}), NA, effort[,m])   # if any day NA in cam.op, make effort NA (if effort is not returned)
@@ -431,19 +538,20 @@ calculateTrappingEffort <- function(cam.op,
     rm(index, index.tmp)
   }
 
-
+# scale effort, if required
   if(isTRUE(scaleEffort2)){
     if(occasionLength2 == 1) stop("cannot scale effort if occasionLength is 1")
-    scale.eff.tmp <- scale(as.vector(effort))
-    scale.eff.tmp.attr <- data.frame(effort.scaled.center = NA,
+    scale.eff.tmp <- scale(as.vector(effort))                       # scale effort (as a vector, not matrix)
+    scale.eff.tmp.attr <- data.frame(effort.scaled.center = NA,     # prepare empty data frame
                                      effort.scaled.scale = NA)
-    scale.eff.tmp.attr$effort.scaled.center[1] <- attr(scale.eff.tmp, which = "scaled:center")
+    scale.eff.tmp.attr$effort.scaled.center[1] <- attr(scale.eff.tmp, which = "scaled:center")   # write scaling parameters to data frame
     scale.eff.tmp.attr$effort.scaled.scale[1]  <- attr(scale.eff.tmp, which = "scaled:scale")
-    effort <- matrix(scale.eff.tmp, nrow = nrow(effort), ncol = ncol(effort))
+    effort <- matrix(scale.eff.tmp, nrow = nrow(effort), ncol = ncol(effort))                    # convert effort vector to matrix again
   }
 
   rownames(effort) <- rownames(cam.op)
 
+  # return objects
   if(isTRUE(scaleEffort2)){
     return(list(effort, scale.eff.tmp.attr))
   } else {
@@ -453,64 +561,7 @@ calculateTrappingEffort <- function(cam.op,
 
 
 
-
-cleanSubsetSpecies <- function(subset_species2 ,
-                               stationCol2,
-                               date_ranges2,
-                               buffer2 = NULL,
-                               maxNumberDays2 = NULL,
-                               occasionStartTime2,
-                               timeZone2){
-
-  nrow_subset_species2 <- nrow(subset_species2)
-
-  # remove records that fall into buffer2 period
-
-  if(!is.null(buffer2)){
-    corrected_start_time_by_record <- as.POSIXct(paste(as.character(date_ranges2$cam.min[match(subset_species2[,stationCol2], rownames(date_ranges2))]), "00:00:00"), tz = timeZone2) + occasionStartTime2 * 3600
-    remove.these <- which(subset_species2$DateTime2 < corrected_start_time_by_record)
-    if(length(remove.these) >= 1){
-      subset_species2 <- subset_species2[-remove.these,]
-      warning(paste(length(remove.these), "records out of", nrow_subset_species2, "were removed because they were before day1"), call. = FALSE, immediate. = TRUE)
-      if(nrow(subset_species2) == 0) stop("No more records left. They are all within the buffer period")
-      rm(corrected_start_time_by_record, remove.these)
-    }
-  }
-
-  # remove records that were taken after maxNumberDays2
-
-  if(!is.null(maxNumberDays2)){
-    corrected_start_time_by_record <- as.POSIXct(paste(as.character(date_ranges2$cam.min[match(subset_species2[,stationCol2], rownames(date_ranges2))]), "00:00:00"), tz = timeZone2) + occasionStartTime2 * 3600
-    remove.these <- which(subset_species2$DateTime2 > corrected_start_time_by_record + maxNumberDays2 * 86400)
-    if(length(remove.these) >= 1){
-      subset_species2 <- subset_species2[-remove.these,]
-      warning(paste(length(remove.these), "records out of", nrow_subset_species2, "were removed because they were after the maxNumberDays"), call. = FALSE, immediate. = TRUE)
-      if(nrow(subset_species2) == 0) stop("No more records left.")
-      rm(corrected_start_time_by_record, remove.these)
-    }
-  }
-
-  return(subset_species2)
-}
-
-
-
-
-
-
-
 ##########################################################################################################
-
-
-
-
-
-
-
-
-
-
-
 # for function surveyReport
 
 makeSurveyZip <- function(output,

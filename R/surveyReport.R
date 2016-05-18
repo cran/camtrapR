@@ -56,7 +56,7 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
   recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol],
                                     format = recordDateTimeFormat,
                                     tz = "UTC")
-  recordTable$Date2 <- as.Date(recordTable$DateTime2)
+  recordTable$Date2 <- as.Date(recordTable$DateTime2, tz = "UTC")
 
 
   if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
@@ -77,8 +77,8 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
   if(any(is.na(as.Date(CTtable[,retrievalCol], format = CTDateFormat)))) {stop("at least one entry in retrievalCol cannot be interpreted using CTDateFormat")}
 
 
-  CTtable[,setupCol]     <- as.Date(strptime(CTtable[,setupCol],     format = CTDateFormat))
-  CTtable[,retrievalCol] <- as.Date(strptime(CTtable[,retrievalCol], format = CTDateFormat))
+  CTtable[,setupCol]     <- as.Date(strptime(CTtable[,setupCol],     format = CTDateFormat, tz = "UTC"), tz = "UTC")
+  CTtable[,retrievalCol] <- as.Date(strptime(CTtable[,retrievalCol], format = CTDateFormat, tz = "UTC"), tz = "UTC")
 
 
   if(isTRUE(CTHasProblems)){    # camera problem columns
@@ -111,8 +111,8 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
                               sep = "")
                 )
 
-      CTtable[,cols.prob.from[xy]] <- as.Date(CTtable[,cols.prob.from[xy]], format = CTDateFormat)
-      CTtable[,cols.prob.to[xy]]   <- as.Date(CTtable[,cols.prob.to[xy]],   format = CTDateFormat)
+      CTtable[,cols.prob.from[xy]] <- as.Date(CTtable[,cols.prob.from[xy]], format = CTDateFormat, tz = "UTC")
+      CTtable[,cols.prob.to[xy]]   <- as.Date(CTtable[,cols.prob.to[xy]],   format = CTDateFormat, tz = "UTC")
 
       if(all(is.na( CTtable[,cols.prob.from[xy]]))) stop(paste("Cannot read date format in", colnames(CTtable)[cols.prob.from[xy]]))
       if(all(is.na( CTtable[,cols.prob.to[xy]])))   stop(paste("Cannot read date format in", colnames(CTtable)[cols.prob.to[xy]]))

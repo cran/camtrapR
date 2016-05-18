@@ -8,7 +8,7 @@ output:
     fig_width: 6
     fig_height: 5
 vignette: >
-  %\VignetteIndexEntry{Extracting data from camera trap images}
+  %\VignetteIndexEntry{3. Extracting data from camera trap images}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

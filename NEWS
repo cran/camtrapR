@@ -1,3 +1,18 @@
+Changes in camtrapR 0.99.1
+=======================
+
+bugfixes
+------------
+- detectionHistory and spatialDetectionHistory did not run correctly under some rare circumstances (combinations of input arguments)
+- column names of detection histories were incorrect if occasionStartTime != 0 and datesAsOccasionNames = TRUE
+- argument maxNumberDays in detectionHistory / spatialDetectionHistory works on each station individually if day1 = "survey" or "station"; and from the specified date if day1 is a date
+
+other changes
+------------
+- additional checks for consistency of input in a number of functions
+- code simplification invisible to the user
+
+
 Changes in camtrapR 0.99.0
 =======================
 

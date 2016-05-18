@@ -21,7 +21,7 @@ activityHistogram <- function(recordTable,
     stopifnot(hasArg(species))
     stopifnot(species %in% recordTable[,speciesCol])
   }
-  recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol], format = recordDateTimeFormat, tz = "UTC")
+  recordTable$DateTime2 <- strptime(as.character(recordTable[,recordDateTimeCol]), format = recordDateTimeFormat, tz = "UTC")
   if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
 
   recordTable$Hour <- as.POSIXlt(recordTable$DateTime2)$hour

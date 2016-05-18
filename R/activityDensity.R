@@ -18,6 +18,8 @@ activityDensity <- function(recordTable,
   mar0 <- par()$mar
   on.exit(setwd(wd0))
   on.exit(par(mar = mar0), add = TRUE)
+  
+  tz <- "UTC"
 
   stopifnot(is.logical(c(allSpecies, writePNG, plotR, createDir)))
   if(allSpecies == FALSE) {
@@ -25,16 +27,15 @@ activityDensity <- function(recordTable,
     stopifnot(hasArg(species))
   }
 
-  recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol], format = recordDateTimeFormat, tz = "UTC")
+  recordTable$DateTime2 <- strptime(as.character(recordTable[,recordDateTimeCol]), format = recordDateTimeFormat, tz = tz)
   if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
   if(any(is.na(recordTable$DateTime2))) stop("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat")
-  recordTable$Date2 <- as.Date(recordTable$DateTime2)
   recordTable$Time2 <- format(recordTable$DateTime2, format = "%H:%M:%S", usetz = FALSE)
 
 
   # radians time
-  recordTable$Time.rad <- (as.numeric(as.POSIXct(strptime(recordTable$Time2, format = "%H:%M:%S"))) -
-                             as.numeric(as.POSIXct(strptime("0", format = "%S")))) / 3600 * (pi/12)
+  recordTable$Time.rad <- (as.numeric(as.POSIXct(strptime(recordTable$Time2, format = "%H:%M:%S", tz = tz))) -
+                             as.numeric(as.POSIXct(strptime("0", format = "%S", tz = tz)))) / 3600 * (pi/12)
 
   if(isTRUE(writePNG)){
     if(hasArg(plotDirectory)){

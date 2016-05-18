@@ -141,7 +141,8 @@ recordTableSample <- recordTable(inDir               = wd_images_ID,
                                  IDfrom              = "directory",
                                  minDeltaTime        = 60,  
                                  deltaTimeComparedTo = "lastRecord",
-                                 exclude             = "NO_ID"
+                                 exclude             = "NO_ID",
+                                 timeZone            = "Asia/Kuala_Lumpur"
 )
 } else {
 data(recordTableSample)
@@ -159,7 +160,8 @@ DetHist1 <- detectionHistory(recordTable         = recordTableSample,
                             occasionLength       = 7,
                             day1                 = "station",
                             datesAsOccasionNames = FALSE,
-                            includeEffort        = FALSE
+                            includeEffort        = FALSE,
+                            timeZone             = "Asia/Kuala_Lumpur"
 )
 
 DetHist1
@@ -175,7 +177,8 @@ DetHist2 <- detectionHistory(recordTable          = recordTableSample,
                              day1                 = "station",
                              datesAsOccasionNames = FALSE,
                              includeEffort        = TRUE,
-                             scaleEffort          = FALSE
+                             scaleEffort          = FALSE,
+                             timeZone             = "Asia/Kuala_Lumpur"
 )
 
 DetHist2[[1]]  # detection history

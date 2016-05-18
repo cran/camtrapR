@@ -8,7 +8,7 @@ output:
     fig_width: 6
     fig_height: 5
 vignette: >
-  %\VignetteIndexEntry{Data exploration and visualisation}
+  %\VignetteIndexEntry{4. Data exploration and visualisation}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

@@ -93,7 +93,7 @@ Juergen Niedballa
 # load record table
 data(recordTableSample)
 
-species4activity <- "VTA"    # = Viverra tangalunga, Malay Civet
+species4activity <- "PBE"    # = Prionailurus bengalensis, Leopard Cat
 
 activityRadial(recordTable       = recordTableSample,
                species           = species4activity,
@@ -105,7 +105,8 @@ activityRadial(recordTable       = recordTableSample,
                lwd               = 5
 )
 
-# with polygon
+# plot type = polygon
+
 activityRadial(recordTable       = recordTableSample,
                species           = species4activity,
                allSpecies        = FALSE,
@@ -114,6 +115,7 @@ activityRadial(recordTable       = recordTableSample,
                plotR             = TRUE,
                writePNG          = FALSE,
                lwd               = 5,
-               rp.type           = "p"
+               rp.type           = "p"      
 )
+
 }

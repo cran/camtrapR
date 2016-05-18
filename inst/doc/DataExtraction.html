@@ -8,6 +8,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
 <meta name="date" content="2016-04-05" />
@@ -18,32 +20,46 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
-</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
 
 
-<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -51,11 +67,11 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 
 
-<div id="header">
-<h1 class="title">Extracting Data from Camera Trapping Images</h1>
+
+<h1 class="title toc-ignore">Extracting Data from Camera Trapping Images</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
 <h4 class="date"><em>2016-04-05</em></h4>
-</div>
+
 
 <div id="TOC">
 <ul>
@@ -78,7 +94,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </ul>
 </div>
 
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(camtrapR)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(camtrapR)</code></pre></div>
 <div id="tabulating-species-and-individual-records-the-recordtable-functions" class="section level1">
 <h1>Tabulating species and individual records: the recordTable functions</h1>
 <p>There are 2 function to tabulate species records after identification of species from images:</p>
@@ -91,19 +107,19 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2><code>recordTable</code>: tabulating species records</h2>
 <p><code>recordTable</code> is typically run after identifying species from images. It reads species IDs from the directory structure the images are placed in or from image metadata tags.</p>
 <p>First we define the directory containing our renamed, identified images</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find the directory with sample images contained in the package</span>
-wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find the directory with sample images contained in the package</span>
+wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)</code></pre></div>
 <p>and see how many JPG images we have (this is not necessary, but informative here).</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">list.files</span>(wd_images_ID, <span class="dt">pattern =</span> <span class="st">&quot;JPG&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">list.files</span>(wd_images_ID, <span class="dt">pattern =</span> <span class="st">&quot;JPG&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <pre><code>## [1] 68</code></pre>
 <p>Now we can run <code>recordTable</code>. Here is a minimal example:</p>
-<pre class="sourceCode r"><code class="sourceCode r">rec.db.species0 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir  =</span> wd_images_ID,
-                               <span class="dt">IDfrom =</span> <span class="st">&quot;directory&quot;</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rec.db.species0 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir  =</span> wd_images_ID,
+                               <span class="dt">IDfrom =</span> <span class="st">&quot;directory&quot;</span>)</code></pre></div>
 <pre><code>## Warning: timeZone is not specified. Assuming UTC</code></pre>
 <pre><code>## StationA : 8 images</code></pre>
 <pre><code>## StationB : 23 images</code></pre>
 <pre><code>## StationC : 37 images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(rec.db.species0)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(rec.db.species0)</code></pre></div>
 <pre><code>##    Station Species    DateTimeOriginal       Date     Time delta.time.secs
 ## 1 StationA     PBE 2009-04-21 00:40:00 2009-04-21 00:40:00               0
 ## 2 StationA     PBE 2009-04-22 20:19:00 2009-04-22 20:19:00          157140
@@ -118,13 +134,13 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                        Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
+##                                                                                                       Directory
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName
 ## 1 StationA__2009-04-21__00-40-00(1).JPG
 ## 2 StationA__2009-04-22__20-19-00(1).JPG
@@ -135,7 +151,7 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 <p>Argument <code>IDfrom</code> tells the function to look for species directories within the station directories and to take species IDs from these. <code>IDfrom</code> must be set to “metadata” if metadata tagging was used for species identification.</p>
 <p>By default, the function returns all records. Nevertheless, we get a data frame containing 56 records, less than the number of images in the image directory. This is because a number of images were taken at the same time (measured with 1 minute precision by these cameras) and the function removes duplicate records.</p>
 <p>It may suffice to illustrate this with the Pig-tailed macaque images from stationB:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list.files</span>(<span class="kw">file.path</span>(wd_images_ID, <span class="st">&quot;StationB&quot;</span>, <span class="st">&quot;MNE&quot;</span>))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list.files</span>(<span class="kw">file.path</span>(wd_images_ID, <span class="st">&quot;StationB&quot;</span>, <span class="st">&quot;MNE&quot;</span>))</code></pre></div>
 <pre><code>##  [1] &quot;StationB__2009-04-15__07-21-00(1).JPG&quot;
 ##  [2] &quot;StationB__2009-04-15__07-23-00(1).JPG&quot;
 ##  [3] &quot;StationB__2009-04-28__17-47-00(1).JPG&quot;
@@ -148,57 +164,61 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## [10] &quot;StationB__2009-04-28__17-49-00(3).JPG&quot;</code></pre>
 <p>There are, amongst others, 3 images taken at 17:48:00 on the 28th of April 2009. Of these, only 1 will be returned.</p>
 <p>Here is what the columns of the record table contain:</p>
-<table>
+<table style="width:11%;">
+<colgroup>
+<col width="5%"></col>
+<col width="5%"></col>
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left">column</th>
-<th align="left">content</th>
+<th>column</th>
+<th>content</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><code>Station</code></td>
-<td align="left">the station the image is from</td>
+<td><code>Station</code></td>
+<td>the station the image is from</td>
 </tr>
 <tr class="even">
-<td align="left"><code>Species</code></td>
-<td align="left">species name</td>
+<td><code>Species</code></td>
+<td>species name</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>DateTimeOriginal</code></td>
-<td align="left">Date and time of record in R-readable format</td>
+<td><code>DateTimeOriginal</code></td>
+<td>Date and time of record in R-readable format</td>
 </tr>
 <tr class="even">
-<td align="left"><code>Date</code></td>
-<td align="left">record date</td>
+<td><code>Date</code></td>
+<td>record date</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>Time</code></td>
-<td align="left">record time of day</td>
+<td><code>Time</code></td>
+<td>record time of day</td>
 </tr>
 <tr class="even">
-<td align="left"><code>delta.time.secs</code></td>
-<td align="left">time difference between record and last (independent) record of same species at same station / camera* (in seconds)</td>
+<td><code>delta.time.secs</code></td>
+<td>time difference between record and last (independent) record of same species at same station / camera* (in seconds)</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>delta.time.mins</code></td>
-<td align="left">time difference between record and last (independent) record of same species at same station / camera* (in minutes)</td>
+<td><code>delta.time.mins</code></td>
+<td>time difference between record and last (independent) record of same species at same station / camera* (in minutes)</td>
 </tr>
 <tr class="even">
-<td align="left"><code>delta.time.hours</code></td>
-<td align="left">time difference between record and last (independent) record of same species at same station / camera* (in hours)</td>
+<td><code>delta.time.hours</code></td>
+<td>time difference between record and last (independent) record of same species at same station / camera* (in hours)</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>delta.time.days</code></td>
-<td align="left">time difference between record and last (independent) record of same species at same station / camera* (in days)</td>
+<td><code>delta.time.days</code></td>
+<td>time difference between record and last (independent) record of same species at same station / camera* (in days)</td>
 </tr>
 <tr class="even">
-<td align="left"><code>Directory</code></td>
-<td align="left">directory the image is in</td>
+<td><code>Directory</code></td>
+<td>directory the image is in</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>FileName</code></td>
-<td align="left">image file name</td>
+<td><code>FileName</code></td>
+<td>image file name</td>
 </tr>
 </tbody>
 </table>
@@ -209,15 +229,15 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 <p>The argument <code>deltaTimeComparedTo</code> further controls how independence between records is assessed. Setting it to “lastRecord” returns only records taken <code>minDeltaTime</code> minutes after the last record. Setting it to “lastIndependentRecord” returns only records taken <code>minDeltaTime</code> minutes after the last <em>independent</em> record.</p>
 <p>Note the warning about the missing time zone. It is much advised to set it to you study area’s time zone (one of <code>OlsonNames</code>). It is unlikely, but you may get into trouble if your cameras record daylight saving hours that UTC (the default) does not have. The time of day of your records will not shift when you change the time zone.</p>
 <p>Let’s now apply an 1-hour independence criterion and define a time zone.</p>
-<pre class="sourceCode r"><code class="sourceCode r">rec.db.species60 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir               =</span> wd_images_ID,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rec.db.species60 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir               =</span> wd_images_ID,
                                 <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                 <span class="dt">minDeltaTime        =</span> <span class="dv">60</span>,
                                 <span class="dt">deltaTimeComparedTo =</span> <span class="st">&quot;lastRecord&quot;</span>,
-                                <span class="dt">timeZone            =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>)</code></pre>
+                                <span class="dt">timeZone            =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>)</code></pre></div>
 <pre><code>## StationA : 8 images</code></pre>
 <pre><code>## StationB : 23 images</code></pre>
 <pre><code>## StationC : 37 images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">nrow</span>(rec.db.species60)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">nrow</span>(rec.db.species60)</code></pre></div>
 <pre><code>## [1] 40</code></pre>
 <p>Now 40 records were returned instead of 56. The missing records were taken less than 1 hour after the prior record of the same species at the same station and therefore omitted.</p>
 </div>
@@ -229,23 +249,23 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 <div id="ignoring-species" class="section level3">
 <h3>Ignoring species</h3>
 <p>Argument <code>exclude</code> can be used to ignore certain species. This is useful for omitting images in directories like “team” or “unidentified”. Here is an example:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># see what species  we recorded</span>
-<span class="kw">table</span>(rec.db.species60$Species)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># see what species  we recorded</span>
+<span class="kw">table</span>(rec.db.species60$Species)</code></pre></div>
 <pre><code>## 
 ##   EGY   MNE NO_ID   PBE   TRA   VTA 
 ##     6     2     1    18     8     5</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># remove &quot;NO_ID&quot; by setting argument exclude = &quot;NO_ID&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># remove &quot;NO_ID&quot; by setting argument exclude = &quot;NO_ID&quot;</span>
 rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir               =</span> wd_images_ID,
                                         <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                         <span class="dt">minDeltaTime        =</span> <span class="dv">60</span>,
                                         <span class="dt">deltaTimeComparedTo =</span> <span class="st">&quot;lastIndependentRecord&quot;</span>,
                                         <span class="dt">timeZone            =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>,
-                                        <span class="dt">exclude             =</span> <span class="st">&quot;NO_ID&quot;</span>)</code></pre>
+                                        <span class="dt">exclude             =</span> <span class="st">&quot;NO_ID&quot;</span>)</code></pre></div>
 <pre><code>## StationA : 8 images</code></pre>
 <pre><code>## StationB : 23 images</code></pre>
 <pre><code>## StationC : 37 images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note that &quot;NO_ID&quot; is gone now</span>
-<span class="kw">table</span>(rec.db.species60.exclude$Species)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note that &quot;NO_ID&quot; is gone now</span>
+<span class="kw">table</span>(rec.db.species60.exclude$Species)</code></pre></div>
 <pre><code>## 
 ## EGY MNE PBE TRA VTA 
 ##   6   2  18   8   5</code></pre>
@@ -253,8 +273,8 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <div id="extracting-image-metadata" class="section level3">
 <h3>Extracting image metadata</h3>
 <p><code>recordTable</code> and <code>recordTableIndividual</code> can both extract additional metadata from images (apart from date and time). For example, some camera models record ambient temperature or moon phase, which may be of interest. Metadata tags are stored in the images at the time they are taken and can be accessed and extracted if their tag names are known. Some tag names are standardised (e.g. “DateTimeOriginal”) while others are manufacturer-specific. Therefore, function <code>exifTagNames</code> returns all Exif metadata it finds in a sample image. Users can then choose which to include in <code>recordTable</code> and <code>recordTableIndividual</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
-<span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">FALSE</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
+<span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>##  [1] &quot;BaseName&quot;                &quot;BitsPerSample&quot;          
 ##  [3] &quot;ColorComponents&quot;         &quot;ColorSpace&quot;             
 ##  [5] &quot;ComponentsConfiguration&quot; &quot;Compression&quot;            
@@ -280,63 +300,63 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## [45] &quot;XResolution&quot;             &quot;YCbCrPositioning&quot;       
 ## [47] &quot;YCbCrSubSampling&quot;        &quot;YResolution&quot;</code></pre>
 <p>If one has no idea what kind of data are behind these tag names, <code>returnMetadata</code> can be set to TRUE to return the actual metadata instead of the tag names only.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre>
-<pre><code>##  [1] &quot;ExifTool Version Number         : 10.09&quot;                                                                                                         
-##  [2] &quot;File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                         
-##  [3] &quot;Directory                       : C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE&quot;
-##  [4] &quot;File Size                       : 27 kB&quot;                                                                                                         
-##  [5] &quot;File Modification Date/Time     : 2016:04:11 17:31:32+02:00&quot;                                                                                     
-##  [6] &quot;File Access Date/Time           : 2016:04:11 17:31:32+02:00&quot;                                                                                     
-##  [7] &quot;File Creation Date/Time         : 2016:04:11 17:31:32+02:00&quot;                                                                                     
-##  [8] &quot;File Permissions                : rw-rw-rw-&quot;                                                                                                     
-##  [9] &quot;File Type                       : JPEG&quot;                                                                                                          
-## [10] &quot;File Type Extension             : jpg&quot;                                                                                                           
-## [11] &quot;MIME Type                       : image/jpeg&quot;                                                                                                    
-## [12] &quot;Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                                                     
-## [13] &quot;Make                            : G4&quot;                                                                                                            
-## [14] &quot;Camera Model Name               : CUDDEBACK&quot;                                                                                                     
-## [15] &quot;X Resolution                    : 72&quot;                                                                                                            
-## [16] &quot;Y Resolution                    : 72&quot;                                                                                                            
-## [17] &quot;Modify Date                     : 2009:04:21 00:40:00&quot;                                                                                           
-## [18] &quot;Resolution Unit                 : inches&quot;                                                                                                        
-## [19] &quot;Y Cb Cr Positioning             : Co-sited&quot;                                                                                                      
-## [20] &quot;Exif Version                    : 0200&quot;                                                                                                          
-## [21] &quot;Components Configuration        : Y, Cb, Cr, -&quot;                                                                                                  
-## [22] &quot;Flashpix Version                : 0100&quot;                                                                                                          
-## [23] &quot;Color Space                     : sRGB&quot;                                                                                                          
-## [24] &quot;Exif Image Width                : 100&quot;                                                                                                           
-## [25] &quot;Exif Image Height               : 75&quot;                                                                                                            
-## [26] &quot;Date/Time Original              : 2009:04:21 00:40:00&quot;                                                                                           
-## [27] &quot;Create Date                     : 2009:04:21 00:40:00&quot;                                                                                           
-## [28] &quot;Warning                         : Invalid EXIF text encoding for UserComment&quot;                                                                    
-## [29] &quot;User Comment                    : 1 ATTEMPT G1H&quot;                                                                                                 
-## [30] &quot;Shutter Speed Value             : 1&quot;                                                                                                             
-## [31] &quot;Compression                     : JPEG (old-style)&quot;                                                                                              
-## [32] &quot;Thumbnail Offset                : 408&quot;                                                                                                           
-## [33] &quot;Thumbnail Length                : 25353&quot;                                                                                                         
-## [34] &quot;Image Width                     : 100&quot;                                                                                                           
-## [35] &quot;Image Height                    : 75&quot;                                                                                                            
-## [36] &quot;Encoding Process                : Baseline DCT, Huffman coding&quot;                                                                                  
-## [37] &quot;Bits Per Sample                 : 8&quot;                                                                                                             
-## [38] &quot;Color Components                : 3&quot;                                                                                                             
-## [39] &quot;Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                                                              
-## [40] &quot;Base Name                       : StationA__2009-04-21__00-40-00(1)&quot;                                                                             
-## [41] &quot;File Extension                  : JPG&quot;                                                                                                           
-## [42] &quot;File Type Description           : Joint Photographic Experts Group&quot;                                                                              
-## [43] &quot;Image Size                      : 100x75&quot;                                                                                                        
-## [44] &quot;Megapixels                      : 0.007&quot;                                                                                                         
-## [45] &quot;Physical Image Size             : 1.4x1.0 inches&quot;                                                                                                
-## [46] &quot;Shutter Speed                   : 1&quot;                                                                                                             
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>##  [1] &quot;ExifTool Version Number         : 10.09&quot;                                                                                                        
+##  [2] &quot;File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                        
+##  [3] &quot;Directory                       : C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE&quot;
+##  [4] &quot;File Size                       : 27 kB&quot;                                                                                                        
+##  [5] &quot;File Modification Date/Time     : 2016:05:18 15:34:32+02:00&quot;                                                                                    
+##  [6] &quot;File Access Date/Time           : 2016:05:18 15:34:31+02:00&quot;                                                                                    
+##  [7] &quot;File Creation Date/Time         : 2016:05:18 15:34:31+02:00&quot;                                                                                    
+##  [8] &quot;File Permissions                : rw-rw-rw-&quot;                                                                                                    
+##  [9] &quot;File Type                       : JPEG&quot;                                                                                                         
+## [10] &quot;File Type Extension             : jpg&quot;                                                                                                          
+## [11] &quot;MIME Type                       : image/jpeg&quot;                                                                                                   
+## [12] &quot;Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                                                    
+## [13] &quot;Make                            : G4&quot;                                                                                                           
+## [14] &quot;Camera Model Name               : CUDDEBACK&quot;                                                                                                    
+## [15] &quot;X Resolution                    : 72&quot;                                                                                                           
+## [16] &quot;Y Resolution                    : 72&quot;                                                                                                           
+## [17] &quot;Modify Date                     : 2009:04:21 00:40:00&quot;                                                                                          
+## [18] &quot;Resolution Unit                 : inches&quot;                                                                                                       
+## [19] &quot;Y Cb Cr Positioning             : Co-sited&quot;                                                                                                     
+## [20] &quot;Exif Version                    : 0200&quot;                                                                                                         
+## [21] &quot;Components Configuration        : Y, Cb, Cr, -&quot;                                                                                                 
+## [22] &quot;Flashpix Version                : 0100&quot;                                                                                                         
+## [23] &quot;Color Space                     : sRGB&quot;                                                                                                         
+## [24] &quot;Exif Image Width                : 100&quot;                                                                                                          
+## [25] &quot;Exif Image Height               : 75&quot;                                                                                                           
+## [26] &quot;Date/Time Original              : 2009:04:21 00:40:00&quot;                                                                                          
+## [27] &quot;Create Date                     : 2009:04:21 00:40:00&quot;                                                                                          
+## [28] &quot;Warning                         : Invalid EXIF text encoding for UserComment&quot;                                                                   
+## [29] &quot;User Comment                    : 1 ATTEMPT G1H&quot;                                                                                                
+## [30] &quot;Shutter Speed Value             : 1&quot;                                                                                                            
+## [31] &quot;Compression                     : JPEG (old-style)&quot;                                                                                             
+## [32] &quot;Thumbnail Offset                : 408&quot;                                                                                                          
+## [33] &quot;Thumbnail Length                : 25353&quot;                                                                                                        
+## [34] &quot;Image Width                     : 100&quot;                                                                                                          
+## [35] &quot;Image Height                    : 75&quot;                                                                                                           
+## [36] &quot;Encoding Process                : Baseline DCT, Huffman coding&quot;                                                                                 
+## [37] &quot;Bits Per Sample                 : 8&quot;                                                                                                            
+## [38] &quot;Color Components                : 3&quot;                                                                                                            
+## [39] &quot;Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                                                             
+## [40] &quot;Base Name                       : StationA__2009-04-21__00-40-00(1)&quot;                                                                            
+## [41] &quot;File Extension                  : JPG&quot;                                                                                                          
+## [42] &quot;File Type Description           : Joint Photographic Experts Group&quot;                                                                             
+## [43] &quot;Image Size                      : 100x75&quot;                                                                                                       
+## [44] &quot;Megapixels                      : 0.007&quot;                                                                                                        
+## [45] &quot;Physical Image Size             : 1.4x1.0 inches&quot;                                                                                               
+## [46] &quot;Shutter Speed                   : 1&quot;                                                                                                            
 ## [47] &quot;Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;</code></pre>
 <p>Note that when <code>returnMetadata = TRUE</code> the tag names contain spaces whereas they don’t when <code>returnMetadata = FALSE</code>. When supplying tagnames to the <code>recordTable</code> functions, use the tag names without spaces. Of the tags shown here, “DateTimeOriginal” contains the date and time that camtrapR reads out. Apart from that, there is little information of ecological interest. However, for demonstration purposes, let’s extract information about the camera model and make:</p>
-<pre class="sourceCode r"><code class="sourceCode r">rec.db.species.metadata1 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir                  =</span> wd_images_ID,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rec.db.species.metadata1 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir                  =</span> wd_images_ID,
                                         <span class="dt">IDfrom                 =</span> <span class="st">&quot;directory&quot;</span>,
                                         <span class="dt">timeZone               =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>,
-                                        <span class="dt">additionalMetadataTags =</span> <span class="kw">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Make&quot;</span>))</code></pre>
+                                        <span class="dt">additionalMetadataTags =</span> <span class="kw">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Make&quot;</span>))</code></pre></div>
 <pre><code>## StationA : 8 images</code></pre>
 <pre><code>## StationB : 23 images</code></pre>
 <pre><code>## StationC : 37 images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(rec.db.species.metadata1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(rec.db.species.metadata1)</code></pre></div>
 <pre><code>##    Station Species    DateTimeOriginal       Date     Time delta.time.secs
 ## 1 StationA     PBE 2009-04-21 00:40:00 2009-04-21 00:40:00               0
 ## 2 StationA     PBE 2009-04-22 20:19:00 2009-04-22 20:19:00          157140
@@ -351,13 +371,13 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                        Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/PBE
+##                                                                                                       Directory
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName     Model Make
 ## 1 StationA__2009-04-21__00-40-00(1).JPG CUDDEBACK   G4
 ## 2 StationA__2009-04-22__20-19-00(1).JPG CUDDEBACK   G4
@@ -371,7 +391,7 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <div id="recordtableindividual-tabulating-individuals-of-a-species" class="section level2">
 <h2><code>recordTableIndividual</code>: tabulating individuals of a species</h2>
 <p>Individual identification of species is a prerequiste for running (spatial) capture-recapture models. <code>recordTableIndividual</code> and the subsequent <code>spatialDetectionHistory</code> function prepare data for these models.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find the directory with tagged sample images contained in the package</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find the directory with tagged sample images contained in the package</span>
 wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images_tagged/LeopardCat&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
  <span class="co"># missing space in species = &quot;LeopardCat&quot; is because of CRAN package policies</span>
 
@@ -382,12 +402,12 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
                                      <span class="dt">hasStationFolders      =</span> <span class="ot">FALSE</span>,         <span class="co"># images are not in station directories</span>
                                      <span class="dt">metadataIDTag          =</span> <span class="st">&quot;individual&quot;</span>,  <span class="co"># the name of the metadata tag containing individual IDs</span>
                                      <span class="dt">timeZone               =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>
- )</code></pre>
-<pre><code>## C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
+ )</code></pre></div>
+<pre><code>## C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
 <div id="extracting-custom-image-metadata" class="section level3">
 <h3>Extracting custom image metadata</h3>
 <p>In addition to the metadata that were saved when the image was taken (see above), custom metadata tags assigned in image management software can also be extracted. These may contain species ID tags if species were identified using metadata tags (instead of moving images into species directories), but also individual IDs, animal counts, sex of animals recorded, etc..</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(rec.db.pbe)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(rec.db.pbe)</code></pre></div>
 <pre><code>##    Station    Species Individual    DateTimeOriginal       Date     Time
 ## 1 StationA LeopardCat          1 2009-05-07 17:11:00 2009-05-07 17:11:00
 ## 2 StationA LeopardCat          2 2009-04-21 00:40:00 2009-04-21 00:40:00
@@ -402,13 +422,13 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 ## 4           13680             228              3.8             0.2
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
-##                                                                                                             Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images_tagged/LeopardCat
+##                                                                                                            Directory
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images_tagged/LeopardCat
 ##                                FileName metadata_Species
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat
@@ -429,7 +449,7 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 <div id="camera-operation" class="section level1">
 <h1>Camera Operation</h1>
 <p>The camera operation matrix is a day-by-station matrix that states how many cameras were active at a station on a given day. Rows represent stations and columns days, beginning with the day the first camera was set up and ending the day the last camera was retrieved.</p>
-<pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># first load the camera trap station table</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># first load the camera trap station table</span>
 <span class="kw">data</span>(camtraps)
  
 camop_problem &lt;-<span class="st"> </span><span class="kw">cameraOperation</span>(<span class="dt">CTtable      =</span> camtraps,
@@ -442,19 +462,19 @@ camop_problem &lt;-<span class="st"> </span><span class="kw">cameraOperation</sp
 )
 
 <span class="co"># as a reminder, these are the dates in our station information table</span>
-camtraps[,-<span class="kw">which</span>(<span class="kw">colnames</span>(camtraps) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;utm_y&quot;</span>, <span class="st">&quot;utm_x&quot;</span>))]</code></pre>
+camtraps[,-<span class="kw">which</span>(<span class="kw">colnames</span>(camtraps) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;utm_y&quot;</span>, <span class="st">&quot;utm_x&quot;</span>))]</code></pre></div>
 <pre><code>##    Station Setup_date Retrieval_date Problem1_from Problem1_to
 ## 1 StationA 02/04/2009     14/05/2009                          
 ## 2 StationB 03/04/2009     16/05/2009                          
 ## 3 StationC 04/04/2009     17/05/2009    12/05/2009  17/05/2009</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># now let's have a look at the first few columns of the camera operation matrix</span>
-camop_problem[, <span class="dv">1</span>:<span class="dv">5</span>]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># now let's have a look at the first few columns of the camera operation matrix</span>
+camop_problem[, <span class="dv">1</span>:<span class="dv">5</span>]</code></pre></div>
 <pre><code>##          2009-04-02 2009-04-03 2009-04-04 2009-04-05 2009-04-06
 ## StationA          1          1          1          1          1
 ## StationB         NA          1          1          1          1
 ## StationC         NA         NA          1          1          1</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and the last few</span>
-camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6</span>):<span class="kw">ncol</span>(camop_problem)]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and the last few</span>
+camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6</span>):<span class="kw">ncol</span>(camop_problem)]</code></pre></div>
 <pre><code>##          2009-05-11 2009-05-12 2009-05-13 2009-05-14 2009-05-15 2009-05-16
 ## StationA          1          1          1          1         NA         NA
 ## StationB          1          1          1          1          1          1
@@ -465,7 +485,7 @@ camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6<
 ## StationC          0</code></pre>
 <p>If stations were not set up, values are NA. If they were set up but malfunctioning, it is 0. Operational station get value 1.</p>
 <p>Here is a little function for plotting the camera operation matrix. Imagine there is a typo in one of your date fields and the setup or retrieval year is wrong. You will easily be able to spot it this way.</p>
-<pre class="sourceCode r"><code class="sourceCode r">camopPlot &lt;-<span class="st"> </span>function(camOp){
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camopPlot &lt;-<span class="st"> </span>function(camOp){
   
   which.tmp &lt;-<span class="st"> </span><span class="kw">grep</span>(<span class="kw">as.Date</span>(<span class="kw">colnames</span>(camOp)), <span class="dt">pattern =</span> <span class="st">&quot;01$&quot;</span>)
   label.tmp &lt;-<span class="st"> </span><span class="kw">format</span>(<span class="kw">as.Date</span>(<span class="kw">colnames</span>(camOp))[which.tmp], <span class="st">&quot;%Y-%m&quot;</span>)
@@ -476,10 +496,10 @@ camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6<
   <span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">at =</span> <span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">0</span>, <span class="dt">to =</span> <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="kw">nrow</span>(camOp)), <span class="dt">labels =</span> <span class="kw">rownames</span>(camOp), <span class="dt">las =</span> <span class="dv">1</span>)
   <span class="kw">abline</span>(<span class="dt">v =</span> at.tmp, <span class="dt">col =</span> <span class="kw">rgb</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>, <span class="fl">0.2</span>))
   <span class="kw">box</span>()
-}</code></pre>
+}</code></pre></div>
 <p>And this is what we get</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">camopPlot</span>(<span class="dt">camOp =</span> camop_problem)</code></pre>
-<p><img src="data:image/png;base64,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" /><br /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">camopPlot</span>(<span class="dt">camOp =</span> camop_problem)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="input-for-subsequent-analyses" class="section level1">
 <h1>Input for subsequent analyses</h1>
@@ -488,7 +508,7 @@ camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6<
 <h2>Occupancy analyses</h2>
 <p>Occupancy models use detection/non-detection matrices in which for every station and every occasion “1”&quot; signifies a detection of a given species and “0”&quot; signifies non-detecion.</p>
 <p>Here is how to obtain a detection/non-detection matrix using function <code>detectionHistory</code>. Because the function builds on prior functions (<code>recordTable</code> and <code>cameraOperation</code>) we also show these function here to provide the context.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create camera operation matrix</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create camera operation matrix</span>
 camop_no_problem &lt;-<span class="st"> </span><span class="kw">cameraOperation</span>(<span class="dt">CTtable      =</span> camtraps,
                                     <span class="dt">stationCol   =</span> <span class="st">&quot;Station&quot;</span>,
                                     <span class="dt">setupCol     =</span> <span class="st">&quot;Setup_date&quot;</span>,
@@ -506,11 +526,11 @@ recordTableSample &lt;-<span class="st"> </span><span class="kw">recordTable</sp
                                  <span class="dt">minDeltaTime        =</span> <span class="dv">60</span>,
                                  <span class="dt">deltaTimeComparedTo =</span> <span class="st">&quot;lastIndependentRecord&quot;</span>,
                                  <span class="dt">timeZone            =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>
-)</code></pre>
+)</code></pre></div>
 <pre><code>## StationA : 8 images</code></pre>
 <pre><code>## StationB : 23 images</code></pre>
 <pre><code>## StationC : 37 images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make detection history (without trapping effort)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make detection history (without trapping effort)</span>
 DetHist1 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(<span class="dt">recordTable         =</span> recordTableSample,
                             <span class="dt">camOp                =</span> camop_no_problem,
                             <span class="dt">stationCol           =</span> <span class="st">&quot;Station&quot;</span>,
@@ -520,9 +540,9 @@ DetHist1 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(
                             <span class="dt">occasionLength       =</span> <span class="dv">7</span>,
                             <span class="dt">day1                 =</span> <span class="st">&quot;station&quot;</span>,
                             <span class="dt">includeEffort        =</span> <span class="ot">FALSE</span>
-)</code></pre>
+)</code></pre></div>
 <pre><code>## Warning: timeZone is not specified. Assuming UTC</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">DetHist1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DetHist1</code></pre></div>
 <pre><code>## $detection_history
 ##          o1 o2 o3 o4 o5 o6 o7
 ## StationA  0  1  0  0  1  0 NA
@@ -530,7 +550,7 @@ DetHist1 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(
 ## StationC  0  0  1  0  0  0  0</code></pre>
 <p>Note the warning about the missing time zone (as in the functions <code>recordTable</code> and <code>recordTable</code>). Normally, it should be fine, but to be on the safe side, better set it to your study area’s time zone.</p>
 <p>If trapping effort is thought to influence detection probability, it can be returned by setting <code>includeEffort = TRUE</code>. This way the number of active trapping days per occasion and station is returned.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make detection history (with trapping effort)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make detection history (with trapping effort)</span>
 DetHist2 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(<span class="dt">recordTable          =</span> recordTableSample,
                              <span class="dt">camOp                =</span> camop_no_problem,
                              <span class="dt">stationCol           =</span> <span class="st">&quot;Station&quot;</span>,
@@ -544,13 +564,13 @@ DetHist2 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(
                              <span class="dt">scaleEffort          =</span> <span class="ot">FALSE</span>
 )
 
-DetHist2[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></pre>
+DetHist2[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></pre></div>
 <pre><code>##          o1 o2 o3 o4 o5 o6 o7
 ## StationA  7  7  7  7  7  7  1
 ## StationB  7  7  7  7  7  7  2
 ## StationC  7  7  7  7  7  7  2</code></pre>
 <p>To help with convergence of models, the effort matrix can be scaled to mean = 0 and sd = 1 by setting <code>scaleEffort = TRUE</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">DetHist3 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(<span class="dt">recordTable          =</span> recordTableSample,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DetHist3 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(<span class="dt">recordTable          =</span> recordTableSample,
                              <span class="dt">camOp                =</span> camop_no_problem,
                              <span class="dt">stationCol           =</span> <span class="st">&quot;Station&quot;</span>,
                              <span class="dt">speciesCol           =</span> <span class="st">&quot;Species&quot;</span>,
@@ -563,7 +583,7 @@ DetHist2[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></
                              <span class="dt">scaleEffort          =</span> <span class="ot">TRUE</span>
 )
 
-DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></pre>
+DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></pre></div>
 <pre><code>##                 o1        o2        o3        o4        o5        o6
 ## StationA 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062
 ## StationB 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062
@@ -572,11 +592,11 @@ DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></
 ## StationA -2.726668
 ## StationB -2.206122
 ## StationC -2.206122</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">DetHist3[[<span class="dv">3</span>]]  <span class="co"># scaling parameters for back-transformation</span></code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DetHist3[[<span class="dv">3</span>]]  <span class="co"># scaling parameters for back-transformation</span></code></pre></div>
 <pre><code>##   effort.scaled.center effort.scaled.scale
 ## 1             6.238095            1.921061</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># backtransform scaled effort like this if needed</span>
-(DetHist3[[<span class="dv">2</span>]] *<span class="st"> </span>DetHist3[[<span class="dv">3</span>]]$effort.scaled.scale) +<span class="st"> </span>DetHist3[[<span class="dv">3</span>]]$effort.scaled.center</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># backtransform scaled effort like this if needed</span>
+(DetHist3[[<span class="dv">2</span>]] *<span class="st"> </span>DetHist3[[<span class="dv">3</span>]]$effort.scaled.scale) +<span class="st"> </span>DetHist3[[<span class="dv">3</span>]]$effort.scaled.center</code></pre></div>
 <pre><code>##          o1 o2 o3 o4 o5 o6 o7
 ## StationA  7  7  7  7  7  7  1
 ## StationB  7  7  7  7  7  7  2
@@ -585,7 +605,7 @@ DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></
 <div id="spatial-capture-recapture-analyses" class="section level2">
 <h2>Spatial Capture-Recapture analyses</h2>
 <p>Input for spatial capture-recapture analyses can be generated in the form of <code>capthist</code>-objects as defined in the <code>secr</code> package with the function <code>spatialDetectionHistory</code>. Output can be in the form of counts (number of individual detections per occasion, argument, argument <code>output = &quot;count&quot;</code>) or binary (was an individual detected during an occasion, argument <code>output = &quot;binary&quot;</code>). note that the detector type will change accordingly: “proximity” if <code>output = &quot;binary&quot;</code> and “count” if <code>output = &quot;count&quot;</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(recordTableIndividualSample)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(recordTableIndividualSample)
 <span class="kw">data</span>(camtraps)
 
 <span class="co"># create camera operation matrix (with problems/malfunction)</span>
@@ -619,7 +639,7 @@ sdh &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory</span
 <span class="co"># missing space in species = &quot;LeopardCat&quot; was introduced by recordTableIndividual </span>
 <span class="co"># (because of CRAN package policies. You can have spaces in your directory names)</span>
 
-  <span class="kw">summary</span>(sdh)</code></pre>
+  <span class="kw">summary</span>(sdh)</code></pre></div>
 <pre><code>## Object class      capthist 
 ## Detector type     proximity 
 ## Detector number   3 
@@ -642,10 +662,10 @@ sdh &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory</span
 ## detections        3 4 4 3 1    15
 ## detectors visited 2 3 3 2 1    11
 ## detectors used    3 3 3 3 2    14</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">plot</span>(sdh, <span class="dt">tracks =</span> <span class="ot">TRUE</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">plot</span>(sdh, <span class="dt">tracks =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Warning in plot.capthist(sdh, tracks = TRUE): track for repeat detections
 ## on same occasion joins points in arbitrary sequence</code></pre>
-<p><img src="data:image/png;base64,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" /><br /></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 </div>
 

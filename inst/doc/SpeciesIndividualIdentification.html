@@ -8,6 +8,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
 <meta name="date" content="2016-04-05" />
@@ -18,32 +20,46 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
-</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
 
 
-<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -51,11 +67,11 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 
 
-<div id="header">
-<h1 class="title">Identifying species and individuals in camtrapR</h1>
+
+<h1 class="title toc-ignore">Identifying species and individuals in camtrapR</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
 <h4 class="date"><em>2016-04-05</em></h4>
-</div>
+
 
 <div id="TOC">
 <ul>
@@ -88,8 +104,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </ul>
 </div>
 
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(camtrapR)
-<span class="kw">data</span>(camtraps)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(camtrapR)
+<span class="kw">data</span>(camtraps)</code></pre></div>
 <div id="methods-for-species-and-individual-identification---general" class="section level1">
 <h1>Methods for species and individual identification - General</h1>
 <p>Having organised your camera trap images into station (and camera) directories as explained in the vignette “Organising raw camera trap images in camtrapR”, you can begin with species (and individual) identification.</p>
@@ -161,41 +177,41 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <table>
 <thead>
 <tr class="header">
-<th align="left">Functionality</th>
-<th align="left">metadata tagging</th>
-<th align="left">drag &amp; drop</th>
+<th>Functionality</th>
+<th>metadata tagging</th>
+<th>drag &amp; drop</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">double observer identification</td>
-<td align="left">yes</td>
-<td align="left">no</td>
+<td>double observer identification</td>
+<td>yes</td>
+<td>no</td>
 </tr>
 <tr class="even">
-<td align="left">multiple species per image</td>
-<td align="left">yes</td>
-<td align="left">no<sup>1</sup></td>
+<td>multiple species per image</td>
+<td>yes</td>
+<td>no<sup>1</sup></td>
 </tr>
 <tr class="odd">
-<td align="left">batch ID</td>
-<td align="left">yes</td>
-<td align="left">yes</td>
+<td>batch ID</td>
+<td>yes</td>
+<td>yes</td>
 </tr>
 <tr class="even">
-<td align="left">filtering by tags</td>
-<td align="left">yes</td>
-<td align="left">no</td>
+<td>filtering by tags</td>
+<td>yes</td>
+<td>no</td>
 </tr>
 <tr class="odd">
-<td align="left">crowd-source ID<sup>2</sup></td>
-<td align="left">yes</td>
-<td align="left">yes</td>
+<td>crowd-source ID<sup>2</sup></td>
+<td>yes</td>
+<td>yes</td>
 </tr>
 <tr class="even">
-<td align="left">portability and robustness</td>
-<td align="left">high<sup>3</sup></td>
-<td align="left">medium<sup>4</sup></td>
+<td>portability and robustness</td>
+<td>high<sup>3</sup></td>
+<td>medium<sup>4</sup></td>
 </tr>
 </tbody>
 </table>
@@ -211,10 +227,10 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2>Checking species names with the ITIS taxonomic database</h2>
 <p>Generally, you are free to use any species names you wish to - scientific names, common names, local names, abbreviations, codes, etc. But it may often be desirable to be consistent with species names, e.g. to ensure long-term usability of data or to facilitate data exchange between researchers. Therefore, users can check the species names they wish to use in species identification (common or scientific names) against the ITIS taxonomic database (<a href="http://www.itis.gov" class="uri">http://www.itis.gov</a>) using the function <code>checkSpeciesNames</code>. The function returns matching common and scientific names to the names provided by the user, taxon ranks and authors, the ITIS taxonomic serial number (TSN) and an ITIS taxon url. Internally, the function <code>checkSpeciesNames</code> makes use of the R package <code>taxize</code>.</p>
 <p>If multiple matches are found, a menu allows users to choose their species of interest (if argument <code>ask = TRUE</code>). By default, only accepted species names are returned (controlled by argument <code>accepted</code>). Invalid names will return no matches but NA.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find data for 2 species with correctly spelled names</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find data for 2 species with correctly spelled names</span>
 checkNames1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="kw">c</span>(<span class="st">&quot;Moonrat&quot;</span>, <span class="st">&quot;Malayan Civet&quot;</span>),
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)
-checkNames1</code></pre>
+checkNames1</code></pre></div>
 <pre><code>##       user_name    tsn     scientific_name    taxon_author   common_name
 ## 1       Moonrat 633549 Echinosorex gymnura (Raffles, 1822)       Moonrat
 ## 2 Malayan Civet 622004  Viverra tangalunga      Gray, 1832 Malayan Civet
@@ -224,10 +240,10 @@ checkNames1</code></pre>
 ##                                                                               itis_url
 ## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=633549
 ## 2 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=622004</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and with scientific names (note that in Echinosorex we provide a genus name only)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and with scientific names (note that in Echinosorex we provide a genus name only)</span>
 checkNames2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="kw">c</span>(<span class="st">&quot;Echinosorex&quot;</span>, <span class="st">&quot;Viverra tangalunga&quot;</span>),
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>)
-checkNames2</code></pre>
+checkNames2</code></pre></div>
 <pre><code>##            user_name    tsn    scientific_name     taxon_author
 ## 1        Echinosorex 633449        Echinosorex Blainville, 1838
 ## 2 Viverra tangalunga 622004 Viverra tangalunga       Gray, 1832
@@ -237,22 +253,22 @@ checkNames2</code></pre>
 ##                                                                               itis_url
 ## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=633449
 ## 2 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=622004</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis</span>
 checkNames3 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Felis bengalensis&quot;</span>,
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>,
                                   <span class="dt">accepted     =</span> <span class="ot">FALSE</span>)
-checkNames3</code></pre>
+checkNames3</code></pre></div>
 <pre><code>##           user_name    tsn   scientific_name taxon_author common_name
 ## 1 Felis bengalensis 183793 Felis bengalensis   Kerr, 1792 leopard cat
 ##   rankname taxon_status
 ## 1  Species      invalid
 ##                                                                               itis_url
 ## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=183793</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">## an ambiguous name name: Chevrotain (Tragulus)    # this does not work in vignettes
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## an ambiguous name name: Chevrotain (Tragulus)    # this does not work in vignettes
 <span class="co"># checkNames4 &lt;- checkSpeciesNames (speciesNames = &quot;Chevrotain&quot;,</span>
 <span class="co">#                                   searchtype   = &quot;common&quot;)</span>
 <span class="co"># 1              # making a choice from the menu</span>
-<span class="co"># checkNames4</span></code></pre>
+<span class="co"># checkNames4</span></code></pre></div>
 </div>
 <div id="species-identification-via-drag-drop-of-images" class="section level2">
 <h2>Species identification via drag &amp; drop of images</h2>
@@ -262,7 +278,7 @@ checkNames3</code></pre>
 <p>The function <code>createSpeciesFolders</code> assists with species identification by drag &amp; drop by creating species directories automatically in all station directories. Alternatively, directories can be created manually. <code>createSpeciesFolders</code> can also remove empty species directories after identification (by setting <code>removeFolders = FALSE</code>). In doing so, it will not touch directories that contain any files.</p>
 <p>It makes sense to create directories for all species one expects to find in the study area, and possibly also for images one wants to exclude later on, e.g. unidentifiable images, blank images or team photos.</p>
 <p>Here is an example in which we first create station directories and the then species directories within these. Note that creating station directories in the example is for demonstration purposes only. Normally, at this point you would already have a directory structure with station directories (possibly with camera subdirectories), each containing renamed, unsorted images. Running <code>createStationFolders</code> here therefore is for demonstration only.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># this dummy directory will be used as inDir (containing station directories with species subdirectories)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># this dummy directory will be used as inDir (containing station directories with species subdirectories)</span>
 wd_createSpeciesFoldersTest &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;createSpeciesFoldersTest&quot;</span>)
 
 <span class="co"># now first create the station directories</span>
@@ -270,38 +286,38 @@ wd_createSpeciesFoldersTest &lt;-<span class="st"> </span><span class="kw">file.
 <span class="co"># already contain renamed, unsorted images). Again, this is for demonstation only.</span>
 StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStationFolders</span> (<span class="dt">inDir       =</span> wd_createSpeciesFoldersTest,
                                               <span class="dt">stations    =</span> <span class="kw">as.character</span>(camtraps$Station), 
-                                              <span class="dt">createinDir =</span> <span class="ot">TRUE</span>)</code></pre>
+                                              <span class="dt">createinDir =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## created 3 directories</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">StationFolderCreate1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">StationFolderCreate1</code></pre></div>
 <pre><code>##    station
 ## 1 StationA
 ## 2 StationB
 ## 3 StationC
 ##                                                                                 directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationB
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationC
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationB
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
 ## 3    TRUE   TRUE</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># species names for which we want to create subdirectories</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># species names for which we want to create subdirectories</span>
 species &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Sambar Deer&quot;</span>, <span class="st">&quot;Bay Cat&quot;</span>)
 
 <span class="co"># create species subdirectories</span>
 SpeciesFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createSpeciesFolders</span> (<span class="dt">inDir               =</span> wd_createSpeciesFoldersTest,
                                               <span class="dt">species             =</span> species,
                                               <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
-                                              <span class="dt">removeFolders       =</span> <span class="ot">FALSE</span>)</code></pre>
+                                              <span class="dt">removeFolders       =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>## created 6 directories</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">SpeciesFolderCreate1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpeciesFolderCreate1</code></pre></div>
 <pre><code>##                                                                                             directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationC/Bay Cat
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -309,20 +325,20 @@ SpeciesFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createSpecie
 ## 4    TRUE   TRUE
 ## 5    TRUE   TRUE
 ## 6    TRUE   TRUE</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># delete empty species directories</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># delete empty species directories</span>
 SpecFolderCreate2 &lt;-<span class="st"> </span><span class="kw">createSpeciesFolders</span> (<span class="dt">inDir               =</span> wd_createSpeciesFoldersTest,
                                            <span class="dt">species             =</span> species,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
-                                           <span class="dt">removeFolders       =</span> <span class="ot">TRUE</span>)</code></pre>
+                                           <span class="dt">removeFolders       =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## deleted 6 empty directories</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">SpecFolderCreate2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpecFolderCreate2</code></pre></div>
 <pre><code>##                                                                                             directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createSpeciesFoldersTest/StationC/Bay Cat
 ##   still.exists
 ## 1        FALSE
 ## 2        FALSE
@@ -354,31 +370,32 @@ SpecFolderCreate2 &lt;-<span class="st"> </span><span class="kw">createSpeciesFo
 <p>Misidentified images can act as false positives and can thus have grave effects when analysing detection/non-detection data, e.g. with occupancy models. Therefore it is very important to make sure species identification is correct. Species may be misidentifed by moving images into wrong directories or assigning wrong species tags. This can be (partly) checked using function <code>checkSpeciesIdentification</code>. Within each station and for each image, it assesses whether there are images of another species taken within a given time interval. Often, it is unlikely that different species are encountered within very short time intervals at the same location. This can help to find images that were misidentified, particularly if they were part of a sequence of images. The function will not be able to find “isolated” images, i.e. images that were misidentified, but were not part of a sequence of images. Likewise, if all images of a sequence were misidentified, they cannot be found either.</p>
 <p><code>checkSpeciesIdentification</code> can check on species identification for both methods of species identification: drag &amp; drop into species directories or metadata tagging. The former requires one of the following directory structures:</p>
 <blockquote>
-<p>inDir/Station/Species<br />inDir/Station/Camera/Species</p>
+<p>inDir/Station/Species<br />
+inDir/Station/Camera/Species</p>
 </blockquote>
 <p>The latter requires one of the following directory structures:</p>
 <blockquote>
 <p>inDir/Station inDir/Station/Camera</p>
 </blockquote>
 <p>Here is an example using images identified with the drag &amp; drop method.</p>
-<pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
 
 <span class="co"># run check with 120 seconds (2 minutes) maximum time differnce</span>
 check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir               =</span> wd_images_ID,
                                             <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                             <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
-                                            <span class="dt">maxDeltaTime        =</span> <span class="dv">120</span>)</code></pre>
+                                            <span class="dt">maxDeltaTime        =</span> <span class="dv">120</span>)</code></pre></div>
 <pre><code>## StationA : checking 8 images in 2 directories</code></pre>
 <pre><code>## StationB : checking 23 images in 4 directories</code></pre>
 <pre><code>## StationC : checking 37 images in 4 directories</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">check.folders</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">check.folders</code></pre></div>
 <pre><code>## $temporalIndependenceCheck
 ##     station
 ## 7  StationC
 ## 29 StationC
-##                                                                                                         Directory
-## 7  C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationC/EGY
-## 29 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationC/TRA
+##                                                                                                        Directory
+## 7  C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationC/EGY
+## 29 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationC/TRA
 ##                                 FileName species    DateTimeOriginal
 ## 7  StationC__2009-04-27__00-17-00(1).JPG     EGY 2009-04-27 00:17:00
 ## 29 StationC__2009-04-27__00-19-00(1).JPG     TRA 2009-04-27 00:19:00
@@ -386,12 +403,12 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 ## $IDconflictCheck
 ## data frame with 0 columns and 0 rows</code></pre>
 <p>The function returns a list with 2 elements. The first element (<code>temporalIndependenceCheck</code>) is the check on temporal proximity of different species (the second element <code>IDconflictCheck</code> is describes in the next paragraph). In our example, two images of different species were taken within 2 minutes of one another at StationC (a chevrotain and a moon rat in our example). Now one should check the species identity of these 2 images to make sure they were identified correctly. If not, the species ID in the incorrectly identified image is corrected. The function <code>checkSpeciesIdentification</code> can be re-run as often as desired. The behaviour of the function can be further specified by arguments <code>excludeSpecies</code> and <code>stationsToCheck</code>. The first causes camtrapR to ignore certain species and the latter can be used to check only certain stations.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check only station A and B (will give no results)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check only station A and B (will give no results)</span>
 <span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir               =</span> wd_images_ID,
                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                            <span class="dt">maxDeltaTime        =</span> <span class="dv">120</span>,
-                           <span class="dt">stationsToCheck     =</span> <span class="kw">c</span>(<span class="st">&quot;StationA&quot;</span>, <span class="st">&quot;StationB&quot;</span>))</code></pre>
+                           <span class="dt">stationsToCheck     =</span> <span class="kw">c</span>(<span class="st">&quot;StationA&quot;</span>, <span class="st">&quot;StationB&quot;</span>))</code></pre></div>
 <pre><code>## StationA : checking 8 images in 2 directories</code></pre>
 <pre><code>## StationB : checking 23 images in 4 directories</code></pre>
 <pre><code>## $temporalIndependenceCheck
@@ -399,12 +416,12 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 ## 
 ## $IDconflictCheck
 ## data frame with 0 columns and 0 rows</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Exclude chevrotains (Tragulus spp).  will give no results</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Exclude chevrotains (Tragulus spp).  will give no results</span>
 <span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir               =</span> wd_images_ID,
                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                            <span class="dt">maxDeltaTime        =</span> <span class="dv">120</span>,
-                           <span class="dt">excludeSpecies      =</span> <span class="st">&quot;TRA&quot;</span>)</code></pre>
+                           <span class="dt">excludeSpecies      =</span> <span class="st">&quot;TRA&quot;</span>)</code></pre></div>
 <pre><code>## StationA : checking 8 images in 2 directories
 ## StationB : checking 23 images in 4 directories</code></pre>
 <pre><code>## StationC : checking 20 images in 3 directories</code></pre>
@@ -421,26 +438,26 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 <div id="appending-species-names-to-image-files" class="section level2">
 <h2>Appending species names to image files</h2>
 <p>Once species are identified correctly, species names can be appended to image file names using <code>appendSpeciesNames</code>. The species names are taken from the directory names (of the drag and drop method was used) or from metadata tags and will be appended to the image file names. Set argument <code>IDfrom = &quot;directory&quot;</code> or <code>IDfrom = &quot;metadata&quot;</code>, respectively. A data frame will show directories, old and new file names.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy sample images to another location (so we don't mess around in the package directory)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy sample images to another location (so we don't mess around in the package directory)</span>
 wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
-<span class="kw">file.copy</span>(<span class="dt">from =</span> wd_images_ID, <span class="dt">to =</span> <span class="kw">tempdir</span>() , <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</code></pre>
+<span class="kw">file.copy</span>(<span class="dt">from =</span> wd_images_ID, <span class="dt">to =</span> <span class="kw">tempdir</span>() , <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">wd_images_species_copy &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;sample_images&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_species_copy &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;sample_images&quot;</span>)
 
 
 species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpeciesNames</span>(<span class="dt">inDir               =</span> wd_images_species_copy,
                                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>
-)</code></pre>
-<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpoHGsk6/sample_images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_append)</code></pre>
+)</code></pre></div>
+<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpqQyGGA/sample_images</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_append)</code></pre></div>
 <pre><code>##                                                                          directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
 ##                            filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1).JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1).JPG     PBE
@@ -455,20 +472,20 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
 ## 4 StationA__2009-04-23__00-07-00(1)__PBE.JPG    TRUE
 ## 5 StationA__2009-04-23__00-09-00(1)__PBE.JPG    TRUE
 ## 6 StationA__2009-05-07__17-11-00(1)__PBE.JPG    TRUE</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">species_names_remove &lt;-<span class="st"> </span><span class="kw">appendSpeciesNames</span>(<span class="dt">inDir               =</span> wd_images_species_copy,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">species_names_remove &lt;-<span class="st"> </span><span class="kw">appendSpeciesNames</span>(<span class="dt">inDir               =</span> wd_images_species_copy,
                                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                                            <span class="dt">removeNames         =</span> <span class="ot">TRUE</span>
-)</code></pre>
-<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpoHGsk6/sample_images</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_remove)</code></pre>
+)</code></pre></div>
+<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpqQyGGA/sample_images</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_remove)</code></pre></div>
 <pre><code>##                                                                          directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sample_images/StationA/PBE
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
+## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sample_images/StationA/PBE
 ##                                 filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1)__PBE.JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1)__PBE.JPG     PBE
@@ -491,7 +508,7 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
 <li>it can be used to check species identification by creating a species image report (which can then be sent for expert identification and confirmation), and</li>
 <li>it is a prerequisite for individual identification.</li>
 </ol>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># again, we use a temporary directory for demonstration. Change this in your own code!</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># again, we use a temporary directory for demonstration. Change this in your own code!</span>
 wd_images_species_copy &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;sampleSpeciesImages&quot;</span>)
 
 species_to_copy &lt;-<span class="st"> &quot;VTA&quot;</span>    <span class="co"># = Viverra tangalunga, Malay Civet</span>
@@ -501,21 +518,21 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
                                   <span class="dt">inDir                   =</span> wd_images_ID,
                                   <span class="dt">outDir                  =</span> wd_images_species_copy,
                                   <span class="dt">createStationSubfolders =</span> <span class="ot">FALSE</span>
-  )</code></pre>
-<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images   to   C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpoHGsk6/sampleSpeciesImages/VTA</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">specImagecopy</code></pre>
+  )</code></pre></div>
+<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images   to   C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpqQyGGA/sampleSpeciesImages/VTA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">specImagecopy</code></pre></div>
 <pre><code>##   species
 ## 1     VTA
 ## 2     VTA
 ## 3     VTA
 ## 4     VTA
 ## 5     VTA
-##                                                                                                    DirectoryOrig
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/VTA
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationA/VTA
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationB/VTA
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationB/VTA
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpQVpcpY/Rinstc6826453a76/camtrapR/pictures/sample_images/StationC/VTA
+##                                                                                                   DirectoryOrig
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/VTA
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationA/VTA
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationB/VTA
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationB/VTA
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/sample_images/StationC/VTA
 ##                            FilenameOrig
 ## 1 StationA__2009-04-10__05-07-00(1).JPG
 ## 2 StationA__2009-05-06__19-06-00(1).JPG
@@ -523,11 +540,11 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 4 StationB__2009-04-27__05-07-00(1).JPG
 ## 5 StationC__2009-04-24__02-57-00(1).JPG
 ##                                                                   DirectoryCopy
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sampleSpeciesImages/VTA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sampleSpeciesImages/VTA
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sampleSpeciesImages/VTA
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sampleSpeciesImages/VTA
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpoHGsk6/sampleSpeciesImages/VTA
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sampleSpeciesImages/VTA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sampleSpeciesImages/VTA
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sampleSpeciesImages/VTA
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sampleSpeciesImages/VTA
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/sampleSpeciesImages/VTA
 ##                            FilenameCopy copy_ok
 ## 1 StationA__2009-04-10__05-07-00(1).JPG    TRUE
 ## 2 StationA__2009-05-06__19-06-00(1).JPG    TRUE

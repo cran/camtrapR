@@ -23,7 +23,7 @@ checkSpeciesIdentification <- function(inDir,
   stopifnot(is.logical(hasCameraFolders))
 
   stopifnot(is.numeric(maxDeltaTime))
-  
+
   file.sep <- .Platform$file.sep
 
  if(class(IDfrom) != "character"){stop("IDfrom must be of class 'character'")}
@@ -72,10 +72,17 @@ checkSpeciesIdentification <- function(inDir,
       }
     }
 
+    # remove empty species directories
+#     empty_dirs <- sapply(dirs.to.check, FUN = function(X){length(list.files(X)) == 0})
+#     if(any(empty_dirs)){
+#       dirs.to.check <- dirs.to.check[-empty_dirs]
+#       dirs.to.check.sho <- dirs.to.check.sho[-empty_dirs]
+#     }
+
     # create command line for exiftool execution
 
     if(IDfrom == "directory"){
-      if(hasArg(excludeSpecies)) {
+      if(hasArg(excludeSpecies)) {   # under some rare circumstances, this caused an error if directories were empty
         command.tmp <- paste('exiftool -t -q -r -f -Directory -FileName -EXIF:DateTimeOriginal -HierarchicalSubject -ext JPG "', paste(dirs.to.check, collapse = '" "'), '"', sep = "")
       } else {
         command.tmp <- paste('exiftool -t -q -r -f -Directory -FileName -EXIF:DateTimeOriginal -HierarchicalSubject -ext JPG "', dirs[i], '"', sep = "")

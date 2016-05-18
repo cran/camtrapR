@@ -8,7 +8,7 @@ output:
     fig_width: 6
     fig_height: 5
 vignette: >
-  %\VignetteIndexEntry{Raw camera trap image organisation}
+  %\VignetteIndexEntry{1. Raw camera trap image organisation}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -107,7 +107,7 @@ Afterwards, Windows (via R) should be able to find ExifTool during the active se
 
 ExifTool is the performance bottleneck of the package functions. It can extract metadata at a rate of about 160 images per second (approx. 10,000 images per minute, measured on a laptop computer running Windows 7, Intel Core i5-2410M / 2.3 GHz, 6 GB RAM). Performance tends to be lower when ExifTool is first called and increases afterwards; and it decreases in situations with numerous camera trap stations with few images each (because ExifTool is called separately on every station directory). 
 
-In a future release, we plan to offer support for the metadata extraction library. Preliminary test showed that performance increased 2-3 fold.
+In a future release, we plan to offer support for the metadata extraction library Exiv2. Preliminary test showed that performance increased 2-3 fold.
 
 # Camera trap station information
 
