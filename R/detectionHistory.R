@@ -86,7 +86,7 @@ detectionHistory <- function(recordTable,
   if(species %in% recordTable[,speciesCol] == FALSE) stop("species is not in speciesCol of recordTable")
 
   if(writecsv == TRUE){
-    if(file.exists(outDir) == FALSE){stop("outDir does not exist")}
+    if(!file.exists(outDir)){stop("outDir does not exist")}
   }
 
   if(includeEffort == TRUE){

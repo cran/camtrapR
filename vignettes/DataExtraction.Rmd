@@ -254,8 +254,13 @@ And this is what we get
 camopPlot(camOp = camop_problem)
 ```
 
+## Saving and loading camera operation matrices
 
+The camera operation matrix can easily be saved as a csv file (by setting argument `writecsv = TRUE` and defining `outdir`). In order to load the csv into R again, it is necessary to tell R to use the station IDs as row names:
 
+```{r eval = FALSE}
+camOp <- read.csv(file = ..., row.names = 1)
+```
 
 # Input for subsequent analyses
 
@@ -330,7 +335,7 @@ DetHist2 <- detectionHistory(recordTable          = recordTableSample,
 DetHist2[[2]]  # effort
 ```
 
-To help with convergence of models, the effort matrix can be scaled to mean = 0 and sd = 1 by setting `scaleEffort = TRUE`. 
+To help with convergence of models, the effort matrix can be scaled to mean = 0 and sd = 1 by setting `scaleEffort = TRUE`. If `writecsv = TRUE`, the scaling parameters will also be saved in a separate csv file.
 
 ```{r}
 
@@ -354,7 +359,14 @@ DetHist3[[3]]  # scaling parameters for back-transformation
 (DetHist3[[2]] * DetHist3[[3]]$effort.scaled.scale) + DetHist3[[3]]$effort.scaled.center
 ```
 
+### Saving and loading detection histories
 
+The detection history and effort matrices can easily be saved as csv files (by setting argument `writecsv = TRUE` and defining `outdir`). In order to load the csv into R again, it is necessary to tell R to use the station IDs as row names:
+
+```{r eval = FALSE}
+detHist <- read.csv(file = ..., row.names = 1)
+effort  <- read.csv(file = ..., row.names = 1)
+```
 
 ## Spatial Capture-Recapture analyses
 

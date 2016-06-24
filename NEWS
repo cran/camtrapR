@@ -1,3 +1,16 @@
+Changes in camtrapR 0.99.2
+=======================
+
+bugfixes
+------------
+- recordTable: fixed problem with appending camera IDs
+- cameraOperation: improved messages to user
+
+other changes
+------------
+- added section about defining date formats in camera station table to vignette 1 (Image Organisation)
+
+
 Changes in camtrapR 0.99.1
 =======================
 

@@ -88,7 +88,7 @@ spatialDetectionHistory(recordTableIndividual,
   integer. maximum number of trap days per station (optional)
 }
   \item{day1}{
-  character. When should occasions begin: station setup date ("setup"), first day of survey ("survey"), a specific date (e.g. "2015-12-31")?
+  character. When should occasions begin: station setup date ("station"), first day of survey ("survey"), a specific date (e.g. "2015-12-31")?
 }
  \item{buffer}{
   integer. Makes the first occasion begin a number of days after station setup. (optional)

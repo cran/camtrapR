@@ -46,10 +46,10 @@ cameraOperation(CTtable,
   logical. If TRUE, camera operability matrix is computed by camera, not by station (requires \code{cameraCol})
 }
   \item{allCamsOn}{
-  logical. If TRUE, all cameras of a station need to be operational for a station to be operational (only relevant if \code{byCamera} is FALSE). Output values will be 1/0/NA only (all cameras at a station operational/ at least 1 camera not operational/ no camera set up)
+  logical. Takes effect only if \code{cameraCol} is defined and if \code{byCamera} is FALSE. If \code{allCamsOn = TRUE}, all cameras at a station need to be operational for the station to be operational (e.g. 1 camera out of 2 malfunctioning renders the station inoperational). Output values can be 1/0/NA only (all cameras at a station operational/ at least 1 camera not operational/ no camera set up). If \code{allCamsOn = FALSE}, at least 1 active camera makes a station operational. 
 }
   \item{camerasIndependent}{
-  logical. Return number of active camera traps by station? Only if \code{byCamera} is FALSE and \code{allCamsOn} is FALSE. If \code{camerasIndependent} is TRUE, output values will the number of operational cameras at a station. If \code{camerasIndependent} is FALSE, the value is 1 if at least 1 camera was operational, otherwise 0. In both cases, values are NA if no camera was set up.
+  logical. Return number of active camera traps by station? Only if \code{byCamera} is FALSE and \code{allCamsOn} is FALSE. If \code{camerasIndependent} is TRUE, output values will be the number of operational cameras at a station. If \code{camerasIndependent} is FALSE, the value is 1 if at least 1 camera was operational, otherwise 0. In both cases, values are NA if no camera was set up.
   }
   \item{dateFormat}{
   character. The format of columns \code{setupCol} and \code{retrievalCol}. Should be interpretable by \code{as.Date}

@@ -112,6 +112,9 @@ camopPlot <- function(camOp){
 ## ------------------------------------------------------------------------
 camopPlot(camOp = camop_problem)
 
+## ----eval = FALSE--------------------------------------------------------
+#  camOp <- read.csv(file = ..., row.names = 1)
+
 ## ------------------------------------------------------------------------
 
 # create camera operation matrix
@@ -187,6 +190,10 @@ DetHist3[[3]]  # scaling parameters for back-transformation
 
 # backtransform scaled effort like this if needed
 (DetHist3[[2]] * DetHist3[[3]]$effort.scaled.scale) + DetHist3[[3]]$effort.scaled.center
+
+## ----eval = FALSE--------------------------------------------------------
+#  detHist <- read.csv(file = ..., row.names = 1)
+#  effort  <- read.csv(file = ..., row.names = 1)
 
 ## ------------------------------------------------------------------------
 

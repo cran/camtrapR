@@ -167,9 +167,8 @@ recordTable <- function(inDir,
       # add station and camera id to metadata table
       arg.list0 <- list(intable = metadata.tmp, dirs_short = dirs_short, stationCol = stationCol, hasStationFolders = TRUE, cameraCol = cameraCol, i = i)  # assumes station directories
 
-      if(!hasArg(cameraCol)) metadata.tmp <- do.call(addStationCameraID, arg.list0)
-      if( hasArg(cameraCol)) metadata.tmp <- do.call(addStationCameraID, c(arg.list0, cameraID = cameraID))
-
+      if(!hasArg(cameraID)) metadata.tmp <- do.call(addStationCameraID, arg.list0)
+      if( hasArg(cameraID)) metadata.tmp <- do.call(addStationCameraID, c(arg.list0, cameraID = cameraID))
 
       # remove species in argument "excluded"
       if(hasArg (exclude)){
@@ -190,6 +189,7 @@ recordTable <- function(inDir,
           metadata.tmp <- metadata.tmp[order(metadata.tmp[,speciesCol], metadata.tmp$DateTimeOriginal),]
         }
 
+    
 
         #remove duplicate records of same species taken in same second (by the same camera, if relevant)
         if(hasArg(cameraID)){

@@ -2,8 +2,8 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 0.99.1
-Date: 2016-05-18
+Version: 0.99.2
+Date: 2016-06-22
 Authors@R: c(
         person("Juergen", "Niedballa", email = "niedballa@izw-berlin.de", role = c("aut", "cre")),
         person("Alexandre", "Courtiol", role = "aut"),
@@ -24,7 +24,7 @@ SystemRequirements: ExifTool
 Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photographs, computes record databases and detection/non-detection matrices for occupancy and spatial capture-recapture analyses with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station) and can visualise activity data.
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2016-05-18 13:35:29 UTC; niedballa
+Packaged: 2016-06-23 12:19:56 UTC; niedballa
 Author: Juergen Niedballa [aut, cre],
   Alexandre Courtiol [aut],
   Rahel Sollmann [aut],
@@ -36,4 +36,4 @@ Author: Juergen Niedballa [aut, cre],
   Andreas Wilting [ctb, ths]
 Maintainer: Juergen Niedballa <niedballa@izw-berlin.de>
 Repository: CRAN
-Date/Publication: 2016-05-18 18:12:40
+Date/Publication: 2016-06-24 07:39:57

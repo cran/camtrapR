@@ -122,14 +122,36 @@ camtraps
 
 Note that the sample data contain only one camera per station. Thus, there is no need to differentiate between station and camera IDs. If there was more than one camera per station, an additional column for camera IDs would be needed. Consequently, there would be one row for each camera and thus several rows per station.
 
-## Column names and data format
+## Column names
 
 Column names are not prescribed to allow users freedom in naming their data the way they wish (with one exception detailed below). In the sample table, 'Station' contains station IDs, 'utm_y' and 'utm_x' contain the station's geographic coordinates. 'Setup_date' and 'Retrieval_date' are the dates the stations were set up and retrieved from the field. All of these may have user-defined names. 'Problem1_from' and 'Problem1_to' are optional columns to specify periods in which cameras/stations were not operational.  Additional pairs of columns such as 'Problem2_from' and 'Problem2_to' etc. can be added if cameras/stations malfunctioned repeatedly. Their names must follow the pattern given here.
 
-All dates in this table (setup, retrieval and problem columns) can be formatted in any way that function `as.Date` can understand. **camtrapR** by default assumes the standard format "YYYY-MM-DD", e.g. "2015-12-31". In the sample data, we  use another format for demonstration purposes. Date format must be consistent between the date columns.
+## Date format
+All dates in this table (setup, retrieval and problem columns) can be formatted in any way that function `as.Date` can interpret. **camtrapR** by default assumes the standard format "YYYY-MM-DD", e.g. "2015-12-31", and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.
+
+Two functions (`cameraOperation`, `surveyReport`) utilize these date information and therefore contain arguments to specify the date format (`dateFormat` and `CTDateFormat`, respectively). Internally, these arguments are passed to function `as.Date` as  argument `format` and are needed to interpret the character string (e.g. "2015-12-31") provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions `as.Date` and `strptime` or here: http://www.r-bloggers.com/date-formats-in-r/.
+
+Here are a few examples for December 1st 2015 ("generic" is the abstract representation of your date string (Y = year, M = month, D = day), "example" is a formatted example and and "dateFormat argument" is what you'd specify in `dateFormat` and `CTDateFormat`):
+
+generic  | example  | dateFormat argument  |
+|---|---|---|
+"YYYY-MM-DD" | "2015-12-01" |  "%Y-%m-%d"   |
+"YYYY/MM/DD" |"2015/12/01" |  "%Y/%m/%d"  |
+"YYYY/MM/DD" |"2015/12/1" |  "%Y/%m/%d"  |
+"MM/DD/YY" |"12/01/15" |   "%m/%d/%y" |
+"YYYYMMDD" |"20151201" | "%Y%m%d"  |
+"DD.MM.YY" |"1.12.15" | "%d.%m.%y"  |
+
+
+In the sample table (`camtraps`), we use another date format for demonstration purposes. 
+
 
 Data type of the ID and date columns in the table must be `character` or `factor`. Please don't use data type `Date`. You can turn data type `Date` into `character` using `as.character`.
 
+
+## Station-/ Camera-level covariates
+
+If needed, station-/camera-level covariates can be specified in this table, e.g. trail or habitat type, camera model etc. They can later be used as covariates, e.g. in occupancy models. 
 
 # Organising raw camera trap images
 

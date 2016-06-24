@@ -85,7 +85,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul></li>
 <li><a href="#camera-trap-station-information">Camera trap station information</a><ul>
-<li><a href="#column-names-and-data-format">Column names and data format</a></li>
+<li><a href="#column-names">Column names</a></li>
+<li><a href="#date-format">Date format</a></li>
+<li><a href="#station--camera-level-covariates">Station-/ Camera-level covariates</a></li>
 </ul></li>
 <li><a href="#organising-raw-camera-trap-images">Organising raw camera trap images</a><ul>
 <li><a href="#saving-raw-images-on-your-hard-disk">Saving raw images on your hard disk</a></li>
@@ -203,11 +205,62 @@ camtraps</code></pre></div>
 ## 2            
 ## 3  17/05/2009</code></pre>
 <p>Note that the sample data contain only one camera per station. Thus, there is no need to differentiate between station and camera IDs. If there was more than one camera per station, an additional column for camera IDs would be needed. Consequently, there would be one row for each camera and thus several rows per station.</p>
-<div id="column-names-and-data-format" class="section level2">
-<h2>Column names and data format</h2>
+<div id="column-names" class="section level2">
+<h2>Column names</h2>
 <p>Column names are not prescribed to allow users freedom in naming their data the way they wish (with one exception detailed below). In the sample table, ‘Station’ contains station IDs, ‘utm_y’ and ‘utm_x’ contain the station’s geographic coordinates. ‘Setup_date’ and ‘Retrieval_date’ are the dates the stations were set up and retrieved from the field. All of these may have user-defined names. ‘Problem1_from’ and ‘Problem1_to’ are optional columns to specify periods in which cameras/stations were not operational. Additional pairs of columns such as ‘Problem2_from’ and ‘Problem2_to’ etc. can be added if cameras/stations malfunctioned repeatedly. Their names must follow the pattern given here.</p>
-<p>All dates in this table (setup, retrieval and problem columns) can be formatted in any way that function <code>as.Date</code> can understand. <strong>camtrapR</strong> by default assumes the standard format “YYYY-MM-DD”, e.g. “2015-12-31”. In the sample data, we use another format for demonstration purposes. Date format must be consistent between the date columns.</p>
+</div>
+<div id="date-format" class="section level2">
+<h2>Date format</h2>
+<p>All dates in this table (setup, retrieval and problem columns) can be formatted in any way that function <code>as.Date</code> can interpret. <strong>camtrapR</strong> by default assumes the standard format “YYYY-MM-DD”, e.g. “2015-12-31”, and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.</p>
+<p>Two functions (<code>cameraOperation</code>, <code>surveyReport</code>) utilize these date information and therefore contain arguments to specify the date format (<code>dateFormat</code> and <code>CTDateFormat</code>, respectively). Internally, these arguments are passed to function <code>as.Date</code> as argument <code>format</code> and are needed to interpret the character string (e.g. “2015-12-31”) provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions <code>as.Date</code> and <code>strptime</code> or here: <a href="http://www.r-bloggers.com/date-formats-in-r/" class="uri">http://www.r-bloggers.com/date-formats-in-r/</a>.</p>
+<p>Here are a few examples for December 1st 2015 (“generic” is the abstract representation of your date string (Y = year, M = month, D = day), “example” is a formatted example and and “dateFormat argument” is what you’d specify in <code>dateFormat</code> and <code>CTDateFormat</code>):</p>
+<table>
+<thead>
+<tr class="header">
+<th>generic</th>
+<th>example</th>
+<th>dateFormat argument</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>“YYYY-MM-DD”</td>
+<td>“2015-12-01”</td>
+<td>“%Y-%m-%d”</td>
+</tr>
+<tr class="even">
+<td>“YYYY/MM/DD”</td>
+<td>“2015/12/01”</td>
+<td>“%Y/%m/%d”</td>
+</tr>
+<tr class="odd">
+<td>“YYYY/MM/DD”</td>
+<td>“2015/12/1”</td>
+<td>“%Y/%m/%d”</td>
+</tr>
+<tr class="even">
+<td>“MM/DD/YY”</td>
+<td>“12/01/15”</td>
+<td>“%m/%d/%y”</td>
+</tr>
+<tr class="odd">
+<td>“YYYYMMDD”</td>
+<td>“20151201”</td>
+<td>“%Y%m%d”</td>
+</tr>
+<tr class="even">
+<td>“DD.MM.YY”</td>
+<td>“1.12.15”</td>
+<td>“%d.%m.%y”</td>
+</tr>
+</tbody>
+</table>
+<p> In the sample table (<code>camtraps</code>), we use another date format for demonstration purposes.</p>
 <p>Data type of the ID and date columns in the table must be <code>character</code> or <code>factor</code>. Please don’t use data type <code>Date</code>. You can turn data type <code>Date</code> into <code>character</code> using <code>as.character</code>.</p>
+</div>
+<div id="station--camera-level-covariates" class="section level2">
+<h2>Station-/ Camera-level covariates</h2>
+<p>If needed, station-/camera-level covariates can be specified in this table, e.g. trail or habitat type, camera model etc. They can later be used as covariates, e.g. in occupancy models.</p>
 </div>
 </div>
 <div id="organising-raw-camera-trap-images" class="section level1">
@@ -248,9 +301,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                 directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createStationFoldersTest/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createStationFoldersTest/StationB
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/createStationFoldersTest/StationC
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/createStationFoldersTest/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/createStationFoldersTest/StationB
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -282,12 +335,12 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
                                  <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
                                  <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
 )</code></pre></div>
-<pre><code>## C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpqQyGGA/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpqQyGGA/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmp8KprI0/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmp8KprI0/raw_images/StationB</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre></div>
 <pre><code>##                                                                   directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images/StationB
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -303,8 +356,8 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
 
 timeshift_undo</code></pre></div>
 <pre><code>##                                                                   directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images/StationB
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -334,13 +387,13 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 <pre><code>## StationB : 3 images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
 <span class="kw">head</span>(renaming.table2)</code></pre></div>
-<pre><code>##                                                                                                Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpKEZWVu/Rinstb245db2b54/camtrapR/pictures/raw_images/StationB
+<pre><code>##                                                                                                  Directory
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -349,12 +402,12 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                              outDir
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images_renamed/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images_renamed/StationA
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images_renamed/StationA
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images_renamed/StationB
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images_renamed/StationB
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpqQyGGA/raw_images_renamed/StationB
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images_renamed/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images_renamed/StationA
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images_renamed/StationA
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images_renamed/StationB
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images_renamed/StationB
+## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmp8KprI0/raw_images_renamed/StationB
 ##                            filename_new CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG       TRUE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG       TRUE

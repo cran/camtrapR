@@ -68,15 +68,51 @@ Mapstest3 <- detectionMaps(CTtable            = camtraps,
 list.files(tempdir(), pattern = shapefileName)
 
 # load it as shapefile
-shapefileTest <- readOGR(dsn = tempdir(), 
+shapefileTest <- readOGR(dsn   = tempdir(), 
                          layer = shapefileName)
 
 # we have a look at the attribute table
 shapefileTest@data
 
 # the output of detectionMaps is used as shapefile attribute table. Therefore, they are identical:
- all(shapefileTest@data == Mapstest3)
+all(shapefileTest@data == Mapstest3)
  
+
+## ------------------------------------------------------------------------
+detections_spdf <- SpatialPointsDataFrame(coords      = Mapstest3[,c("utm_x", "utm_y")],
+                                          data        = Mapstest3,
+                                          proj4string = CRS(shapefileProjection))
+
+str(detections_spdf)
+
+# now we create a sample raster and extract data from it (if the raster package is available)
+if("raster" %in% installed.packages()){
+  library(raster)
+  raster_test <- raster(x = extend(extent(detections_spdf), y = 500), nrows = 10, ncols = 10)
+  values(raster_test) <- rpois(n = 100, lambda = seq(1, 100))    # fill raster with random numbers
+  
+  # plot raster
+  plot(raster_test,
+       main = "some raster with camera trap stations",
+       ylab = "UTM N",     # needs to be adjusted if data are not in UTM coordinate system
+       xlab = "UTM E")     # needs to be adjusted if data are not in UTM coordinate system
+  
+  # add points to plot
+  points(detections_spdf, pch = 16)
+     
+  # add point labels
+  text(x      = coordinates(detections_spdf)[,1],
+       y      = coordinates(detections_spdf)[,2],
+       labels = detections_spdf$Station,
+       pos = 1)
+  
+  # extracting raster values. See ?extract for more information
+  detections_spdf$raster_value <- extract(x = raster_test, y = detections_spdf)
+  
+  # checking the attribute table
+  detections_spdf@data
+
+}
 
 ## ------------------------------------------------------------------------
 # we first pick a species for our activity trials
