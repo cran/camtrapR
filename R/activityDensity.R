@@ -11,8 +11,8 @@ activityDensity <- function(recordTable,
                             pngMaxPix = 1000,
                             add.rug = TRUE,
                             ...
-)
-{
+){
+
 
   wd0 <- getwd()
   mar0 <- par()$mar

@@ -60,7 +60,7 @@ recordTable(inDir,
   character. Directory to save csv to. If NULL and \code{writecsv = TRUE}, recordTable will be written to \code{inDir}.
 }
   \item{metadataHierarchyDelimitor}{
-  character. The character delimiting hierarchy levels in image metadata tags in field "HierarchicalSubject". Either "|" or ":". 
+  character. The character delimiting hierarchy levels in image metadata tags in field "HierarchicalSubject". Either "|" or ":".
 }
   \item{metadataSpeciesTag}{
   character. In custom image metadata, the species ID tag name.
@@ -70,7 +70,7 @@ recordTable(inDir,
 }
 }
 \details{
-The function can handle a number of different ways of storing images, and supports species identification by moving images into species directories as well as metadata tagging. In every case, images need to be stored into station directories. If images are identified by moving them into species directories, a camera directory is optional: "Station/Species/XY.JPG" or "Station/Camera/Species/XY.JPG". Likewise, if images are identified using metadata tagging, a camera directory can be used optionally: "Station/XY.JPG" or "Station/Camera/XY.JPG". 
+The function can handle a number of different ways of storing images, and supports species identification by moving images into species directories as well as metadata tagging. In every case, images need to be stored into station directories. If images are identified by moving them into species directories, a camera directory is optional: "Station/Species/XY.JPG" or "Station/Camera/Species/XY.JPG". Likewise, if images are identified using metadata tagging, a camera directory can be used optionally: "Station/XY.JPG" or "Station/Camera/XY.JPG".
 
 If images are identified by metadata tagging, \code{metadataSpeciesTag} specifies the metadata tag group name that contains species identification tags. \code{metadataHierarchyDelimitor} is "|" for images tagged in DigiKam and images tagged in Adobe Bridge / Lightroom with the default settings. It is only necessary to change it if the default was changed in these programs.
 
@@ -89,13 +89,8 @@ A data frame containing species records and additional information about station
 }
 
 \section{Warning }{
-Custom image metadata must be organised hierarchically, e.g.
+Custom image metadata must be organised hierarchically (tag group - tag; e.g. "Species" - "Leopard Cat"). Detailed information on how to set up and use metadata tags can be found in \href{https://cran.r-project.org/web/packages/camtrapR/vignettes/SpeciesIndividualIdentification.html#metadata-tagging}{vignette 2: Species and Individual Identification}.
 
-- Species       # set \code{metadataSpeciesTag} to "Species"
-	* Leopard Cat
-	* Malay Civet
-	* Moonrat
-	
 Custom image metadata tags must be written to the images. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
 }
 \references{

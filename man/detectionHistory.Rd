@@ -16,6 +16,7 @@ detectionHistory(recordTable,
  recordDateTimeCol = "DateTimeOriginal",
  recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
  occasionLength,
+ minActiveDaysPerOccasion,
  maxNumberDays,
  day1,
  buffer,
@@ -53,6 +54,9 @@ detectionHistory(recordTable,
 }
   \item{occasionLength}{
   integer. occasion length in days
+}
+\item{minActiveDaysPerOccasion}{
+  integer. minimum number of active trap days for occasions to be included (optional)
 }
   \item{maxNumberDays}{
   integer. maximum number of trap days per station (optional)

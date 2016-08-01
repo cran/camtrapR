@@ -23,6 +23,7 @@ spatialDetectionHistory(recordTableIndividual,
   recordDateTimeCol = "DateTimeOriginal",
   recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
   occasionLength, 
+  minActiveDaysPerOccasion,
   occasionStartTime = 0, 
   maxNumberDays,
   day1,
@@ -80,6 +81,9 @@ spatialDetectionHistory(recordTableIndividual,
 }
   \item{occasionLength}{
   integer. occasion length in days
+}
+\item{minActiveDaysPerOccasion}{
+  integer. minimum number of active trap days for occasions to be included (optional)
 }
   \item{occasionStartTime}{
   integer. time of day (the full hour) at which to begin occasions.

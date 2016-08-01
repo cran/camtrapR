@@ -16,16 +16,16 @@ surveyReport <- function(recordTable,
 ){
 
   stopifnot(c(stationCol, setupCol, retrievalCol) %in% colnames(CTtable))
-  stopifnot(c(stationCol, recordDateTimeCol, stationCol) %in% colnames(recordTable))
-  
-  # make columns character
-recordTable[,speciesCol] <- as.character(recordTable[,speciesCol])
-recordTable[,stationCol] <- as.character(recordTable[,stationCol])
-recordTable[,recordDateTimeCol] <- as.character(recordTable[,recordDateTimeCol])
+  stopifnot(c(stationCol, recordDateTimeCol, speciesCol) %in% colnames(recordTable))
 
-CTtable[,stationCol]   <- as.character(CTtable[,stationCol])
-CTtable[,setupCol]     <- as.character(CTtable[,setupCol])
-CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
+  # make columns character
+  recordTable[,speciesCol]        <- as.character(recordTable[,speciesCol])
+  recordTable[,stationCol]        <- as.character(recordTable[,stationCol])
+  recordTable[,recordDateTimeCol] <- as.character(recordTable[,recordDateTimeCol])
+
+  CTtable[,stationCol]   <- as.character(CTtable[,stationCol])
+  CTtable[,setupCol]     <- as.character(CTtable[,setupCol])
+  CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
 
 
 
@@ -50,7 +50,7 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
     CTtable[,Xcol] <- as.numeric(as.character(CTtable[,Xcol]))
     CTtable[,Ycol] <- as.numeric(as.character(CTtable[,Ycol]))
   } else {
-  Xcol <- Ycol <- NA
+    Xcol <- Ycol <- NA
   }
 
   recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol],
@@ -106,9 +106,9 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
       if(isTRUE(unlist(strsplit(colnames(CTtable)[cols.prob.from[xy]], split = "_"))[1] !=
                 unlist(strsplit(colnames(CTtable)[cols.prob.to[xy]], split = "_"))[1])) stop (
                   paste("problem columns are arranged incorrectly (",
-                              colnames(CTtable)[cols.prob.from[xy]], ", ",
-                              colnames(CTtable)[cols.prob.to[xy]], ")",
-                              sep = "")
+                        colnames(CTtable)[cols.prob.from[xy]], ", ",
+                        colnames(CTtable)[cols.prob.to  [xy]], ")",
+                        sep = "")
                 )
 
       CTtable[,cols.prob.from[xy]] <- as.Date(CTtable[,cols.prob.from[xy]], format = CTDateFormat, tz = "UTC")
@@ -158,20 +158,20 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
                             list(CTtable[,stationCol]),
                             FUN = max)
   image.tmp1   <- aggregate(recordTable$Date2,
-                          list(recordTable[,stationCol]),
-                          FUN = min)
+                            list(recordTable[,stationCol]),
+                            FUN = min)
   image.tmp2   <- aggregate(recordTable$Date2,
-                          list(recordTable[,stationCol]),
-                          FUN = max)
+                            list(recordTable[,stationCol]),
+                            FUN = max)
 
 
   n_nights_total      <- as.integer(CTtable[,retrievalCol] - CTtable[,setupCol])
   n_nights_total_agg  <- aggregate(n_nights_total,
-                                  by  = list(CTtable[,stationCol]),
-                                  FUN = sum)
+                                   by  = list(CTtable[,stationCol]),
+                                   FUN = sum)
   n_cameras_total_agg <- aggregate(CTtable[,stationCol],
-                                  by  = list(CTtable[,stationCol]),
-                                  FUN = length)
+                                   by  = list(CTtable[,stationCol]),
+                                   FUN = length)
   n_nights_active     <- n_nights_total_agg[,2] - n_days_inactive_rowsum[,2]
 
   date_range_combined <- data.frame(station.tmp1[,1], station.tmp1[,2],
@@ -259,7 +259,7 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
     subset.tmp               <- table(subset(recordTable, recordTable[, stationCol] == tmp)[,speciesCol] )
 
     station_record_table.tmp <- station_record_table[station_record_table[, stationCol] == tmp,]
-    station_record_table.tmp$n_events[match(names(subset.tmp), station_record_table.tmp$Species)] <- subset.tmp
+    station_record_table.tmp$n_events[match(names(subset.tmp), station_record_table.tmp[,speciesCol])] <- subset.tmp
 
     station_record_table[station_record_table[, stationCol] == tmp,] <- station_record_table.tmp
     rm(station_record_table.tmp)
@@ -285,7 +285,7 @@ CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
     print(station_record_table2)
     sink()
     message("saved output to file \n",
-        paste(sinkfile, "\n\n"))
+            paste(sinkfile, "\n\n"))
   }
 
   output <- list(date_range_combined, n_spec_by_station, species_record_table2, station_record_table1, station_record_table2)

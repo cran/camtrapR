@@ -1,14 +1,32 @@
+Changes in camtrapR 0.99.3
+=======================
+
+new functions
+------------
+ o addCopyrightTag: Write a copyright tag into image Exif metadata
+
+bugfixes
+------------
+  o detectionHistory: malfunctioning cameras (0 in camera operation matrix) did not cause detection history matrix cells to be NA (even if includeEffort = FALSE; reported by Hsiang Ling Chen)
+  o detectionHistory: if the last occasion is shorter than occasionLength, the corresponding detection history matrix cells will now be NA if includeEffort = FALSE
+  o surveyReport: species column names other than "Species" are now supported, i.e. argument "speciesCol" is now respected (tanks to Valentine Herrmann and Stefano Anile for reporting)
+
+new features
+------------
+  o detectionHistory gained argument "minActiveDaysPerOccasion". It can be used to define the minimum number of active trap days per occasion for that occasion be included (0/1 instead of NA)
+  
+  
 Changes in camtrapR 0.99.2
 =======================
 
 bugfixes
 ------------
-- recordTable: fixed problem with appending camera IDs
-- cameraOperation: improved messages to user
+  o recordTable: fixed problem with appending camera IDs
+  o cameraOperation: improved messages to user
 
 other changes
 ------------
-- added section about defining date formats in camera station table to vignette 1 (Image Organisation)
+  o added section about defining date formats in camera station table to vignette 1 (Image Organisation)
 
 
 Changes in camtrapR 0.99.1
@@ -16,14 +34,14 @@ Changes in camtrapR 0.99.1
 
 bugfixes
 ------------
-- detectionHistory and spatialDetectionHistory did not run correctly under some rare circumstances (combinations of input arguments)
-- column names of detection histories were incorrect if occasionStartTime != 0 and datesAsOccasionNames = TRUE
-- argument maxNumberDays in detectionHistory / spatialDetectionHistory works on each station individually if day1 = "survey" or "station"; and from the specified date if day1 is a date
+  o detectionHistory and spatialDetectionHistory did not run correctly under some rare circumstances (combinations of input arguments)
+  o column names of detection histories were incorrect if occasionStartTime != 0 and datesAsOccasionNames = TRUE
+  o argument maxNumberDays in detectionHistory / spatialDetectionHistory works on each station individually if day1 = "survey" or "station"; and from the specified date if day1 is a date
 
 other changes
 ------------
-- additional checks for consistency of input in a number of functions
-- code simplification invisible to the user
+  o additional checks for consistency of input in a number of functions
+  o code simplification invisible to the user
 
 
 Changes in camtrapR 0.99.0
@@ -31,31 +49,25 @@ Changes in camtrapR 0.99.0
 
 new functions
 ------------
-
-  o checkSpeciesNames: checks a vector of species names (common or scientific) against the ITIS database via package 'taxize'
+  o checkSpeciesNames: checks a vector of species names (common or scientific) against the ITIS taxonomic database via package 'taxize'
   o checkSpeciesIdentification: expanded from former function checkSpeciesFolders (now defunct). Can check identification if metadata tags were used for species identification. 
   o createStationFolders: Create camera trap station directories, possibly with camera subdirectories, for storing raw images (was not included in NAMESPACE of version 0.98.0, therefore invisible. Thanks to Patrick Lorch and Brent Pease for notification)
   
 renamed functions
 ------------
-
   o recordDatabase           -> recordTable
   o recordDatabaseIndividual -> recordTableIndividual
   
-  
 renamed data sets
 ------------
-
   o recordDatabaseSample           -> recordTableSample
   o recordDatabaseIndividualSample -> recordTableIndividualSample
   
-  
 new features
 ------------
-
   o detectionHistory and spatialDetectionHistory: 
 	- detection histories can begin on any specified date, station-specific setup date or day the first station was set up (to that end argument "beginWithDay1" was changed to "day1")
-	- a buffer between setup and the first occasion can be applied (argument 'buffer').
+	- a buffer between setup and the first occasion can be applied (argument "buffer").
   o spatialDetectionHistory: 
 	- output can be given as counts or binary (argument "output")
 	- an RMark data frame can be created using argument makeRMarkInput
@@ -67,13 +79,11 @@ new features
   
 bugfixes
 ------------  
-  
   o surveyReport returned an error when there were stations without records.
   o detecionMaps: Xcol and Ycol have arbitrary names now.
   
 other changes
 ------------
-
   o arguments "customMetadataTags" and hasSpeciesFolders/ hasIndividualFolders was removed and replaced with argument "IDfrom"
   o metadata tags assigned in image management software are always extracted and tabulated in recordTable functions (making argument "customMetadataTags" obsolete)
   o some functions changed the user's working directory. Fixed. Thanks to Patrick Lorch for notification.
@@ -88,14 +98,12 @@ Changes in camtrapR 0.98.0
 
 new functions
 ------------
-
   o createStationFolders: Create camera trap station directories, possibly with camera subdirectories, for storing raw images
   o recordDatabaseIndividual: Single-species record databases from camera trap images with custom metadata tags
   o spatialDetectionHistory: prepare a capthist object for spatial capture-recapture analyses
 
 new features
 ------------
-
   o support for camera subdirectories in species identification: Station/Camera/Species in the following function:
       - appendSpeciesFolders
       - createSpeciesFolders
@@ -119,11 +127,10 @@ new features
   
 other changes
 ------------
-
-o checkSpeciesFolders: renamed argument exclude -> excludeSpecies
-o detectionHistory: "session" in argument names was renamed to "occasion" (to be consistent with secr nomenclature)
-o getSpeciesImages: removed argument emptyOutDir (nothing can be deleted anymore)
-o recordDatabase: row names of object are 1:nrow
+  o checkSpeciesFolders: renamed argument exclude -> excludeSpecies
+  o detectionHistory: "session" in argument names was renamed to "occasion" (to be consistent with secr nomenclature)
+  o getSpeciesImages: removed argument emptyOutDir (nothing can be deleted anymore)
+  o recordDatabase: row names of object are 1:nrow
 
 
 Changes in camtrapR 0.97.1

@@ -13,6 +13,7 @@ spatialDetectionHistory <- function(recordTableIndividual,
                                     recordDateTimeCol = "DateTimeOriginal",
                                     recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
                                     occasionLength,
+                                    minActiveDaysPerOccasion,
                                     occasionStartTime = 0,
                                     maxNumberDays,
                                     day1,
@@ -87,6 +88,10 @@ spatialDetectionHistory <- function(recordTableIndividual,
     stop("timeZone must be an element of OlsonNames()")
   }
 
+  if(hasArg(minActiveDaysPerOccasion)){
+    stopifnot(is.numeric(minActiveDaysPerOccasion))
+    stopifnot(minActiveDaysPerOccasion <= occasionLength)
+  }
 
   occasionStartTime    <- as.integer(round(occasionStartTime))
   if(occasionStartTime != 0 & !is.integer(occasionStartTime)) stop ("occasionStartTime must be between 0 and 23")
@@ -187,7 +192,14 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   ######################
   # calculate trapping effort by station and occasion
-  effort.tmp <-  calculateTrappingEffort (cam.op = cam.op.worked, occasionLength2 = occasionLength, scaleEffort2 = scaleEffort, includeEffort2 = includeEffort)
+  
+  arg.list0 <- list(cam.op = cam.op.worked, occasionLength2 = occasionLength, scaleEffort2 = scaleEffort, includeEffort2 = includeEffort)
+
+    if(hasArg(minActiveDaysPerOccasion))  arg.list0 <- c(arg.list0, minActiveDaysPerOccasion2 = minActiveDaysPerOccasion)
+  
+    effort.tmp <- do.call(calculateTrappingEffort, arg.list0)
+  
+    rm(arg.list0)
 
   effort <- effort.tmp[[1]]
   if(isTRUE(scaleEffort))     scale.eff.tmp.attr <- effort.tmp[[2]]
@@ -243,7 +255,7 @@ if(day1 %in% c("survey")){
   remove.tmp <- which(is.na(sdh0[,"ID"]))
   if(length(remove.tmp) >= 1){
     sdh0 <- sdh0[-remove.tmp,]
-    warning(paste("removed", length(remove.tmp), "records because of missing individual IDs"))
+    warning(paste("removed", length(remove.tmp), "records because of missing individual IDs"), call. = FALSE)
   }
 
 # add required session column
@@ -256,14 +268,32 @@ if(day1 %in% c("survey")){
     sdh2 <- sdh1                          # keep duplicate rows 
   }
   
+  
+  ############
+  # remove records for which effort was 0 or NA
+  
+rowindex_sdh_to_remove <- vector()
 
+  for(rowindex_sdh in 1:nrow(sdh2)){ 
+    if(is.na(effort[match(sdh2$trapID[rowindex_sdh], rownames(effort)), sdh2$Occasion[rowindex_sdh]]) |   # if effort = NA or 0
+     effort[match(sdh2$trapID[rowindex_sdh], rownames(effort)), sdh2$Occasion[rowindex_sdh]] == 0){   
+     rowindex_sdh_to_remove <- c(rowindex_sdh_to_remove, rowindex_sdh)                                    # save into temporary vector
+    }
+  }
+  # if a problem was found, remove records with effort = 0 / NA
+  if(length(rowindex_sdh_to_remove) != 0){
+    sdh2 <- sdh2[-rowindex_sdh_to_remove,]
+    warning(paste("removed", length(rowindex_sdh_to_remove), "records because of effort = 0/NA or effort < minActiveDaysPerOccasion"), call. = FALSE)
+  }
+rm(rowindex_sdh, rowindex_sdh_to_remove)
+  
   ############
   # make secr traps object
 
   coord.ct <- CTtable[,c(Xcol, Ycol)]
   colnames(coord.ct) <- c("x", "y")
   rownames(coord.ct) <- CTtable[,stationCol]
-
+  
 # set detector type according to desired output (count or binary)
   detectortype <- ifelse (output == "binary", "proximity", "count")
 

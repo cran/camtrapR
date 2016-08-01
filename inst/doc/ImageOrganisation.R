@@ -80,3 +80,21 @@ renaming.table2 <- imageRename(inDir               = wd_images_raw,
 # here is the information for a few images 
 head(renaming.table2)
 
+## ------------------------------------------------------------------------
+# copy sample images to temporary directory (so we don't mess around in the package directory)
+wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
+file.copy(from = wd_images_ID, to = tempdir(), recursive = TRUE)
+wd_images_ID_copy <- file.path(tempdir(), "sample_images")
+
+# define an example copyright tag
+copyrightTagToAdd <- "Your Name (Your Organisation)"
+
+# write the tag to images
+addCopyrightTag(inDir        = wd_images_ID_copy, 
+                copyrightTag = copyrightTagToAdd, 
+                askFirst     = FALSE)                  # askFirst = FALSE prevents function from asking user to confirm action (which doesn't work in vignettes)
+
+
+# you can check the outcome with function exifTagNames (you'll find field "Copyright" in line 20)
+exifTagNames(wd_images_ID_copy, returnMetadata = TRUE)
+

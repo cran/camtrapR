@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2016-04-05" />
+<meta name="date" content="2016-08-01" />
 
 <title>Extracting Data from Camera Trapping Images</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Extracting Data from Camera Trapping Images</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2016-04-05</em></h4>
+<h4 class="date"><em>2016-08-01</em></h4>
 
 
 <div id="TOC">
@@ -91,6 +91,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li><a href="#input-for-subsequent-analyses">Input for subsequent analyses</a><ul>
 <li><a href="#occupancy-analyses">Occupancy analyses</a><ul>
+<li><a href="#handling-of-incomplete-occasions">Handling of incomplete occasions</a></li>
 <li><a href="#saving-and-loading-detection-histories">Saving and loading detection histories</a></li>
 </ul></li>
 <li><a href="#spatial-capture-recapture-analyses">Spatial Capture-Recapture analyses</a></li>
@@ -139,12 +140,12 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                         Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName
 ## 1 StationA__2009-04-21__00-40-00(1).JPG
 ## 2 StationA__2009-04-22__20-19-00(1).JPG
@@ -307,11 +308,11 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>##  [1] &quot;ExifTool Version Number         : 10.09&quot;                                                                                                          
 ##  [2] &quot;File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                          
-##  [3] &quot;Directory                       : C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE&quot;
+##  [3] &quot;Directory                       : C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE&quot;
 ##  [4] &quot;File Size                       : 27 kB&quot;                                                                                                          
-##  [5] &quot;File Modification Date/Time     : 2016:06:23 14:18:51+02:00&quot;                                                                                      
-##  [6] &quot;File Access Date/Time           : 2016:06:23 14:18:51+02:00&quot;                                                                                      
-##  [7] &quot;File Creation Date/Time         : 2016:06:23 14:18:51+02:00&quot;                                                                                      
+##  [5] &quot;File Modification Date/Time     : 2016:08:01 09:40:37+02:00&quot;                                                                                      
+##  [6] &quot;File Access Date/Time           : 2016:08:01 09:40:37+02:00&quot;                                                                                      
+##  [7] &quot;File Creation Date/Time         : 2016:08:01 09:40:37+02:00&quot;                                                                                      
 ##  [8] &quot;File Permissions                : rw-rw-rw-&quot;                                                                                                      
 ##  [9] &quot;File Type                       : JPEG&quot;                                                                                                           
 ## [10] &quot;File Type Extension             : jpg&quot;                                                                                                            
@@ -376,12 +377,12 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                         Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images/StationA/PBE
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName     Model Make
 ## 1 StationA__2009-04-21__00-40-00(1).JPG CUDDEBACK   G4
 ## 2 StationA__2009-04-22__20-19-00(1).JPG CUDDEBACK   G4
@@ -407,7 +408,7 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
                                      <span class="dt">metadataIDTag          =</span> <span class="st">&quot;individual&quot;</span>,  <span class="co"># the name of the metadata tag containing individual IDs</span>
                                      <span class="dt">timeZone               =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>
  )</code></pre></div>
-<pre><code>## C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
+<pre><code>## C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
 <div id="extracting-custom-image-metadata" class="section level3">
 <h3>Extracting custom image metadata</h3>
 <p>In addition to the metadata that were saved when the image was taken (see above), custom metadata tags assigned in image management software can also be extracted. These may contain species ID tags if species were identified using metadata tags (instead of moving images into species directories), but also individual IDs, animal counts, sex of animals recorded, etc..</p>
@@ -427,12 +428,12 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
 ##                                                                                                              Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpG0uPpf/Rinst18106a182af6/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 6 C:/Users/niedballa/AppData/Local/Temp/RtmpUfPKSO/Rinst16e845af38ae/camtrapR/pictures/sample_images_tagged/LeopardCat
 ##                                FileName metadata_Species
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat
@@ -487,7 +488,7 @@ camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6<
 ## StationA         NA
 ## StationB         NA
 ## StationC          0</code></pre>
-<p>If stations were not set up, values are NA. If they were set up but malfunctioning, it is 0. Operational station get value 1.</p>
+<p>If stations were not set up, values are NA. If they were set up but malfunctioning, it is 0. Operational stations get value 1.</p>
 <p>Here is a little function for plotting the camera operation matrix. Imagine there is a typo in one of your date fields and the setup or retrieval year is wrong. You will easily be able to spot it this way.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camopPlot &lt;-<span class="st"> </span>function(camOp){
   
@@ -506,8 +507,9 @@ camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6<
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <div id="saving-and-loading-camera-operation-matrices" class="section level2">
 <h2>Saving and loading camera operation matrices</h2>
-<p>The camera operation matrix can easily be saved as a csv file (by setting argument <code>writecsv = TRUE</code> and defining <code>outdir</code>). In order to load the csv into R again, it is necessary to tell R to use the station IDs as row names:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camOp &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> ..., <span class="dt">row.names =</span> <span class="dv">1</span>)</code></pre></div>
+<p>The camera operation matrix can easily be saved as a csv file (by setting argument <code>writecsv = TRUE</code>, <code>check.names = FALSE</code> and defining <code>outdir</code>). In order to load the csv into R again, it is necessary to tell R to use the station IDs (the first column) as row names:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camOp &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> ..., <span class="dt">row.names =</span> <span class="dv">1</span>, <span class="dt">check.names =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p><code>check.names = FALSE</code> ensures that column names (the dates) are read back into R as they are (e.g. “2015-12-01”). Otherwise one may end up with unreadable column names (at least for camtrapR) such as “X2015.12.01”.</p>
 </div>
 </div>
 <div id="input-for-subsequent-analyses" class="section level1">
@@ -555,8 +557,8 @@ DetHist1 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(
 <pre><code>## $detection_history
 ##          o1 o2 o3 o4 o5 o6 o7
 ## StationA  0  1  0  0  1  0 NA
-## StationB  0  1  0  1  0  0  0
-## StationC  0  0  1  0  0  0  0</code></pre>
+## StationB  0  1  0  1  0  0 NA
+## StationC  0  0  1  0  0  0 NA</code></pre>
 <p>Note the warning about the missing time zone (as in the functions <code>recordTable</code> and <code>recordTable</code>). Normally, it should be fine, but to be on the safe side, better set it to your study area’s time zone.</p>
 <p>If trapping effort is thought to influence detection probability, it can be returned by setting <code>includeEffort = TRUE</code>. This way the number of active trapping days per occasion and station is returned.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make detection history (with trapping effort)</span>
@@ -573,7 +575,12 @@ DetHist2 &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(
                              <span class="dt">scaleEffort          =</span> <span class="ot">FALSE</span>
 )
 
-DetHist2[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></pre></div>
+DetHist2[[<span class="dv">1</span>]]  <span class="co"># detection history</span></code></pre></div>
+<pre><code>##          o1 o2 o3 o4 o5 o6 o7
+## StationA  0  1  0  0  1  0  0
+## StationB  0  1  0  1  0  0  0
+## StationC  0  0  1  0  0  0  0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DetHist2[[<span class="dv">2</span>]]  <span class="co"># effort (in days per occasion)</span></code></pre></div>
 <pre><code>##          o1 o2 o3 o4 o5 o6 o7
 ## StationA  7  7  7  7  7  7  1
 ## StationB  7  7  7  7  7  7  2
@@ -592,7 +599,7 @@ DetHist2[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></
                              <span class="dt">scaleEffort          =</span> <span class="ot">TRUE</span>
 )
 
-DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></pre></div>
+DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort (scaled)</span></code></pre></div>
 <pre><code>##                 o1        o2        o3        o4        o5        o6
 ## StationA 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062
 ## StationB 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062 0.3966062
@@ -610,6 +617,78 @@ DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort</span></code></
 ## StationA  7  7  7  7  7  7  1
 ## StationB  7  7  7  7  7  7  2
 ## StationC  7  7  7  7  7  7  2</code></pre>
+<div id="handling-of-incomplete-occasions" class="section level3">
+<h3>Handling of incomplete occasions</h3>
+<p>The following table shows the behaviour of the detectionHistory function for different occasion-level camera operation values (table head) under different combinations of the arguments <code>includeEffort</code> and <code>minActiveDaysPerOccasion</code> in the function <code>detectionHistory</code>.</p>
+<table style="width:44%;">
+<colgroup>
+<col width="5%"></col>
+<col width="5%"></col>
+<col width="5%"></col>
+<col width="5%"></col>
+<col width="5%"></col>
+<col width="5%"></col>
+<col width="5%"></col>
+<col width="5%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>includeEffort</th>
+<th>minActiveDaysPerOccasion</th>
+<th>camera operation all 1</th>
+<th>at least one 1</th>
+<th>all 0</th>
+<th>0 and NA</th>
+<th>all NA</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TRUE</td>
+<td>not defined</td>
+<td>0/1</td>
+<td>0/1</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>TRUE</td>
+<td>defined</td>
+<td>0/1</td>
+<td>0/1/NA*</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>FALSE</td>
+<td>not defined</td>
+<td>0/1</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>FALSE</td>
+<td>defined</td>
+<td>0/1</td>
+<td>0/1/NA*</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>*: NA if there were less active days in an occasion than <code>minActiveDaysPerOccasion</code></p>
+<p>The same applies to generation of input for spatial capture-recapture analyses using <code>spatialDetectionHistory</code> as described below.</p>
+</div>
 <div id="saving-and-loading-detection-histories" class="section level3">
 <h3>Saving and loading detection histories</h3>
 <p>The detection history and effort matrices can easily be saved as csv files (by setting argument <code>writecsv = TRUE</code> and defining <code>outdir</code>). In order to load the csv into R again, it is necessary to tell R to use the station IDs as row names:</p>
@@ -663,20 +742,20 @@ sdh &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory</span
 ## y-range           604000 607050 m 
 ## 
 ##  Usage range by occasion
-##      1  2  3  4 5
-## min  8 10 10 10 0
-## max 10 10 10 10 5
+##      1  2  3  4  5
+## min  8 10 10 10 NA
+## max 10 10 10 10 NA
 ## 
 ## Counts by occasion 
-##                   1 2 3 4 5 Total
-## n                 2 2 3 2 1    10
-## u                 2 0 1 0 0     3
-## f                 0 1 0 2 0     3
-## M(t+1)            2 2 3 3 3     3
-## losses            0 0 0 0 0     0
-## detections        3 4 4 3 1    15
-## detectors visited 2 3 3 2 1    11
-## detectors used    3 3 3 3 2    14</code></pre>
+##                   1 2 3 4  5 Total
+## n                 2 2 3 2  1    10
+## u                 2 0 1 0  0     3
+## f                 0 1 0 2  0     3
+## M(t+1)            2 2 3 3  3     3
+## losses            0 0 0 0  0     0
+## detections        3 4 4 3  1    15
+## detectors visited 2 3 3 2  1    11
+## detectors used    3 3 3 3 NA    NA</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">plot</span>(sdh, <span class="dt">tracks =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Warning in plot.capthist(sdh, tracks = TRUE): track for repeat detections
 ## on same occasion joins points in arbitrary sequence</code></pre>

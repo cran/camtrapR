@@ -14,6 +14,7 @@ activityOverlap <- function(recordTable,
                             add.rug = TRUE,
                             ...){
 
+
   wd0 <- getwd()
   mar0 <- par()$mar
   on.exit(setwd(wd0))

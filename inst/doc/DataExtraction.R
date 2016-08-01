@@ -113,7 +113,7 @@ camopPlot <- function(camOp){
 camopPlot(camOp = camop_problem)
 
 ## ----eval = FALSE--------------------------------------------------------
-#  camOp <- read.csv(file = ..., row.names = 1)
+#  camOp <- read.csv(file = ..., row.names = 1, check.names = FALSE)
 
 ## ------------------------------------------------------------------------
 
@@ -168,7 +168,8 @@ DetHist2 <- detectionHistory(recordTable          = recordTableSample,
                              scaleEffort          = FALSE
 )
 
-DetHist2[[2]]  # effort
+DetHist2[[1]]  # detection history
+DetHist2[[2]]  # effort (in days per occasion)
 
 ## ------------------------------------------------------------------------
 
@@ -185,7 +186,7 @@ DetHist3 <- detectionHistory(recordTable          = recordTableSample,
                              scaleEffort          = TRUE
 )
 
-DetHist3[[2]]  # effort
+DetHist3[[2]]  # effort (scaled)
 DetHist3[[3]]  # scaling parameters for back-transformation
 
 # backtransform scaled effort like this if needed

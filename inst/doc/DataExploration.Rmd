@@ -1,7 +1,7 @@
 ---
 title: "Data exploration and visualisation in camtrapR"
 author: Juergen Niedballa (<niedballa@izw-berlin.de>)
-date: "2016-04-05"
+date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: yes
@@ -10,6 +10,7 @@ output:
 vignette: >
   %\VignetteIndexEntry{4. Data exploration and visualisation}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{raster, sp, rgdal, overlap}
   \usepackage[utf8]{inputenc}
 ---
 
@@ -320,5 +321,5 @@ The zip file is relatively small and can easily be used for data sharing with co
 ## Data archiving
 
 The tables provided by the function `surveyReport` together with the camera station table and the record table provide key information about surveys. 
-These data can be used for archiving survey data in online repositories such as the Knowledge Network for Biocomplexity (KNB, https://knb.ecoinformatics.org), a DataONE member node (https://www.dataone.org). 
-To make these survey data understandable and usable for everyone, they need to be described thoroughly by metadata. Because of the amount of metadata needed to adequately describe the survey data and the technical requirement involved, we recommend using external software (e.g. Morpho, https://knb.ecoinformatics.org/#tools/morpho) for annotating data generated with camtrapR before upload to repositories.
+These data can be used for archiving survey data in online repositories such as the Knowledge Network for Biocomplexity ([KNB](https://knb.ecoinformatics.org)), a DataONE member node (https://www.dataone.org). 
+To make these survey data understandable and usable for everyone, they need to be described thoroughly by metadata. Because of the amount of metadata needed to adequately describe the survey data and the technical requirement involved, we recommend using external software (e.g. [Morpho](https://knb.ecoinformatics.org/#tools/morpho)) for annotating data generated with camtrapR before upload to repositories.

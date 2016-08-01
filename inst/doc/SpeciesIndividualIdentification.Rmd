@@ -1,7 +1,7 @@
 ---
 title: "Identifying species and individuals in camtrapR"
 author: Juergen Niedballa (<niedballa@izw-berlin.de>)
-date: "2016-04-05"
+date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette: 
     toc: yes
@@ -53,6 +53,7 @@ Here is a list of suitable software for metadata tagging:
 Among these, we recommend digiKam because it is free and open-source software. All of these programs offer customisable metadata structures and are easy to use. 
 We only tested these three programs and it is unlikely that other software will work smoothly, if at all. **Picasa is not suitable**, because it does not allow for hierarchical tags, the total number of tags is limited, and it may overwrite and permanently destroy your original metadata.
 
+
 ### Metadata tag structure
 
 Before assigning metadata tags, users need to set up a hierarchical tag structure in image management software. This structure is customisable and can be expanded as needed. In digiKam, this is done in the Tag Manager. Here's some examples:
@@ -60,11 +61,13 @@ Before assigning metadata tags, users need to set up a hierarchical tag structur
 * Species
     + SpeciesA
     + SpeciesB
+    
+    
 * Individual
-  * Female1
-  * Female2
-	* Male1
-	* Male2
+    + Female1
+    + Female2
+	  + Male1
+	  * Male2
 
 
 Be careful to use one level of hierarchy in your tags only. The following example will not work:
@@ -77,7 +80,49 @@ Be careful to use one level of hierarchy in your tags only. The following exampl
          * 1
          * 2
 
+The crucial point is to set up tag groups (e.g. "Species" for species identification) which then contain the desired tags (e.g. species tags such as "Leopard Cat", "Malay Civet" etc.). This is what is meant by hierarchical tag structure. For clarification, here is a screenshot of the digiKam tag tree in which an image was identified as showing a Leopard Cat.
+
+![The desired tag structure shown in a digiKam screenshot](SpeciesID_digiKam.png)
+
 An **important** word of warning: image management software must be configured to write custom image metadata tags into the images themselves, not into .xmp sidecar files. The relevant functions cannot read tags from .xmp sidecar files. Make sure you set the preferences in your image management software accordingly. In digiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
+
+### How does metadata extraction work?
+
+This if for those who are interested in the technical details of how custom metadata are saved in images. The image management software will save metadata in a metadata tag field called "HierarchicalSubject" which camtrapR can then read out. Let's assume that in the above example we had three images, showing: 
+
+1. SpeciesA,
+1. Female1 of SpeciesB, 
+1.  both species in the same image.
+
+Here's what the content of the HierarchicalSubject field would look like:
+
+Species|SpeciesA
+Species|SpeciesB, Individual|Female1
+Species|SpeciesA, Species|SpeciesB
+
+
+Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar ("|"). Adobe software also lets you use colon (":"); you can tell camtrapR which to use using argument \code{metadataHierarchyDelimitor} in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.
+
+### What if non-hierarchical metadata tags were assigned already?
+
+If you have set of tagged images, but the tags are not structured hierarchically as explained above, but rather flat (no tag groups, only tags), they can easily be brought into the format needed by camtrapR in digiKam. This will, however, change your original metadata structure. So to be on the safe side, take some precautions:
+
+* make a backup of your images,
+* first try it on a sub-dataset,
+* and maybe even do it on another computer (digiKam's internal tag structure changes and even re-loading the original images will not restore it).
+
+Let's assume you have species tags (e.g. "Leopard Cat") that are not hierarchically ordered. The digiKam workflow to order them hierarchically (in order to make them readable in camtrapR) is as follows:
+
+1. Open the captions/tags window on the right side of your screen. 
+1. create a new tag (e.g. "Species"). 
+1. You can manipulate the tag structure by dragging tags around. So you could then drag your species tags (e.g. "Leopard Cat") into the "Species" tag group (afterwards it should look similar to the screenshot above). But note: dragging the tags around doesn't update the image metadata yet!
+1. To update the image metadata with your new tag structure (and to populate the image metadata tag "HierarchicalSubject" that camtrapR reads), select the images, click the "More" button in the bottom right corner of the screen, then "Write metadata to each file". 
+1. Repeat the last step for each station directory.
+
+Afterwards, the "HierarchicalSubject" of your image metadata should contain the tag structure. You can check using the `exifTagNames` function as described in the section above.
+
+This procedure also works for other tags, not only "Species".
+
 
 ## Double observer identification
 
@@ -109,7 +154,7 @@ Double observer species identification is only available with metadata tagging, 
 
 ## Checking species names with the ITIS taxonomic database
 
-Generally, you are free to use any species names you wish to - scientific names, common names, local names, abbreviations, codes, etc. But it may often be desirable to be consistent with species names, e.g. to ensure long-term usability of data or to facilitate data exchange between researchers. Therefore, users can check the species names they wish to use in species identification (common or scientific names) against the ITIS taxonomic database (http://www.itis.gov) using the function `checkSpeciesNames`. The function returns matching common and scientific names to the names provided by the user, taxon ranks and authors, the ITIS taxonomic serial number (TSN) and an ITIS taxon url. Internally, the function `checkSpeciesNames` makes use of the R package `taxize`.
+Generally, you are free to use any species names you wish to - scientific names, common names, local names, abbreviations, codes, etc. But it may often be desirable to be consistent with species names, e.g. to ensure long-term usability of data or to facilitate data exchange between researchers. Therefore, users can check the species names they wish to use in species identification (common or scientific names) against the [ITIS taxonomic database](http://www.itis.gov) using the function `checkSpeciesNames`. The function returns matching common and scientific names to the names provided by the user, taxon ranks and authors, the ITIS taxonomic serial number (TSN) and an ITIS taxon url. Internally, the function `checkSpeciesNames` makes use of the R package `taxize`.
 
 If multiple matches are found, a menu allows users to choose their species of interest (if argument `ask = TRUE`).  By default, only accepted species names are returned (controlled by argument `accepted`). Invalid names will return no matches but NA.
 
@@ -132,7 +177,8 @@ checkNames3 <- checkSpeciesNames (speciesNames = "Felis bengalensis",
                                   accepted     = FALSE)
 checkNames3
 
-## an ambiguous name name: Chevrotain (Tragulus)    # this does not work in vignettes
+## an ambiguous name name: Chevrotain (Tragulus)    
+## this does not work in vignettes, but should run on your machine
 # checkNames4 <- checkSpeciesNames (speciesNames = "Chevrotain",
 #                                   searchtype   = "common")
 # 1              # making a choice from the menu

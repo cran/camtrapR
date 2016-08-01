@@ -1,7 +1,7 @@
 ---
 title: "Extracting Data from Camera Trapping Images"
 author: Juergen Niedballa (<niedballa@izw-berlin.de>)
-date: "2016-04-05"
+date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: yes
@@ -229,7 +229,7 @@ camop_problem[, 1:5]
 camop_problem[, (ncol(camop_problem)-6):ncol(camop_problem)]
 ```
 
-If stations were not set up, values are NA. If they were set up but malfunctioning, it is 0. Operational station get value 1.
+If stations were not set up, values are NA. If they were set up but malfunctioning, it is 0. Operational stations get value 1.
 
 
 Here is a little function for plotting the camera operation matrix. Imagine there is a typo in one of your date fields and the setup or retrieval year is wrong. You will easily be able to spot it this way.
@@ -256,11 +256,13 @@ camopPlot(camOp = camop_problem)
 
 ## Saving and loading camera operation matrices
 
-The camera operation matrix can easily be saved as a csv file (by setting argument `writecsv = TRUE` and defining `outdir`). In order to load the csv into R again, it is necessary to tell R to use the station IDs as row names:
+The camera operation matrix can easily be saved as a csv file (by setting argument `writecsv = TRUE`, `check.names = FALSE` and defining `outdir`). In order to load the csv into R again, it is necessary to tell R to use the station IDs (the first column) as row names:
 
 ```{r eval = FALSE}
-camOp <- read.csv(file = ..., row.names = 1)
+camOp <- read.csv(file = ..., row.names = 1, check.names = FALSE)
 ```
+
+`check.names = FALSE` ensures that column names (the dates) are read back into R as they are (e.g. "2015-12-01"). Otherwise one may end up with unreadable column names (at least for camtrapR) such as "X2015.12.01".
 
 # Input for subsequent analyses
 
@@ -332,7 +334,8 @@ DetHist2 <- detectionHistory(recordTable          = recordTableSample,
                              scaleEffort          = FALSE
 )
 
-DetHist2[[2]]  # effort
+DetHist2[[1]]  # detection history
+DetHist2[[2]]  # effort (in days per occasion)
 ```
 
 To help with convergence of models, the effort matrix can be scaled to mean = 0 and sd = 1 by setting `scaleEffort = TRUE`. If `writecsv = TRUE`, the scaling parameters will also be saved in a separate csv file.
@@ -352,12 +355,26 @@ DetHist3 <- detectionHistory(recordTable          = recordTableSample,
                              scaleEffort          = TRUE
 )
 
-DetHist3[[2]]  # effort
+DetHist3[[2]]  # effort (scaled)
 DetHist3[[3]]  # scaling parameters for back-transformation
 
 # backtransform scaled effort like this if needed
 (DetHist3[[2]] * DetHist3[[3]]$effort.scaled.scale) + DetHist3[[3]]$effort.scaled.center
 ```
+
+### Handling of incomplete occasions
+
+The following table shows the behaviour of the detectionHistory function for different occasion-level camera operation values (table head) under different combinations of the arguments `includeEffort` and `minActiveDaysPerOccasion` in the function `detectionHistory`.
+
+| includeEffort  | minActiveDaysPerOccasion  | camera operation all 1 | at least one 1  | all 0 | 0 and NA |  all NA |
+|---|---|---|---|---|---|---|---| 
+| TRUE    |   not defined |  0/1  | 0/1     |  NA  |  NA |   NA | 
+| TRUE    |   defined     |  0/1  | 0/1/NA* |  NA  |  NA |   NA | 
+| FALSE   |   not defined |  0/1  | NA      |  NA  |  NA |   NA | 
+| FALSE   |   defined     |  0/1  | 0/1/NA* |  NA  |  NA |   NA | 
+*: NA if there were less active days in an occasion than `minActiveDaysPerOccasion`
+
+The same applies to generation of input for spatial capture-recapture analyses using `spatialDetectionHistory` as described below.
 
 ### Saving and loading detection histories
 

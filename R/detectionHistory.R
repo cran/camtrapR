@@ -6,6 +6,7 @@ detectionHistory <- function(recordTable,
                              recordDateTimeCol = "DateTimeOriginal",
                              recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
                              occasionLength,
+                             minActiveDaysPerOccasion,
                              maxNumberDays,
                              day1,
                              buffer,
@@ -94,6 +95,11 @@ detectionHistory <- function(recordTable,
     if(class(scaleEffort) != "logical") stop("scaleEffort must be logical (TRUE or FALSE)")
   } else {scaleEffort <- FALSE}
 
+  if(hasArg(minActiveDaysPerOccasion)){
+    stopifnot(is.numeric(minActiveDaysPerOccasion))
+    stopifnot(minActiveDaysPerOccasion <= occasionLength)
+  }
+  
   #############
   # bring date, time, station ids into shape
 
@@ -145,8 +151,14 @@ detectionHistory <- function(recordTable,
 
 ######################
 # calculate trapping effort by station and occasion
-  effort.tmp <-  calculateTrappingEffort (cam.op = cam.op.worked, occasionLength2 = occasionLength, scaleEffort2 = scaleEffort, includeEffort2 = includeEffort)
+  arg.list0 <- list(cam.op = cam.op.worked, occasionLength2 = occasionLength, scaleEffort2 = scaleEffort, includeEffort2 = includeEffort)
 
+    if(hasArg(minActiveDaysPerOccasion))  arg.list0 <- c(arg.list0, minActiveDaysPerOccasion2 = minActiveDaysPerOccasion)
+  
+    effort.tmp <- do.call(calculateTrappingEffort, arg.list0)
+  
+    rm(arg.list0)
+  
   effort <- effort.tmp[[1]]
   if(isTRUE(scaleEffort))  scale.eff.tmp.attr <- effort.tmp[[2]]
 
@@ -176,32 +188,35 @@ if(day1 %in% c("survey")){
   ############
   # make detection history
 
-  if(occasionLength == 1){
+  if(occasionLength == 1){                    # occasion length = 1
     record.hist <- cam.op.worked
     record.hist <- ifelse(record.hist == 0, NA, record.hist)    # if cameras not operational, set NA
     record.hist <- ifelse(record.hist >= 1, 0,  record.hist)    # if cameras operational, set to 0
 
     occasions.by.station <- tapply(X = subset_species$occasion, INDEX = subset_species[,stationCol], FUN = unique, simplify = FALSE)
 
+    # fill detection matrix with 1 in appropriate cells
     for(xyz in which(sapply(occasions.by.station, FUN = function(x){!is.null(x)}))){
-      if(any(occasions.by.station[[xyz]] < 0)) stop("this is a bug in the function (line 181). Please report it.", call. = FALSE)
-      if(any(occasions.by.station[[xyz]] > ncol(record.hist))) stop("this is a bug in the function (line 182). Please report it.", call. = FALSE)
+      if(any(occasions.by.station[[xyz]] < 0)) stop("this is a bug in the function (line 188). Please report it.", call. = FALSE)
+      if(any(occasions.by.station[[xyz]] > ncol(record.hist))) stop("this is a bug in the function (line 189). Please report it.", call. = FALSE)
       record.hist[match(names(occasions.by.station)[xyz], rownames(record.hist)), occasions.by.station[[xyz]]] <- 1
     }
     record.hist[is.na(cam.op.worked)] <- NA   # remove the records that were taken when cams were NA (redundant with above:   # remove records taken after day1 + maxNumberDays)
 
     rm(occasions.by.station, xyz)
-  } else {                                    # occasion lenght > 1
-    record.hist <- effort
-    record.hist <- ifelse(!is.na(record.hist), 0, record.hist)
+    
+  } else {                                    # occasion length > 1
+    record.hist <- effort                     # start with effort (including NAs)
+    record.hist <- ifelse(!is.na(record.hist), 0, record.hist)     # set all cells 0 (unless they are NA)
     rownames(record.hist) <- rownames(cam.op.worked)
 
     occasions.by.station <- tapply(X = subset_species$occasion, INDEX = subset_species[,stationCol], FUN = unique, simplify = FALSE)
 
+    # fill detection matrix with "1" in appropriate cells
     for(xyz in which(sapply(occasions.by.station, FUN = function(x){!is.null(x)}))){
       record.hist[match(names(occasions.by.station)[xyz], rownames(record.hist)), occasions.by.station[[xyz]]] <- 1
     }
-    record.hist[is.na(effort)] <- NA
+    record.hist[is.na(effort)] <- NA     # just to make sure NA stays NA
   }
 
 # assign row names to output

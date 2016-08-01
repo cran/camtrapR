@@ -23,7 +23,9 @@ The functions in this section set up a directory structure for storing camera tr
 \code{\link{createStationFolders}} \tab Create camera trap station directories for raw images \cr
 \code{\link{timeShiftImages}} \tab Apply time shifts to JPEG images \cr
 \code{\link{imageRename}} \tab Copy and rename images based on station ID and image creation date \cr
+\code{\link{addCopyrightTag}} \tab Write a copyright tag into JPG images \cr
 \code{\link{appendSpeciesNames}} \tab Add or remove species names from image filenames \cr
+
 --------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
 
 }
