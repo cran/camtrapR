@@ -87,16 +87,9 @@ A data frame containing species records with individual IDs and additional infor
 }
 
 \section{Warning }{
-Custom image metadata must be organised hierarchically, e.g.
-
-- Individual
-  * Female1
-  * Female2
-	* Male1
-	* Male2
-	
-
-Custom image metadata tags must be written to the images. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences of your image management software accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
+Be sure to read the section on individual identification in the package vignette (\url{https://cran.r-project.org/web/packages/camtrapR/vignettes/SpeciesIndividualIdentification.html}).
+  
+Af you use image metadata tags for identification, the tags must be written to the image metadata. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences of your image management software accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
 }
 
 \references{

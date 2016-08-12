@@ -8,13 +8,14 @@ Generate a \code{capthist} object for spatial capture-recapture analyses from ca
 This function generates spatial detection histories of individuals of a species for spatial capture-recapture analyses with package \code{\link[secr]{secr}}. Data are stored in a \code{\link[secr]{capthist}} object. The \code{\link[secr]{capthist}} object contains detection histories, camera-trap station location and possibly individual and station-level covariates. Detection histories can have adjustable occasion length and occasion start time (as in the function \code{\link{detectionHistory}}]).
 }
 \usage{
-spatialDetectionHistory(recordTableIndividual, 
-  species, 
-  camOp, 
+spatialDetectionHistory(recordTableIndividual,
+  species,
+  camOp,
   CTtable,
   output,
-  stationCol = "Station", 
+  stationCol = "Station",
   speciesCol = "Species",
+  sessionCol,
   Xcol,
   Ycol,
   stationCovariateCols,
@@ -22,9 +23,9 @@ spatialDetectionHistory(recordTableIndividual,
   individualCovariateCols,
   recordDateTimeCol = "DateTimeOriginal",
   recordDateTimeFormat = "\%Y-\%m-\%d \%H:\%M:\%S",
-  occasionLength, 
+  occasionLength,
   minActiveDaysPerOccasion,
-  occasionStartTime = 0, 
+  occasionStartTime = 0,
   maxNumberDays,
   day1,
   buffer,
@@ -44,7 +45,7 @@ spatialDetectionHistory(recordTableIndividual,
   character. the species for which to compute the detection history
 }
   \item{camOp}{
-  The camera operability matrix as created by \code{\link{cameraOperation}} 
+  The camera operability matrix as created by \code{\link{cameraOperation}}
 }
   \item{CTtable}{
   data.frame. contains station IDs and coordinates. Same as used in \code{\link{cameraOperation}}.
@@ -57,6 +58,9 @@ spatialDetectionHistory(recordTableIndividual,
 }
   \item{speciesCol}{
   character. name of the column specifying species in \code{recordTableIndividual}
+}
+  \item{sessionCol}{
+  integer. name of the column specifying session IDs in \code{recordTableIndividual}. Must be integer numbers beginning with 1 (i.e., values can only be 1,2,3,...).
 }
   \item{Xcol}{
   character. name of the column specifying x coordinates in \code{CTtable}
@@ -101,7 +105,7 @@ spatialDetectionHistory(recordTableIndividual,
   logical. Include trapping effort (number of active camera trap days per station and occasion) as usage in \code{\link[secr]{capthist}}  object?
 }
   \item{scaleEffort}{
-  logical. scale and center effort matrix to mean = 0 and sd = 1?
+  logical. scale and center effort matrix to mean = 0 and sd = 1? Currently not used. Must be FALSE.
 }
   \item{binaryEffort}{
   logical. Should effort be binary (1 if >1 active day per occasion, 0 otherwise)?
@@ -117,12 +121,14 @@ spatialDetectionHistory(recordTableIndividual,
 \details{
 The function creates a \code{\link[secr]{capthist}} object by combining three different objects: 1) a record table of identified individuals of a species, 2) a camera trap station table with station coordinates and 3) a camera operation matrix computed with \code{\link{cameraOperation}}. The record table must contain a column with individual IDs and optionally individual covariates. The camera trap station table must contain station coordinates and optionally station-level covariates. The camera operation matrix provides the dates stations were active or not and the number of active stations.
 
-\code{day1} defines if each stations detection history will begin on that station's setup day (\code{day1 = "station"}) or if all station's detection histories have a common origin (the day the first station was set up if \code{day1 = "survey"} or a fixed date if, e.g. \code{day1 = "2015-12-31"}). 
+\code{day1} defines if each stations detection history will begin on that station's setup day (\code{day1 = "station"}) or if all station's detection histories have a common origin (the day the first station was set up if \code{day1 = "survey"} or a fixed date if, e.g. \code{day1 = "2015-12-31"}).
 
-\code{includeEffort} controls whether an effort matrix is computed or not. If TRUE, effort will be used for object \code{\link[secr]{usage}}) information in a \code{\link[secr]{traps}}). \code{scaleEffort} and \code{binaryEffort} further define the behaviour. 
+\code{includeEffort} controls whether an effort matrix is computed or not. If TRUE, effort will be used for object \code{\link[secr]{usage}} information in a \code{\link[secr]{traps}}. \code{binaryEffort} makes the effort information binary. \code{scaleEffort} is currently not used and must be set to FALSE. The reason is that \code{\link[secr]{usage}} can only be either binary, or nonnegative real values, whereas scaling effort would return negative values.
 
 The number of days that are aggregated is controlled by \code{occasionLength}. \code{occasionStartTime} can be used to make occasions begin another hour than midnight (the default). This may be relevant for nocturnal animals, in which 1 whole night would be considered an occasion.
 Output can be returned as individual counts per occasion (\code{output = "count"}) or as binary observation (\code{output = "binary"}).
+
+Argument \code{sessionCol} can be used to assign session numbers to the \code{\link[secr]{capthist}} object. The capture information are thus split by sessions. Session information must be provided as a column in \code{recordTableIndividual} in the form of integer numbers >= 1, i.e., you provide the session number directly in \code{sessionCol}. Currently, the function assumes the same traps to apply to all sessions.
 
 \code{\link[secr]{capthist}} objects (as created by \code{\link{spatialDetectionHistory}} for spatial capture-recapture analyses) expect the units of coordinates (\code{Xcol} and \code{col} in \code{CTtable}) to be meters.
 }
@@ -164,9 +170,9 @@ camop_problem <- cameraOperation(CTtable      = camtraps,
                                  dateFormat   = "\%d/\%m/\%Y"
 )
 
-sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSample, 
-                               species               = "LeopardCat",    
-                               camOp                 = camop_problem, 
+sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSample,
+                               species               = "LeopardCat",
+                               camOp                 = camop_problem,
                                CTtable               = camtraps,
                                output                = "binary",
                                stationCol            = "Station",
@@ -176,14 +182,14 @@ sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSamp
                                individualCol         = "Individual",
                                recordDateTimeCol     = "DateTimeOriginal",
                                recordDateTimeFormat  = "\%Y-\%m-\%d \%H:\%M:\%S",
-                               occasionLength        = 10, 
+                               occasionLength        = 10,
                                day1                  = "survey",
                                includeEffort         = TRUE,
                                timeZone              = "Asia/Kuala_Lumpur"
   )
-  
-# missing space in species = "LeopardCat" was introduced by recordTableIndividual 
-# (because of CRAN package policies. 
+
+# missing space in species = "LeopardCat" was introduced by recordTableIndividual
+# (because of CRAN package policies.
 # In your data you can have spaces in your directory names)
 
   summary(sdh)

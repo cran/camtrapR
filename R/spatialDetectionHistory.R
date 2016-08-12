@@ -5,6 +5,7 @@ spatialDetectionHistory <- function(recordTableIndividual,
                                     output,
                                     stationCol = "Station",
                                     speciesCol = "Species",
+                                    sessionCol,
                                     Xcol,
                                     Ycol,
                                     stationCovariateCols,
@@ -19,8 +20,8 @@ spatialDetectionHistory <- function(recordTableIndividual,
                                     day1,
                                     buffer,
                                     includeEffort = TRUE,
-                                    scaleEffort = FALSE,
-                                    binaryEffort = FALSE,
+                                    scaleEffort   = FALSE,
+                                    binaryEffort  = FALSE,
                                     timeZone,
                                     makeRMarkInput
 )
@@ -69,12 +70,20 @@ spatialDetectionHistory <- function(recordTableIndividual,
   recordTableIndividual[,recordDateTimeCol] <- as.character(recordTableIndividual[,recordDateTimeCol])
   stopifnot(is.character(recordDateTimeCol))
 
+
+  if(hasArg(sessionCol)) {
+    stopifnot(sessionCol %in% colnames(recordTableIndividual))
+    stopifnot(is.numeric(recordTableIndividual[,sessionCol]))
+    if(!all(sort(unique(recordTableIndividual[,sessionCol])) == seq.int(from = 1, to = max(recordTableIndividual[,sessionCol]), by = 1)))
+      stop("Problem in sessionCol: Values must come from a gapless sequence of numbers starting with 1")
+  }
+
   if(hasArg(makeRMarkInput)) stopifnot(is.logical(makeRMarkInput))
 
   stopifnot(c(stationCol, Xcol, Ycol) %in% colnames(CTtable))
-  if(any(is.na(CTtable[,Xcol])))stop("there are NAs in Xcol")
-  if(any(is.na(CTtable[,Ycol])))stop("there are NAs in Ycol")
-  if(any(is.na(CTtable[,stationCol])))stop("there are NAs in stationCol of CTtable")
+  if(any(is.na(CTtable[,Xcol]))) stop("there are NAs in Xcol")
+  if(any(is.na(CTtable[,Ycol]))) stop("there are NAs in Ycol")
+  if(any(is.na(CTtable[,stationCol]))) stop("there are NAs in stationCol of CTtable")
 
   if(hasArg(stationCovariateCols)){
     stopifnot(stationCovariateCols %in% colnames(CTtable))
@@ -125,15 +134,16 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   if(includeEffort == TRUE){
     if(hasArg(scaleEffort)){
-      if(class(scaleEffort) != "logical") stop("scaleEffort must be logical (TRUE or FALSE)")
-    } 
+      if(class(scaleEffort) != "logical") stop("scaleEffort must be logical (currently only FALSE is allowed)")
+      if(isTRUE(scaleEffort))             stop("currently scaleEffort must be FALSE")
+    }
     if(hasArg(binaryEffort)){
       if(class(binaryEffort) != "logical") stop("binaryEffort must be logical (TRUE or FALSE)")
-    } 
+    }
     if(binaryEffort == TRUE & scaleEffort == TRUE) stop("'scaleEffort' and 'binaryEffort' cannot both be TRUE")
   } else {
-  scaleEffort  <- FALSE
-  binaryEffort <- FALSE
+    scaleEffort  <- FALSE
+    binaryEffort <- FALSE
   }
 
 
@@ -145,12 +155,12 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   # check consistency of argument day1
   stopifnot(class(day1) == "character")
-  
+
   if(day1 == "survey") {day1switch <- 1} else {
     if(day1 == "station") {day1switch <- 2} else {
       try(date.test <- as.Date(day1), silent = TRUE)
-       if(class(date.test) != "Date") stop('could not interpret argument day1: can only be "station", "survey" or a specific date (e.g. "2015-12-31")')
-       if(hasArg(buffer)) stop("if buffer is defined, day1 can only be 'survey' or 'station'")
+      if(class(date.test) != "Date") stop('could not interpret argument day1: can only be "station", "survey" or a specific date (e.g. "2015-12-31")')
+      if(hasArg(buffer)) stop("if buffer is defined, day1 can only be 'survey' or 'station'")
       suppressWarnings(rm(date.test))
       day1switch <- 3
     }
@@ -167,14 +177,13 @@ spatialDetectionHistory <- function(recordTableIndividual,
   }
 
 
-
   ################################################
   # compute date range of stations and records
 
   arg.list0 <- list(cam.op = cam.op.worked0, subset_species_tmp = subset_species, stationCol_tmp = stationCol, day1_tmp = day1, occasionStartTime_tmp = occasionStartTime, timeZone_tmp = timeZone)
 
-    if(hasArg(maxNumberDays))  arg.list0 <- c(arg.list0,   maxNumberDays_tmp = maxNumberDays)
-    if(hasArg(buffer))   arg.list0 <- c(arg.list0, buffer_tmp =  buffer)
+  if(hasArg(maxNumberDays))  arg.list0 <- c(arg.list0,   maxNumberDays_tmp = maxNumberDays)
+  if(hasArg(buffer))   arg.list0 <- c(arg.list0, buffer_tmp =  buffer)
 
   date_ranges <- do.call(createDateRangeTable, arg.list0)
 
@@ -192,14 +201,14 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   ######################
   # calculate trapping effort by station and occasion
-  
+
   arg.list0 <- list(cam.op = cam.op.worked, occasionLength2 = occasionLength, scaleEffort2 = scaleEffort, includeEffort2 = includeEffort)
 
-    if(hasArg(minActiveDaysPerOccasion))  arg.list0 <- c(arg.list0, minActiveDaysPerOccasion2 = minActiveDaysPerOccasion)
-  
-    effort.tmp <- do.call(calculateTrappingEffort, arg.list0)
-  
-    rm(arg.list0)
+  if(hasArg(minActiveDaysPerOccasion))  arg.list0 <- c(arg.list0, minActiveDaysPerOccasion2 = minActiveDaysPerOccasion)
+
+  effort.tmp <- do.call(calculateTrappingEffort, arg.list0)
+
+  rm(arg.list0)
 
   effort <- effort.tmp[[1]]
   if(isTRUE(scaleEffort))     scale.eff.tmp.attr <- effort.tmp[[2]]
@@ -214,23 +223,21 @@ spatialDetectionHistory <- function(recordTableIndividual,
   ############
   #  define the 1st day of the effective survey period.
 
-if(day1 %in% c("survey")){
-  time2 <- date_ranges$start_first_occasion_survey[match(subset_species[,stationCol], rownames(date_ranges))]
-} else {
-  time2 <- date_ranges$start_first_occasion[match(subset_species[,stationCol], rownames(date_ranges))]
-}
+  if(day1 %in% c("survey")){
+    time2 <- date_ranges$start_first_occasion_survey[match(subset_species[,stationCol], rownames(date_ranges))]
+  } else {
+    time2 <- date_ranges$start_first_occasion[match(subset_species[,stationCol], rownames(date_ranges))]
+  }
 
-
-#  time2 <- date_ranges$start_first_occasion[match(subset_species[,stationCol], rownames(date_ranges))]
 
   # calculate time difference between records and first day of detection history (the occasion each record belongs into)
   occasionCol <- "Occasion"
 
-  subset_species[,occasionCol] <- as.numeric(ceiling((difftime(time1  = subset_species$DateTime2,
-                                                          time2 =  time2,
-                                                          units = "secs",
-                                                          tz = timeZone)
-                                                / (occasionLength * 86400))))
+  subset_species[,occasionCol] <- as.numeric(ceiling((difftime(time1 = subset_species$DateTime2,
+                                                               time2 =  time2,
+                                                               units = "secs",
+                                                               tz    = timeZone)
+                                                      / (occasionLength * 86400))))
 
 
   if(max(subset_species[,occasionCol]) > ncol(effort)) {stop("encountered a bug. I'm Sorry. Please report it.")}
@@ -251,50 +258,60 @@ if(day1 %in% c("survey")){
     colnames(sdh0) <- c("ID", occasionCol, "trapID")
   }
 
+  # add required session column
+  if(hasArg(sessionCol)) {
+    sdh1 <- cbind(Session = subset_species[,sessionCol], sdh0)
+  } else {
+    sdh1 <- cbind(Session = 1, sdh0)
+  }
+
   # remove unidentified individuals
-  remove.tmp <- which(is.na(sdh0[,"ID"]))
+  remove.tmp <- which(is.na(sdh1[,"ID"]))
   if(length(remove.tmp) >= 1){
-    sdh0 <- sdh0[-remove.tmp,]
+    sdh1 <- sdh1[-remove.tmp,]
     warning(paste("removed", length(remove.tmp), "records because of missing individual IDs"), call. = FALSE)
   }
 
-# add required session column
-  sdh1 <- data.frame(Session = 1, sdh0)   
 
-# if requested,  remove duplicate records (makes capthist binary. otherwise it returns counts)
+  # if requested,  remove duplicate records (makes capthist binary. otherwise it returns counts)
   if(output == "binary"){
     sdh2 <- unique(sdh1)                  # remove duplicate rows
   } else {
-    sdh2 <- sdh1                          # keep duplicate rows 
+    sdh2 <- sdh1                          # keep duplicate rows
   }
-  
-  
+
+
   ############
   # remove records for which effort was 0 or NA
-  
-rowindex_sdh_to_remove <- vector()
 
-  for(rowindex_sdh in 1:nrow(sdh2)){ 
-    if(is.na(effort[match(sdh2$trapID[rowindex_sdh], rownames(effort)), sdh2$Occasion[rowindex_sdh]]) |   # if effort = NA or 0
-     effort[match(sdh2$trapID[rowindex_sdh], rownames(effort)), sdh2$Occasion[rowindex_sdh]] == 0){   
-     rowindex_sdh_to_remove <- c(rowindex_sdh_to_remove, rowindex_sdh)                                    # save into temporary vector
+  rowindex_sdh_to_remove <- vector()
+
+  for(rowindex_sdh in 1:nrow(sdh2)){
+    if(is.na(effort[match(sdh2$trapID[rowindex_sdh], rownames(effort)), sdh2$Occasion[rowindex_sdh]]) |   # if effort = NA or
+       effort[match(sdh2$trapID[rowindex_sdh], rownames(effort)), sdh2$Occasion[rowindex_sdh]] == 0){     # if effort = 0
+      rowindex_sdh_to_remove <- c(rowindex_sdh_to_remove, rowindex_sdh)                                   # save row index into temporary vector
     }
   }
-  # if a problem was found, remove records with effort = 0 / NA
+  # if there were records in occasios with effort = 0/NA, remove these records
   if(length(rowindex_sdh_to_remove) != 0){
     sdh2 <- sdh2[-rowindex_sdh_to_remove,]
     warning(paste("removed", length(rowindex_sdh_to_remove), "records because of effort = 0/NA or effort < minActiveDaysPerOccasion"), call. = FALSE)
   }
-rm(rowindex_sdh, rowindex_sdh_to_remove)
-  
+  rm(rowindex_sdh, rowindex_sdh_to_remove)
+
+
+  # make sure we have no NA in effort matrix (overwrite with 0)
+  # otherwise secr::verify() will crash if there are NAs in the trap usage information
+  effort[which(is.na(effort))] <- 0
+
   ############
   # make secr traps object
 
   coord.ct <- CTtable[,c(Xcol, Ycol)]
   colnames(coord.ct) <- c("x", "y")
   rownames(coord.ct) <- CTtable[,stationCol]
-  
-# set detector type according to desired output (count or binary)
+
+  # set detector type according to desired output (count or binary)
   detectortype <- ifelse (output == "binary", "proximity", "count")
 
   if(includeEffort == TRUE) {
@@ -324,16 +341,17 @@ rm(rowindex_sdh, rowindex_sdh_to_remove)
 
   ###########
   # make capthist object
-  capthist.secr <- make.capthist(captures = sdh2,
-                                 traps    = secr.traps,
-                                 fmt      = "trapID")
+  capthist.secr <- make.capthist(captures   = sdh2,
+                                 traps      = secr.traps,
+                                 fmt        = "trapID",
+                                 noccasions = ncol(effort))
 
-if(hasArg(makeRMarkInput)){
-  if(isTRUE(makeRMarkInput)){
-    RMarkDataframe <- RMarkInput(capthist.secr, covariates = TRUE)
-    return(RMarkDataframe)
+  if(hasArg(makeRMarkInput)){
+    if(isTRUE(makeRMarkInput)){
+      RMarkDataframe <- RMarkInput(capthist.secr, covariates = TRUE)
+      return(RMarkDataframe)
+    }
   }
-}
 
   return(capthist.secr)
 }

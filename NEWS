@@ -1,3 +1,20 @@
+Changes in camtrapR 0.99.4
+=======================
+
+bugfixes
+------------
+  o spatialDetectionHistory: trap usage now codes malfunctioning cameras and cameras that were not set up as 0 instead of NA (as expected by the secr package)
+  o spatialDetectionHistory: argument "scaleEffort" can only be FALSE now (to avoid negative trapping effort values, which secr does not accept)
+  
+new features
+------------
+  o spatialDetectionHistory gained argument "sessionCol". It can be used to split data (i,e,, create a list with multiple capthist objects) if captures come from different sessions.
+  
+other changes
+------------
+  o package shows startup message and checks automatically if local package version is up to date
+
+
 Changes in camtrapR 0.99.3
 =======================
 
@@ -9,7 +26,7 @@ bugfixes
 ------------
   o detectionHistory: malfunctioning cameras (0 in camera operation matrix) did not cause detection history matrix cells to be NA (even if includeEffort = FALSE; reported by Hsiang Ling Chen)
   o detectionHistory: if the last occasion is shorter than occasionLength, the corresponding detection history matrix cells will now be NA if includeEffort = FALSE
-  o surveyReport: species column names other than "Species" are now supported, i.e. argument "speciesCol" is now respected (tanks to Valentine Herrmann and Stefano Anile for reporting)
+  o surveyReport: species column names other than "Species" are now supported, i.e. argument "speciesCol" is now respected (thanks to Valentine Herrmann and Stefano Anile for reporting)
 
 new features
 ------------
