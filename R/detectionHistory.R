@@ -30,6 +30,7 @@ detectionHistory <- function(recordTable,
   stopifnot(hasArg(occasionLength))
 
   stopifnot(hasArg(recordTable))
+  stopifnot(class(recordTable) == "data.frame")
   stopifnot(hasArg(camOp))
 
   stopifnot(hasArg(stationCol))

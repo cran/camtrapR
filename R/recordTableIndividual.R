@@ -11,7 +11,9 @@ recordTableIndividual <- function(inDir,
                                      outDir,
                                      metadataHierarchyDelimitor = "|",
                                      metadataIDTag,
-                                     additionalMetadataTags
+                                     additionalMetadataTags,
+                                     removeDuplicateRecords = TRUE
+
 )
 {
   wd0 <- getwd()
@@ -70,9 +72,11 @@ recordTableIndividual <- function(inDir,
   if(hasArg(additionalMetadataTags)){
     if(class(additionalMetadataTags) != "character"){stop("additionalMetadataTags must be of class 'character'", call. = FALSE)}
   }
+  
+  stopifnot(is.logical(removeDuplicateRecords))
 
   metadata.tagname <- "HierarchicalSubject"    # for extracting metadata assigned in tagging software
-
+    
   minDeltaTime <- as.integer(minDeltaTime)
   stopifnot(class(minDeltaTime) == "integer")
 
@@ -121,24 +125,13 @@ recordTableIndividual <- function(inDir,
   for(i in 1:length(dirs)){   # loop through station directories
 
     # execute exiftool
-    tmp1 <-  strsplit(system(command.tmp[i], intern=TRUE), split = "\t")
-
-    # build matrix for image metadata (station i)
-    metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
-                                         ncol  = length(colnames.tmp),
-                                         byrow = TRUE),
-                                  stringsAsFactors = FALSE)
-
-    colnames(metadata.tmp) <- colnames.tmp
+    metadata.tmp <- runExiftool(command.tmp = command.tmp[i], colnames.tmp = colnames.tmp)
 
     # now split HierarchicalSubject tags and add as columns to table
-
    metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
                                          metadata.tagname           = metadata.tagname,
                                          metadataHierarchyDelimitor = metadataHierarchyDelimitor,
                                          multiple_tag_separator     = multiple_tag_separator)
-
-    rm(tmp1)
 
 
     if(nrow(metadata.tmp) == 0){            # omit station if no images found
@@ -184,34 +177,18 @@ recordTableIndividual <- function(inDir,
 
         # sort by (camera), species and time
         if(camerasIndependent == TRUE) {
-          metadata.tmp <- metadata.tmp[order(metadata.tmp[,individualCol], metadata.tmp[,cameraCol], metadata.tmp$DateTimeOriginal),]
+          metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,individualCol], metadata.tmp[,cameraCol], metadata.tmp$DateTimeOriginal),]
         } else {
-          metadata.tmp <- metadata.tmp[order(metadata.tmp[,individualCol], metadata.tmp$DateTimeOriginal),]
+          metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,individualCol], metadata.tmp$DateTimeOriginal),]
         }
 
-        #remove duplicate records of same individual taken in same second (by the same camera, if relevant)
-        if(hasArg(cameraID)){
-          remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", individualCol, cameraCol)]))
-          if(length(remove.tmp >= 1)) metadata.tmp <- metadata.tmp[-remove.tmp,]
-        } else {
-          remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", individualCol)]))
-          if(length(remove.tmp >= 1)) metadata.tmp <- metadata.tmp[-remove.tmp,]
-        }
-        rm(remove.tmp)
-
-        # prepare to add time difference between observations columns
-        metadata.tmp2 <- data.frame(metadata.tmp,
-                                    delta.time.secs  = NA,
-                                    delta.time.mins  = NA,
-                                    delta.time.hours = NA,
-                                    delta.time.days  = NA)
-
-        # introduce column specifying independence of records
-#         if(minDeltaTime == 0) {
-#           metadata.tmp2$independent <- TRUE    # all independent if no temporal filtering
-#         } else {
-          metadata.tmp2$independent <- NA
-        # }
+        #remove duplicate records of same individual taken in same second at the same station (by the same camera, if relevant)
+        metadata.tmp2 <- removeDuplicatesOfRecords(metadata.tmp           = metadata.tmp, 
+                                                  removeDuplicateRecords = removeDuplicateRecords, 
+                                                  camerasIndependent     = camerasIndependent, 
+                                                  stationCol             = stationCol, 
+                                                  speciesCol             = speciesCol, 
+                                                  cameraCol              = cameraCol)
 
         # assess independence between records and calculate time differences
         d1 <- assessTemporalIndependence (intable             = metadata.tmp2,
@@ -235,7 +212,7 @@ recordTableIndividual <- function(inDir,
         suppressWarnings(rm(d1, d2))
       }
     }
-  }       # end      for(i in 1:length(dirs)){   # loop through station directories
+  }       # end loop through station directories
 
   if(nrow(record.table) == 0){
     stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty"))

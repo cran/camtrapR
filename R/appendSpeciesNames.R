@@ -31,7 +31,7 @@ appendSpeciesNames <- function(inDir,
 multiple_tag_separator = "__"
 
   ## find station directories
-  dirs       <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
+  dirs       <- list.dirs(inDir, full.names = TRUE,  recursive = FALSE)
   dirs_short <- list.dirs(inDir, full.names = FALSE, recursive = FALSE)
 
   renaming.table <- data.frame()
@@ -106,14 +106,7 @@ multiple_tag_separator = "__"
 
 
       # run exiftool and make data frame
-      tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
-
-      metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
-                                           ncol  = length(colnames.tmp),
-                                           byrow = TRUE),
-                                    stringsAsFactors = FALSE)
-
-      colnames(metadata.tmp) <- colnames.tmp
+      metadata.tmp <- runExiftool(command.tmp = command.tmp, colnames.tmp = colnames.tmp)
 
 
       if(class(metadata.tmp) == "data.frame"){

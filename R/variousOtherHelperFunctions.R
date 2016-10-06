@@ -26,8 +26,26 @@
 
 
 
-
 # for functions reading out and tabulating image metadata
+
+runExiftool <- function(command.tmp, 
+                        colnames.tmp)
+{
+  tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
+  metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
+                                     ncol = length(colnames.tmp),
+                                     byrow = TRUE),
+                              stringsAsFactors = FALSE)
+  colnames(metadata.tmp) <- colnames.tmp
+  
+  # find and remove ._ files created on Macs
+  strangeMacFiles <- grep("^[._]", metadata.tmp$FileName, fixed = FALSE)  
+  if(length(strangeMacFiles) >= 1)  {
+    warning(paste("found", length(strangeMacFiles), "JPG files beginning with '._' in", paste(unique(metadata.tmp$Directory[strangeMacFiles]), collapse = ","), ". Will ignore them."), call. = FALSE, immediate. = TRUE)
+    metadata.tmp <- metadata.tmp[-strangeMacFiles,]
+    }
+  return(metadata.tmp)
+}
 
 
 addMetadataAsColumns <- function(intable,
@@ -202,21 +220,69 @@ addStationCameraID <- function(intable,
 }
 
 
+  # remove duplicate records of same species taken in same second at the same station (by the same camera, if relevant)
+  # Note to self: this may also be done outside the station loop, after the final record table is assembled. Saves a few executions of this function.
+  
+  removeDuplicatesOfRecords <- function(metadata.tmp, removeDuplicateRecords, camerasIndependent, stationCol, speciesCol, cameraCol){
+          if(isTRUE(removeDuplicateRecords)){
+            if(isTRUE(camerasIndependent)){
+              remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", stationCol, speciesCol, cameraCol)]))
+              if(length(remove.tmp >= 1)){
+                metadata.tmp <- metadata.tmp[-remove.tmp,]
+                warning("removed ", length(remove.tmp), " duplicate records at station ", paste(unique(metadata.tmp[,stationCol]), collapse = ", "), call. = FALSE, immediate. = TRUE)
+              }
+            } else {
+              remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", stationCol, speciesCol)]))
+              if(length(remove.tmp >= 1)) {
+                metadata.tmp <- metadata.tmp[-remove.tmp,]
+                warning("removed ", length(remove.tmp), " duplicate records at station ", paste(unique(metadata.tmp[,stationCol]), collapse = ", "), call. = FALSE, immediate. = TRUE)
+              }
+            }
+          }
+          return(metadata.tmp)
+        }
+
 
 #### assess temporal independence between records
 
 assessTemporalIndependence <- function(intable,
                                        deltaTimeComparedTo,
-                                       columnOfInterest,
+                                       columnOfInterest,     # species/individual column
                                        cameraCol,
                                        camerasIndependent,
                                        stationCol,
                                        minDeltaTime)
 {
+# check if all Exif DateTimeOriginal tags were read correctly
+  if(any(is.na(intable$DateTimeOriginal))){
+    which.tmp <- which(is.na(intable$DateTimeOriginal))
+    if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), "Consider checking for corrupted Exif metadata.")
+    warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them. Consider checking for corrupted Exif metadata. \n",
+      paste(file.path(intable[which.tmp, "Directory"], 
+                      intable[which.tmp, "FileName"]), collapse = "\n")), call. = FALSE, immediate. = TRUE)
+    intable <- intable[-which.tmp ,]
+    rm(which.tmp)
+  }
 
+   # prepare to add time difference between observations columns
+        intable <- data.frame(intable,
+                              delta.time.secs  = NA,
+                              delta.time.mins  = NA,
+                              delta.time.hours = NA,
+                              delta.time.days  = NA)
+       
+   # introduce column specifying independence of records       
+        if(minDeltaTime == 0) {
+          intable$independent <- TRUE    # all independent if no temporal filtering
+        } else {
+          intable$independent <- NA
+        }
+
+                                    
   for(xy in 1:nrow(intable)){     # for every record
 
     # set independent = TRUE if it is the 1st/only  record of a species / individual
+    
     if(camerasIndependent == TRUE){
       if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which(intable[, columnOfInterest] == intable[xy, columnOfInterest] &
                                                                              intable[, stationCol]       == intable[xy, stationCol] &
@@ -238,9 +304,9 @@ assessTemporalIndependence <- function(intable,
 
         if(camerasIndependent == TRUE){
           which_time2 <- which(intable[, columnOfInterest]       == intable[xy, columnOfInterest] &    # same species/individual
-                              intable[, stationCol]              == intable[xy, stationCol] &           # at same station
+                              intable[, stationCol]              == intable[xy, stationCol] &          # at same station
                               intable[, cameraCol]               == intable[xy, cameraCol] &           # at same camera
-                              intable$independent                == TRUE &                             # independent
+                              intable$independent                == TRUE &                             # independent (first or only record of a species at a station)
                               intable$DateTimeOriginal           <  intable$DateTimeOriginal[xy])      # earlier than record xy
         } else {
           which_time2 <- which(intable[, columnOfInterest]       == intable[xy, columnOfInterest] &

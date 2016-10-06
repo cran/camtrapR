@@ -56,7 +56,9 @@ activityDensity <- function(recordTable,
   if(allSpecies == FALSE){
 
     subset_species <- subset(recordTable, recordTable[,speciesCol] == species)
-
+    
+    if(nrow(subset_species) == 1)  stop(paste(species, "had only 1 record. Cannot estimate density."), call. = FALSE)
+    
     if(isTRUE(writePNG)){
       png(filename = paste("activity_density_", species, "_", Sys.Date(), ".png", sep = ""),
           width = pngWidth, height = pngHeight, units = "px", res = 96, type = "cairo")
@@ -84,9 +86,9 @@ activityDensity <- function(recordTable,
       spec.tmp <- unique(recordTable[,speciesCol])[i]
       subset_species <- subset(recordTable, recordTable[,speciesCol] == spec.tmp)
 
-      subset_species <- subset(recordTable, recordTable[,speciesCol] == spec.tmp)
       if(nrow(subset_species) == 1){
-        warning(paste(spec.tmp, "had only 1 record, cannot estimate density"))
+        warning(paste("Skipping ", spec.tmp, ". It had only 1 record. Cannot estimate density."), sep = "", call. = FALSE)
+        next
       } else {
         if(isTRUE(writePNG)){
           png(filename = paste("activity_density_", spec.tmp, "_", Sys.Date(), ".png", sep = ""),

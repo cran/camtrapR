@@ -1,3 +1,22 @@
+Changes in camtrapR 0.99.5
+=======================
+
+bugfixes
+------------
+  o recordTable/recordTableIndividual: give warning if Exif DateTimeOriginal tag of images is unreadable (error if all tags of a station are unreadable). May happen if images files are corrupted due to camera malfunctioning.
+  o recordTable/recordTableIndividual: 2 records of the same species at the same station and same time by different cameras are not collapsed into one record if camerasIndependent = TRUE
+  o all functions using Exiftool: JPG files beginning with "._" are now ignored with a warning (these are hidden, uninformative system files created on Macs and were quite capable of messing up function calls)
+  
+new features
+------------
+  o getSpeciesImages can now also read image file paths from a record table provided by the user instead of reading species IDs anew in every function call. It gained 3 new arguments for that purpose.
+  o recordTable and recordTableIndividual both gained an argument (removeDuplicateRecords) to control whether duplicate records (same station, same species, exactly same time) should be collapsed into one record (former versions did that without asking)
+  
+other changes
+------------
+  o imageRename will first check all directories before actually renaming anything. So the function won't break halfway through, leaving you with a half-full directory of renamed images if something goes wrong (e.g. unreadable date/time tags).
+  
+  
 Changes in camtrapR 0.99.4
 =======================
 
@@ -8,7 +27,7 @@ bugfixes
   
 new features
 ------------
-  o spatialDetectionHistory gained argument "sessionCol". It can be used to split data (i,e,, create a list with multiple capthist objects) if captures come from different sessions.
+  o spatialDetectionHistory gained argument "sessionCol". It can be used to split data (i.e., create a list with multiple capthist objects) if captures come from different sessions).
   
 other changes
 ------------

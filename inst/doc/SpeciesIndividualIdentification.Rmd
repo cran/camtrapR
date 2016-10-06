@@ -84,7 +84,9 @@ The crucial point is to set up tag groups (e.g. "Species" for species identifica
 
 ![The desired tag structure shown in a digiKam screenshot](SpeciesID_digiKam.png)
 
-An **important** word of warning: image management software must be configured to write custom image metadata tags into the images themselves, not into .xmp sidecar files. The relevant functions cannot read tags from .xmp sidecar files. Make sure you set the preferences in your image management software accordingly. In digiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
+Two **important** warnings about metadata tagging: image management software must be configured to write custom image metadata tags into the images themselves, not into .xmp sidecar files. The relevant functions cannot read tags from .xmp sidecar files. Make sure you set the preferences in your image management software accordingly. In digiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
+
+Secondly, do not use spaces or interpunction in the tag group names.
 
 ### How does metadata extraction work?
 
@@ -92,16 +94,18 @@ This if for those who are interested in the technical details of how custom meta
 
 1. SpeciesA,
 1. Female1 of SpeciesB, 
-1.  both species in the same image.
+1. both species in the same image.
 
 Here's what the content of the HierarchicalSubject field would look like:
 
 Species|SpeciesA
+
 Species|SpeciesB, Individual|Female1
+
 Species|SpeciesA, Species|SpeciesB
 
 
-Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar ("|"). Adobe software also lets you use colon (":"); you can tell camtrapR which to use using argument \code{metadataHierarchyDelimitor} in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.
+Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar ("|"). Adobe software also lets you use colon (":"); you can tell camtrapR which to use using argument `metadataHierarchyDelimitor` in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.
 
 ### What if non-hierarchical metadata tags were assigned already?
 
@@ -126,7 +130,10 @@ This procedure also works for other tags, not only "Species".
 
 ## Double observer identification
 
-Double observer species identification is only available with metadata tagging, not with the drag & drop method. Both observers need to tag images independently using separate metadata tag groups (e.g. "SpeciesID_Peter" and "SpeciesID_Paul"). The function `checkSpeciesIdentification` returns conflicting species identification by several observers that can then be harmonised (see below).
+Double observer identification is only available with metadata tagging, not with the drag & drop method. It can be used both for species and individual identification (the latter with some limitations detailed below). Both observers need to tag images independently using separate metadata tag groups (e.g. "SpeciesID_Peter" and "SpeciesID_Paul"). but with both observers using identical tags for the same species/individual (e.g., not "Leopard Cat" and "leopard cat"). The function `checkSpeciesIdentification` then returns images that were assigned to different species/individuals by different observers, which can then be harmonised (see below). It also returns images that were tagged by one observer only.
+
+
+
 
 ## Comparison of identification methods
 
@@ -311,7 +318,7 @@ checkSpeciesIdentification(inDir               = wd_images_ID,
 
 ## Comparing double observer identification
 
-The second element returned by `checkSpeciesIdentification` (`IDconflictCheck`) reports on images with conflicting IDs if 2 observers identified images via metadata tagging. To that end, the arguments `metadataSpeciesTag` and `metadataSpeciesTagToCompare` need to be set. All records that differ in their assigned IDs will be reported. If `metadataSpeciesTagToCompare` is not defined, the data frame will be empty.
+The second element returned by `checkSpeciesIdentification` (`IDconflictCheck`) reports on images with conflicting IDs if two observers identified images via metadata tagging. To that end, the arguments `metadataSpeciesTag` and `metadataSpeciesTagToCompare` need to be set. All records that differ in their assigned IDs will be reported (also if one of them is empty). If `metadataSpeciesTagToCompare` is not defined, the data frame will be empty.
 
 ## Appending species names to image files
 
@@ -351,6 +358,8 @@ The function `getSpeciesImages` collects all images of a focal species from all 
 
 1. it can be used to check species identification by creating a species image report (which can then be sent for expert identification and confirmation), and
 1. it is a prerequisite for individual identification.
+
+The images that are to be copied can be specified an a record table (as returned by function `recordTable`) or, alternatively, the function can scan for all images of your target species that were identified using either the drag and drop method or metadata tagging for species identification. Please see the function help file for more detail.
 
 
 ```{r}
@@ -408,3 +417,32 @@ Individuals can be identified by moving images into individual directories, eith
 
 Metadata tagging of individual IDs is analogous to species assignment with metadata.
 
+### Double observer identification of individuals
+
+Despite its name, the function `checkSpeciesIdentification`can also be used to compare individual IDs assigned via metadata by multiple observers (with some limitations still). The idea is the same as with comparing double-observer species identifcation. In other words, the function treats individual IDs as if they were species IDs. Images of a species need to be stored in a species directory containing only images of that species (see function `getSpeciesImages`), preferably in station subdirectories. If images were not stored in station directories, the function will not be able to tell you which station the images were taken at (but you still have unique file names), do be careful when interpreting the first part of the output (the check for temporal independence).
+
+For lack of an example dataset in the package, here's two theoretical code examples which assumes tagged images of only one species in this directory C:/Users/Peter/individualID/SpeciesA, either with or without station subdirectories
+
+```{r eval = FALSE}
+# all images in one directory, no station subdirectories
+# column "station" in outtable will be uninformative
+ID_check1 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID",
+                                        stationsToCheck             = "SpeciesA",         # no station subdirectories
+                                        IDfrom                      = "metadata",
+                                        hasCameraFolders            = FALSE,
+                                        metadataSpeciesTag          = "Example_Species_ID_Paul",
+                                        metadataSpeciesTagToCompare = "Example_Species_ID_Peter",
+                                        maxDeltaTime                = 60)
+
+# check results with either of the following two:
+# ID_check1[[2]]   
+# ID_check1$IDconflictCheck   
+
+# all images in station subdirectories
+ID_check2 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID/SpeciesA",  # with station subdirectories
+                                        IDfrom                      = "metadata",
+                                        hasCameraFolders            = FALSE,
+                                        metadataSpeciesTag          = "Example_Species_ID_Paul",
+                                        metadataSpeciesTagToCompare = "Example_Species_ID_Peter",
+                                        maxDeltaTime                = 60)
+```

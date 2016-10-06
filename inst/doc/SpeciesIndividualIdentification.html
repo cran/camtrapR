@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2016-08-12" />
+<meta name="date" content="2016-10-06" />
 
 <title>Identifying species and individuals in camtrapR</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Identifying species and individuals in camtrapR</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2016-08-12</em></h4>
+<h4 class="date"><em>2016-10-06</em></h4>
 
 
 <div id="TOC">
@@ -101,7 +101,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#individual-identification">Individual identification</a><ul>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#individual-identification-by-drag-drop">Individual identification by drag &amp; drop</a></li>
-<li><a href="#individual-identification-by-metadata-tagging">Individual identification by metadata tagging</a></li>
+<li><a href="#individual-identification-by-metadata-tagging">Individual identification by metadata tagging</a><ul>
+<li><a href="#double-observer-identification-of-individuals">Double observer identification of individuals</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -172,7 +174,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <img src="data:image/png;base64,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" alt="The desired tag structure shown in a digiKam screenshot" />
 <p class="caption">The desired tag structure shown in a digiKam screenshot</p>
 </div>
-<p>An <strong>important</strong> word of warning: image management software must be configured to write custom image metadata tags into the images themselves, not into .xmp sidecar files. The relevant functions cannot read tags from .xmp sidecar files. Make sure you set the preferences in your image management software accordingly. In digiKam, go to Settings/Configure digiKam/Metadata. There, make sure “Write to sidecar files” is unchecked.</p>
+<p>Two <strong>important</strong> warnings about metadata tagging: image management software must be configured to write custom image metadata tags into the images themselves, not into .xmp sidecar files. The relevant functions cannot read tags from .xmp sidecar files. Make sure you set the preferences in your image management software accordingly. In digiKam, go to Settings/Configure digiKam/Metadata. There, make sure “Write to sidecar files” is unchecked.</p>
+<p>Secondly, do not use spaces or interpunction in the tag group names.</p>
 </div>
 <div id="how-does-metadata-extraction-work" class="section level3">
 <h3>How does metadata extraction work?</h3>
@@ -183,8 +186,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>both species in the same image.</li>
 </ol>
 <p>Here’s what the content of the HierarchicalSubject field would look like:</p>
-<p>Species|SpeciesA Species|SpeciesB, Individual|Female1 Species|SpeciesA, Species|SpeciesB</p>
-<p>Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar (“|”). Adobe software also lets you use colon (“:”); you can tell camtrapR which to use using argument  in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.</p>
+<p>Species|SpeciesA</p>
+<p>Species|SpeciesB, Individual|Female1</p>
+<p>Species|SpeciesA, Species|SpeciesB</p>
+<p>Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar (“|”). Adobe software also lets you use colon (“:”); you can tell camtrapR which to use using argument <code>metadataHierarchyDelimitor</code> in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.</p>
 </div>
 <div id="what-if-non-hierarchical-metadata-tags-were-assigned-already" class="section level3">
 <h3>What if non-hierarchical metadata tags were assigned already?</h3>
@@ -208,7 +213,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="double-observer-identification" class="section level2">
 <h2>Double observer identification</h2>
-<p>Double observer species identification is only available with metadata tagging, not with the drag &amp; drop method. Both observers need to tag images independently using separate metadata tag groups (e.g. “SpeciesID_Peter” and “SpeciesID_Paul”). The function <code>checkSpeciesIdentification</code> returns conflicting species identification by several observers that can then be harmonised (see below).</p>
+<p>Double observer identification is only available with metadata tagging, not with the drag &amp; drop method. It can be used both for species and individual identification (the latter with some limitations detailed below). Both observers need to tag images independently using separate metadata tag groups (e.g. “SpeciesID_Peter” and “SpeciesID_Paul”). but with both observers using identical tags for the same species/individual (e.g., not “Leopard Cat” and “leopard cat”). The function <code>checkSpeciesIdentification</code> then returns images that were assigned to different species/individuals by different observers, which can then be harmonised (see below). It also returns images that were tagged by one observer only.</p>
 </div>
 <div id="comparison-of-identification-methods" class="section level2">
 <h2>Comparison of identification methods</h2>
@@ -333,9 +338,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                 directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationB
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationC
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -351,12 +356,12 @@ SpeciesFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createSpecie
 <pre><code>## created 6 directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpeciesFolderCreate1</code></pre></div>
 <pre><code>##                                                                                             directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Bay Cat
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -372,12 +377,12 @@ SpecFolderCreate2 &lt;-<span class="st"> </span><span class="kw">createSpeciesFo
 <pre><code>## deleted 6 empty directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpecFolderCreate2</code></pre></div>
 <pre><code>##                                                                                             directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Bay Cat
 ##   still.exists
 ## 1        FALSE
 ## 2        FALSE
@@ -432,9 +437,9 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 ##     station
 ## 7  StationC
 ## 29 StationC
-##                                                                                                        Directory
-## 7  C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationC/EGY
-## 29 C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationC/TRA
+##                                                                                                         Directory
+## 7  C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationC/EGY
+## 29 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationC/TRA
 ##                                 FileName species    DateTimeOriginal
 ## 7  StationC__2009-04-27__00-17-00(1).JPG     EGY 2009-04-27 00:17:00
 ## 29 StationC__2009-04-27__00-19-00(1).JPG     TRA 2009-04-27 00:19:00
@@ -472,7 +477,7 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 </div>
 <div id="comparing-double-observer-identification" class="section level2">
 <h2>Comparing double observer identification</h2>
-<p>The second element returned by <code>checkSpeciesIdentification</code> (<code>IDconflictCheck</code>) reports on images with conflicting IDs if 2 observers identified images via metadata tagging. To that end, the arguments <code>metadataSpeciesTag</code> and <code>metadataSpeciesTagToCompare</code> need to be set. All records that differ in their assigned IDs will be reported. If <code>metadataSpeciesTagToCompare</code> is not defined, the data frame will be empty.</p>
+<p>The second element returned by <code>checkSpeciesIdentification</code> (<code>IDconflictCheck</code>) reports on images with conflicting IDs if two observers identified images via metadata tagging. To that end, the arguments <code>metadataSpeciesTag</code> and <code>metadataSpeciesTagToCompare</code> need to be set. All records that differ in their assigned IDs will be reported (also if one of them is empty). If <code>metadataSpeciesTagToCompare</code> is not defined, the data frame will be empty.</p>
 </div>
 <div id="appending-species-names-to-image-files" class="section level2">
 <h2>Appending species names to image files</h2>
@@ -488,15 +493,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpAVfdxL/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmpysh5ph/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_append)</code></pre></div>
 <pre><code>##                                                                          directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
 ##                            filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1).JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1).JPG     PBE
@@ -516,15 +521,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                                            <span class="dt">removeNames         =</span> <span class="ot">TRUE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpAVfdxL/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmpysh5ph/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_remove)</code></pre></div>
 <pre><code>##                                                                          directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sample_images/StationA/PBE
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
 ##                                 filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1)__PBE.JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1)__PBE.JPG     PBE
@@ -547,6 +552,7 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
 <li>it can be used to check species identification by creating a species image report (which can then be sent for expert identification and confirmation), and</li>
 <li>it is a prerequisite for individual identification.</li>
 </ol>
+<p>The images that are to be copied can be specified an a record table (as returned by function <code>recordTable</code>) or, alternatively, the function can scan for all images of your target species that were identified using either the drag and drop method or metadata tagging for species identification. Please see the function help file for more detail.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># again, we use a temporary directory for demonstration. Change this in your own code!</span>
 wd_images_species_copy &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;sampleSpeciesImages&quot;</span>)
 
@@ -558,7 +564,7 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
                                   <span class="dt">outDir                  =</span> wd_images_species_copy,
                                   <span class="dt">createStationSubfolders =</span> <span class="ot">FALSE</span>
   )</code></pre></div>
-<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images   to   C:\Users\NIEDBA~1\AppData\Local\Temp\RtmpAVfdxL/sampleSpeciesImages/VTA</code></pre>
+<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images   to   C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmpysh5ph/sampleSpeciesImages/VTA</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">specImagecopy</code></pre></div>
 <pre><code>##   species
 ## 1     VTA
@@ -566,12 +572,12 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 3     VTA
 ## 4     VTA
 ## 5     VTA
-##                                                                                                   DirectoryOrig
-## 1 C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationA/VTA
-## 2 C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationA/VTA
-## 3 C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationB/VTA
-## 4 C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationB/VTA
-## 5 C:/Users/niedballa/AppData/Local/Temp/RtmpuUMjwH/Rinstec8770fd36/camtrapR/pictures/sample_images/StationC/VTA
+##                                                                                                    DirectoryOrig
+## 1 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/VTA
+## 2 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/VTA
+## 3 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationB/VTA
+## 4 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationB/VTA
+## 5 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationC/VTA
 ##                            FilenameOrig
 ## 1 StationA__2009-04-10__05-07-00(1).JPG
 ## 2 StationA__2009-05-06__19-06-00(1).JPG
@@ -579,11 +585,11 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 4 StationB__2009-04-27__05-07-00(1).JPG
 ## 5 StationC__2009-04-24__02-57-00(1).JPG
 ##                                                                   DirectoryCopy
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sampleSpeciesImages/VTA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sampleSpeciesImages/VTA
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sampleSpeciesImages/VTA
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sampleSpeciesImages/VTA
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\RtmpAVfdxL/sampleSpeciesImages/VTA
+## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
+## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
+## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
+## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
+## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
 ##                            FilenameCopy copy_ok
 ## 1 StationA__2009-04-10__05-07-00(1).JPG    TRUE
 ## 2 StationA__2009-05-06__19-06-00(1).JPG    TRUE
@@ -622,6 +628,32 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 <div id="individual-identification-by-metadata-tagging" class="section level2">
 <h2>Individual identification by metadata tagging</h2>
 <p>Metadata tagging of individual IDs is analogous to species assignment with metadata.</p>
+<div id="double-observer-identification-of-individuals" class="section level3">
+<h3>Double observer identification of individuals</h3>
+<p>Despite its name, the function <code>checkSpeciesIdentification</code>can also be used to compare individual IDs assigned via metadata by multiple observers (with some limitations still). The idea is the same as with comparing double-observer species identifcation. In other words, the function treats individual IDs as if they were species IDs. Images of a species need to be stored in a species directory containing only images of that species (see function <code>getSpeciesImages</code>), preferably in station subdirectories. If images were not stored in station directories, the function will not be able to tell you which station the images were taken at (but you still have unique file names), do be careful when interpreting the first part of the output (the check for temporal independence).</p>
+<p>For lack of an example dataset in the package, here’s two theoretical code examples which assumes tagged images of only one species in this directory C:/Users/Peter/individualID/SpeciesA, either with or without station subdirectories</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># all images in one directory, no station subdirectories</span>
+<span class="co"># column &quot;station&quot; in outtable will be uninformative</span>
+ID_check1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir                       =</span> <span class="st">&quot;C:/Users/Peter/individualID&quot;</span>,
+                                        <span class="dt">stationsToCheck             =</span> <span class="st">&quot;SpeciesA&quot;</span>,         <span class="co"># no station subdirectories</span>
+                                        <span class="dt">IDfrom                      =</span> <span class="st">&quot;metadata&quot;</span>,
+                                        <span class="dt">hasCameraFolders            =</span> <span class="ot">FALSE</span>,
+                                        <span class="dt">metadataSpeciesTag          =</span> <span class="st">&quot;Example_Species_ID_Paul&quot;</span>,
+                                        <span class="dt">metadataSpeciesTagToCompare =</span> <span class="st">&quot;Example_Species_ID_Peter&quot;</span>,
+                                        <span class="dt">maxDeltaTime                =</span> <span class="dv">60</span>)
+
+<span class="co"># check results with either of the following two:</span>
+<span class="co"># ID_check1[[2]]   </span>
+<span class="co"># ID_check1$IDconflictCheck   </span>
+
+<span class="co"># all images in station subdirectories</span>
+ID_check2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir                       =</span> <span class="st">&quot;C:/Users/Peter/individualID/SpeciesA&quot;</span>,  <span class="co"># with station subdirectories</span>
+                                        <span class="dt">IDfrom                      =</span> <span class="st">&quot;metadata&quot;</span>,
+                                        <span class="dt">hasCameraFolders            =</span> <span class="ot">FALSE</span>,
+                                        <span class="dt">metadataSpeciesTag          =</span> <span class="st">&quot;Example_Species_ID_Paul&quot;</span>,
+                                        <span class="dt">metadataSpeciesTagToCompare =</span> <span class="st">&quot;Example_Species_ID_Peter&quot;</span>,
+                                        <span class="dt">maxDeltaTime                =</span> <span class="dv">60</span>)</code></pre></div>
+</div>
 </div>
 </div>
 

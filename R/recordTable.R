@@ -11,7 +11,8 @@ recordTable <- function(inDir,
                         outDir,
                         metadataHierarchyDelimitor = "|",
                         metadataSpeciesTag,
-                        additionalMetadataTags
+                        additionalMetadataTags,
+                        removeDuplicateRecords = TRUE
 )
 {
 
@@ -68,6 +69,8 @@ recordTable <- function(inDir,
   if(hasArg(exclude)){
     if(class(exclude) != "character"){stop("exclude must be of class 'character'", call. = FALSE)}
   }
+  
+  stopifnot(is.logical(removeDuplicateRecords))
 
   metadata.tagname <- "HierarchicalSubject"    # for extracting metadata assigned in tagging software
 
@@ -117,20 +120,9 @@ recordTable <- function(inDir,
   for(i in 1:length(dirs)){   # loop through station directories
 
     # execute exiftool
-    tmp1 <-  strsplit(system(command.tmp[i], intern=TRUE), split = "\t")
-
-    # build matrix for image metadata (station i)
-    metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
-                                         ncol  = length(colnames.tmp),
-                                         byrow = TRUE),
-                                  stringsAsFactors = FALSE)
-
-    colnames(metadata.tmp) <- colnames.tmp
-
-    rm(tmp1)
+    metadata.tmp <- runExiftool(command.tmp = command.tmp[i], colnames.tmp = colnames.tmp)
 
     # now split HierarchicalSubject tags and add as columns to table
-
        metadata.tmp <- addMetadataAsColumns (intable                     = metadata.tmp,
                                               metadata.tagname           = metadata.tagname,
                                               metadataHierarchyDelimitor = metadataHierarchyDelimitor,
@@ -184,38 +176,21 @@ recordTable <- function(inDir,
 
         # sort by (camera), species and time
         if(camerasIndependent == TRUE) {
-          metadata.tmp <- metadata.tmp[order(metadata.tmp[,speciesCol], metadata.tmp[,cameraCol], metadata.tmp$DateTimeOriginal),]
+          metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,speciesCol], metadata.tmp[,cameraCol], metadata.tmp$DateTimeOriginal),]
         } else {
-          metadata.tmp <- metadata.tmp[order(metadata.tmp[,speciesCol], metadata.tmp$DateTimeOriginal),]
+          metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,speciesCol], metadata.tmp$DateTimeOriginal),]
         }
 
     
 
-        #remove duplicate records of same species taken in same second (by the same camera, if relevant)
-        if(hasArg(cameraID)){
-          remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", speciesCol, cameraCol)]))
-          if(length(remove.tmp >= 1)) metadata.tmp <- metadata.tmp[-remove.tmp,]
-        } else {
-          remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", speciesCol)]))
-          if(length(remove.tmp >= 1)) metadata.tmp <- metadata.tmp[-remove.tmp,]
-        }
-        rm(remove.tmp)
-
-
-        # prepare to add time difference between observations columns
-        metadata.tmp2 <- data.frame(metadata.tmp,
-                                    delta.time.secs  = NA,
-                                    delta.time.mins  = NA,
-                                    delta.time.hours = NA,
-                                    delta.time.days  = NA)
-
-        # introduce column specifying independence of records
-        if(minDeltaTime == 0) {
-          metadata.tmp2$independent <- TRUE    # all independent if no temporal filtering
-        } else {
-          metadata.tmp2$independent <- NA
-        }
-
+        #remove duplicate records of same species taken in same second at the same station (by the same camera, if relevant)
+        metadata.tmp2 <- removeDuplicatesOfRecords(metadata.tmp           = metadata.tmp, 
+                                                  removeDuplicateRecords = removeDuplicateRecords, 
+                                                  camerasIndependent     = camerasIndependent, 
+                                                  stationCol             = stationCol, 
+                                                  speciesCol             = speciesCol, 
+                                                  cameraCol              = cameraCol)
+        
 
         # assess independence between records and calculate time differences
         d1 <- assessTemporalIndependence (intable             = metadata.tmp2, 

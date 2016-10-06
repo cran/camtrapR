@@ -23,7 +23,7 @@ The functions in this section set up a directory structure for storing camera tr
 \code{\link{createStationFolders}} \tab Create camera trap station directories for raw images \cr
 \code{\link{timeShiftImages}} \tab Apply time shifts to JPEG images \cr
 \code{\link{imageRename}} \tab Copy and rename images based on station ID and image creation date \cr
-\code{\link{addCopyrightTag}} \tab Write a copyright tag into JPG images \cr
+\code{\link{addCopyrightTag}} \tab Write a copyright tag into JPEG image metadata \cr
 \code{\link{appendSpeciesNames}} \tab Add or remove species names from image filenames \cr
 
 --------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
@@ -103,7 +103,7 @@ Maintainer:Juergen Niedballa <niedballa@izw-berlin.de>
 
 \references{
 Lemon, J. (2006) Plotrix: a package in the red light district of R. R-News, 6(4): 8-12. \cr
-Mike Meredith and Martin Ridout (2014). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.2.4. \url{http://CRAN.R-project.org/package=overlap} \cr
+Mike Meredith and Martin Ridout (2014). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.2.4. \url{https://CRAN.R-project.org/package=overlap} \cr
 Phil Harvey's ExifTool \url{http://www.sno.phy.queensu.ca/~phil/exiftool/ } \cr
 }
 

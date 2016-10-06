@@ -80,7 +80,7 @@ This function plots kernel density estimates of two species' diel activity data 
 Returns invisibly the \code{data.frame} with plot coordinates returned by \code{\link[overlap]{overlapPlot}}.
 }
 \references{
-Mike Meredith and Martin Ridout (2014). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.2.4. \url{http://CRAN.R-project.org/package=overlap} \cr
+Mike Meredith and Martin Ridout (2014). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.2.4. \url{https://CRAN.R-project.org/package=overlap} \cr
 Ridout, M.S. and Linkie, M. (2009) Estimating overlap of daily activity patterns from camera trap data. Journal of Agricultural, Biological and Environmental Statistics, 14, 322-337.
 }
 \author{

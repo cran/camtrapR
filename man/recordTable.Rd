@@ -21,7 +21,8 @@ recordTable(inDir,
   outDir,
   metadataHierarchyDelimitor = "|",
   metadataSpeciesTag,
-  additionalMetadataTags
+  additionalMetadataTags,
+  removeDuplicateRecords = TRUE
 )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -45,7 +46,7 @@ recordTable(inDir,
   integer. Time difference between records of the same species at the same station to be considered independent (in minutes)
 }
   \item{deltaTimeComparedTo}{
-  character. For two records to be considered independent, must the second one be at least \code{minDeltaTime} minutes after the last independent record of the same species (\code{"lastIndependentRecord"}), or \code{minDeltaTime} minutes after the last record (\code{"lastRecord"})
+  character. For two records to be considered independent, must the second one be at least \code{minDeltaTime} minutes after the last independent record of the same species (\code{"lastIndependentRecord"}), or \code{minDeltaTime} minutes after the last record (\code{"lastRecord"})?
 }
   \item{timeZone}{
   character. Must be an argument of \code{\link[base]{OlsonNames}}
@@ -68,6 +69,9 @@ recordTable(inDir,
   \item{additionalMetadataTags}{
   character. Additional camera model-specific metadata tags to be extracted.
 }
+  \item{removeDuplicateRecords}{
+  logical. If there are several records of the same species at the same station (also same camera if cameraID is defined) at exactly the same time, show only one?
+}
 }
 \details{
 The function can handle a number of different ways of storing images, and supports species identification by moving images into species directories as well as metadata tagging. In every case, images need to be stored into station directories. If images are identified by moving them into species directories, a camera directory is optional: "Station/Species/XY.JPG" or "Station/Camera/Species/XY.JPG". Likewise, if images are identified using metadata tagging, a camera directory can be used optionally: "Station/XY.JPG" or "Station/Camera/XY.JPG".
@@ -89,7 +93,7 @@ A data frame containing species records and additional information about station
 }
 
 \section{Warning }{
-Custom image metadata must be organised hierarchically (tag group - tag; e.g. "Species" - "Leopard Cat"). Detailed information on how to set up and use metadata tags can be found in \href{https://cran.r-project.org/web/packages/camtrapR/vignettes/SpeciesIndividualIdentification.html#metadata-tagging}{vignette 2: Species and Individual Identification}.
+Custom image metadata must be organised hierarchically (tag group - tag; e.g. "Species" - "Leopard Cat"). Detailed information on how to set up and use metadata tags can be found in \href{https://CRAN.R-project.org/package=camtrapR/vignettes/SpeciesIndividualIdentification.html#metadata-tagging}{vignette 2: Species and Individual Identification}.
 
 Custom image metadata tags must be written to the images. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
 }
@@ -127,6 +131,7 @@ rec.db1 <- recordTable(inDir                  = wd_images_ID,
                        additionalMetadataTags = c("Model", "Make")
 )
 
+ 
 rec.db2 <- recordTable(inDir                  = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 60,
@@ -134,11 +139,42 @@ rec.db2 <- recordTable(inDir                  = wd_images_ID,
                        exclude                = "NO_ID",
                        writecsv               = FALSE,
                        timeZone               = "Asia/Kuala_Lumpur",
-                       additionalMetadataTags = c("Model", "Make", "NonExistingMetadataTag")
+                       additionalMetadataTags = c("Model", "Make", "NonExistingMetadataTag")    
 )
+# note the warning that the last tag in "additionalMetadataTags" was not found
+
 
 any(rec.db1$Species == "NO_ID")
 any(rec.db2$Species == "NO_ID")
+
+
+#############
+# here's how the removeDuplicateRecords argument works
+
+rec.db3a <- recordTable(inDir                 = wd_images_ID,
+                       IDfrom                 = "directory",
+                       minDeltaTime           = 0,
+                       exclude                = "NO_ID",
+                       timeZone               = "Asia/Kuala_Lumpur",
+                       removeDuplicateRecords = FALSE
+)
+
+rec.db3b <- recordTable(inDir                 = wd_images_ID,
+                       IDfrom                 = "directory",
+                       minDeltaTime           = 0,
+                       exclude                = "NO_ID",
+                       timeZone               = "Asia/Kuala_Lumpur",
+                       removeDuplicateRecords = TRUE
+)
+
+
+anyDuplicated(rec.db3a[, c("Station", "Species", "DateTimeOriginal")])   # got duplicates
+anyDuplicated(rec.db3b[, c("Station", "Species", "DateTimeOriginal")])   # no duplicates
+
+# after removing duplicates, both are identical:
+whichAreDuplicated <- which(duplicated(rec.db3a[, c("Station", "Species", "DateTimeOriginal")]))
+all(rec.db3a[-whichAreDuplicated,] == rec.db3b)
+
 
 } else {                                # show function output if ExifTool is not available
 message("ExifTool is not available. Cannot test function")

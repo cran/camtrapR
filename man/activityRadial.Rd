@@ -78,7 +78,7 @@ If \code{allSpecies == TRUE}, all species' data frames are returned in an invisi
 }
 \references{
 Lemon, J. (2006) Plotrix: a package in the red light district of R. R-News, 6(4): 8-12. \cr
-\url{http://CRAN.R-project.org/package=plotrix }
+\url{https://CRAN.R-project.org/package=plotrix }
 }
 
 \author{

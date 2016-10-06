@@ -126,3 +126,26 @@ specImagecopy <- getSpeciesImages(species                 = species_to_copy,
 
 specImagecopy
 
+## ----eval = FALSE--------------------------------------------------------
+#  # all images in one directory, no station subdirectories
+#  # column "station" in outtable will be uninformative
+#  ID_check1 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID",
+#                                          stationsToCheck             = "SpeciesA",         # no station subdirectories
+#                                          IDfrom                      = "metadata",
+#                                          hasCameraFolders            = FALSE,
+#                                          metadataSpeciesTag          = "Example_Species_ID_Paul",
+#                                          metadataSpeciesTagToCompare = "Example_Species_ID_Peter",
+#                                          maxDeltaTime                = 60)
+#  
+#  # check results with either of the following two:
+#  # ID_check1[[2]]
+#  # ID_check1$IDconflictCheck
+#  
+#  # all images in station subdirectories
+#  ID_check2 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID/SpeciesA",  # with station subdirectories
+#                                          IDfrom                      = "metadata",
+#                                          hasCameraFolders            = FALSE,
+#                                          metadataSpeciesTag          = "Example_Species_ID_Paul",
+#                                          metadataSpeciesTagToCompare = "Example_Species_ID_Peter",
+#                                          maxDeltaTime                = 60)
+

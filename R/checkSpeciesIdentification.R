@@ -93,14 +93,8 @@ checkSpeciesIdentification <- function(inDir,
     colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", "HierarchicalSubject")
 
     # run exiftool and make data frame
-    tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
+    metadata.tmp <- runExiftool(command.tmp = command.tmp, colnames.tmp = colnames.tmp)
 
-    metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
-                                         ncol = length(colnames.tmp),
-                                         byrow = TRUE),
-                                  stringsAsFactors = FALSE)
-
-    colnames(metadata.tmp) <- colnames.tmp
 
     if(class(metadata.tmp) == "data.frame"){
 		if(IDfrom == "directory"){
@@ -161,7 +155,7 @@ checkSpeciesIdentification <- function(inDir,
           if(nrow(metadata.tmp.conflict) >= 1){
             conflict_ID_table <- rbind(conflict_ID_table, metadata.tmp.conflict)
           }
-        } else {warning(paste(metadataSpeciesTagToCompare, "was not found in image metadata in Station", dirs_short[i]), call. = FALSE, immediate. = TRUE)}
+        } else {warning(paste("metadata tag '", metadataSpeciesTagToCompare, "' was not found in image metadata in Station ", dirs_short[i], sep = ""), call. = FALSE, immediate. = TRUE)}
         suppressWarnings(rm(metadataSpeciesTag2, metadataSpeciesTagToCompare2, metadata.tmp.conflict))
       }
 

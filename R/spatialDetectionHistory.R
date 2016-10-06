@@ -33,6 +33,7 @@ spatialDetectionHistory <- function(recordTableIndividual,
   #################
   # check input
   stopifnot(hasArg(recordTableIndividual))
+  stopifnot(class(recordTableIndividual) == "data.frame")
   stopifnot(hasArg(camOp))
 
   stopifnot(hasArg(species))

@@ -2,10 +2,10 @@
 \alias{addCopyrightTag}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Write a copyright tag into JPG images
+Write a copyright tag into JPEG image metadata
 }
 \description{
-This function writes a copyright tag into the copyright field of JPG image Exif metadata. It does so recursively, so it works both for images that are sorted into subdirectories and unsorted images. Note that all images in subdirectories of inDir will be tagged. It is not required to run this function in the camtrapR workflow, but may be desired for data sharing or publishing.
+This function writes a copyright tag into the copyright field of JPEG image Exif metadata. It does so recursively, so it works both for images that are sorted into subdirectories and unsorted images. Note that all images in subdirectories of inDir will be tagged. It is not required to run this function in the camtrapR workflow, but may be desired for data sharing or publishing.
 }
 \usage{
 addCopyrightTag(inDir, 

@@ -21,7 +21,8 @@ recordTableIndividual(inDir,
   outDir,
   metadataHierarchyDelimitor = "|",
   metadataIDTag,
-  additionalMetadataTags
+  additionalMetadataTags,
+  removeDuplicateRecords = TRUE
 )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -45,7 +46,7 @@ recordTableIndividual(inDir,
   numeric. time difference between observation of the same individual at the same station/camera to be considered independent (in minutes)
 }
   \item{deltaTimeComparedTo}{
-  character. For two records to be considered independent, must the second one be at least \code{minDeltaTime} minutes after the last independent record of the same individual (\code{"lastIndependentRecord"}), or \code{minDeltaTime} minutes after the last record (\code{"lastRecord"})
+  character. For two records to be considered independent, must the second one be at least \code{minDeltaTime} minutes after the last independent record of the same individual (\code{"lastIndependentRecord"}), or \code{minDeltaTime} minutes after the last record (\code{"lastRecord"})?
 }
   \item{timeZone}{
   character. \code{timeZone} must be an argument of \code{\link[base]{OlsonNames}}
@@ -68,6 +69,9 @@ recordTableIndividual(inDir,
   \item{additionalMetadataTags}{
   character. additional camera model-specific metadata tags to be extracted.
 }
+  \item{removeDuplicateRecords}{
+  logical. If there are several records of the same individual at the same station (also same camera if cameraID is defined) at exactly the same time, show only one?
+}
 }
 \details{
 The function can handle a number of different ways of storing images. In every case, images need to be stored in a species directory first (e.g. using function \code{\link{getSpeciesImages}}). Station subdirectories are optional. Camera subdirectories are not allowed. This directory structure can be created easily with function \code{\link{getSpeciesImages}}.
@@ -87,7 +91,7 @@ A data frame containing species records with individual IDs and additional infor
 }
 
 \section{Warning }{
-Be sure to read the section on individual identification in the package vignette (\url{https://cran.r-project.org/web/packages/camtrapR/vignettes/SpeciesIndividualIdentification.html}).
+Be sure to read the section on individual identification in the package vignette (\url{https://CRAN.R-project.org/package=camtrapR/vignettes/SpeciesIndividualIdentification.html}).
   
 Af you use image metadata tags for identification, the tags must be written to the image metadata. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences of your image management software accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
 }
