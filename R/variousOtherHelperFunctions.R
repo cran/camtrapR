@@ -6,10 +6,10 @@
 {
   # Create URL
   cran_pkg_loc = paste0(cran_url,pkg)
-  
+
   # Try to establish a connection
   suppressWarnings( conn <- try( url(cran_pkg_loc) , silent=TRUE ) )
-  
+
   # If connection, try to parse values, otherwise return NULL
   if ( all( class(conn) != "try-error") ) {
     suppressWarnings( cran_pkg_page <- try( readLines(conn) , silent=TRUE ) )
@@ -17,18 +17,41 @@
   } else {
     return(NULL)
   }
-  
+
   # Extract version info
   version_line = cran_pkg_page[grep("Version:",cran_pkg_page)+1]
   gsub("<(td|\\/td)>","",version_line)
 }
 
 
+# for all functions in which user specifies column names: error if spaces in column names
+checkForSpacesInColumnNames <- function(...){
+
+  z <- list(...)
+
+  # if all arguments are of length 1, do
+  if(all(sapply(z, FUN = length) == 1)){
+    if(any(grepl(pattern = " ", x = unlist(z), fixed = TRUE))) stop("column names may not contain spaces: \n ",
+                                                                     paste(names(z)[which(grepl(pattern = " ", x = unlist(z), fixed = TRUE))], "=",
+                                                                           z[which(grepl(pattern = " ", x = unlist(z), fixed = TRUE))], collapse = "\n "),
+                                                                     call. = FALSE)
+  }
+
+  # if the argument is of length >1, do
+  if(any(sapply(z, FUN = length) > 1)){
+    if(length(z) != 1) stop("this is a bug in 'checkForSpacesInColumnNames'. I'm sorry. Please report it.")
+    if(any(grepl(pattern = " ", x = unlist(z[[1]]), fixed = TRUE))) stop("column names in '", names(z) ,"' may not contain spaces: \n ",
+                                                                         paste(names(unlist(z))[which(grepl(pattern = " ", x = unlist(z), fixed = TRUE))], "=",
+                                                                               z[[1]][which(grepl(pattern = " ", x = unlist(z), fixed = TRUE))], collapse = "\n "),
+                                                                         call. = FALSE)
+  }
+}
+
 
 
 # for functions reading out and tabulating image metadata
 
-runExiftool <- function(command.tmp, 
+runExiftool <- function(command.tmp,
                         colnames.tmp)
 {
   tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
@@ -37,9 +60,9 @@ runExiftool <- function(command.tmp,
                                      byrow = TRUE),
                               stringsAsFactors = FALSE)
   colnames(metadata.tmp) <- colnames.tmp
-  
+
   # find and remove ._ files created on Macs
-  strangeMacFiles <- grep("^[._]", metadata.tmp$FileName, fixed = FALSE)  
+  strangeMacFiles <- grep("^[._]", metadata.tmp$FileName, fixed = FALSE)
   if(length(strangeMacFiles) >= 1)  {
     warning(paste("found", length(strangeMacFiles), "JPG files beginning with '._' in", paste(unique(metadata.tmp$Directory[strangeMacFiles]), collapse = ","), ". Will ignore them."), call. = FALSE, immediate. = TRUE)
     metadata.tmp <- metadata.tmp[-strangeMacFiles,]
@@ -222,7 +245,7 @@ addStationCameraID <- function(intable,
 
   # remove duplicate records of same species taken in same second at the same station (by the same camera, if relevant)
   # Note to self: this may also be done outside the station loop, after the final record table is assembled. Saves a few executions of this function.
-  
+
   removeDuplicatesOfRecords <- function(metadata.tmp, removeDuplicateRecords, camerasIndependent, stationCol, speciesCol, cameraCol){
           if(isTRUE(removeDuplicateRecords)){
             if(isTRUE(camerasIndependent)){
@@ -258,7 +281,7 @@ assessTemporalIndependence <- function(intable,
     which.tmp <- which(is.na(intable$DateTimeOriginal))
     if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), "Consider checking for corrupted Exif metadata.")
     warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them. Consider checking for corrupted Exif metadata. \n",
-      paste(file.path(intable[which.tmp, "Directory"], 
+      paste(file.path(intable[which.tmp, "Directory"],
                       intable[which.tmp, "FileName"]), collapse = "\n")), call. = FALSE, immediate. = TRUE)
     intable <- intable[-which.tmp ,]
     rm(which.tmp)
@@ -270,19 +293,19 @@ assessTemporalIndependence <- function(intable,
                               delta.time.mins  = NA,
                               delta.time.hours = NA,
                               delta.time.days  = NA)
-       
-   # introduce column specifying independence of records       
+
+   # introduce column specifying independence of records
         if(minDeltaTime == 0) {
           intable$independent <- TRUE    # all independent if no temporal filtering
         } else {
           intable$independent <- NA
         }
 
-                                    
+
   for(xy in 1:nrow(intable)){     # for every record
 
     # set independent = TRUE if it is the 1st/only  record of a species / individual
-    
+
     if(camerasIndependent == TRUE){
       if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which(intable[, columnOfInterest] == intable[xy, columnOfInterest] &
                                                                              intable[, stationCol]       == intable[xy, stationCol] &
@@ -581,7 +604,7 @@ cleanSubsetSpecies <- function(subset_species2 ,
   remove.these <- which(subset_species2$DateTime2 < corrected_start_time_by_record)
     if(length(remove.these) >= 1){
       subset_species2 <- subset_species2[-remove.these,]
-      warning(paste(length(remove.these), "records out of", nrow_subset_species2, "were removed because they were taken within the buffer period or before occasionStartTime on the 1st day"), call. = FALSE)
+      warning(paste(length(remove.these), "records out of", nrow_subset_species2, "were removed because they were taken within the buffer period, before day1 (if a date was specified), or before occasionStartTime on the 1st day"), call. = FALSE)
       if(nrow(subset_species2) == 0) stop("No more records left. The detection history would be empty.")
       rm(corrected_start_time_by_record, remove.these)
     }

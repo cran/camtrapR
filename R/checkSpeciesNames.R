@@ -11,13 +11,15 @@ checkSpeciesNames <- function(speciesNames,
   speciesNames <- unique(as.character(speciesNames))
 
   file.sep <- .Platform$file.sep
-  
+
   # query ITIS TSN (taxnonomic serial number)
   tsns <- get_tsn(searchterm = speciesNames,
                   searchtype = searchtype,
                   verbose    = FALSE,
                   accepted   = accepted,
                   ask        = ask)
+
+  tsns <- as.tsn(unique(tsns), check = FALSE)    # remove duplicates
 
   # warning if a name was not found
   if(any(is.na(tsns))){
@@ -28,48 +30,82 @@ checkSpeciesNames <- function(speciesNames,
     tsns_worked <- tsns
   }
 
-  if(any(!is.na(tsns))){
+  if(length(tsns_worked) >= 1){
 
-  scientific <- common <- author <- rankname  <- taxon_status <- data.frame()
+    scientific <- common <- author <- rankname  <- taxon_status <- data.frame(matrix(NA,
+                                                                                     nrow = length(tsns_worked),
+                                                                                     ncol = 2),
+                                                                              stringsAsFactors = FALSE)
 
-  for(i in 1:length(tsns_worked)){
-    scientific   <- rbind(scientific,   getscientificnamefromtsn (tsns_worked[i]))       # get scientific names
-    common       <- rbind(common,       getcommonnamesfromtsn (tsns_worked[i]))          # get common names
-    author       <- rbind(author,       gettaxonauthorshipfromtsn (tsns_worked[i]))      # get author
-  	rankname     <- rbind(rankname,     gettaxonomicranknamefromtsn (tsns_worked[i]))    # get rank name
-	  if(accepted == FALSE) taxon_status <- rbind(taxon_status, getcoremetadatafromtsn (tsns_worked[i]))         # get taxonomic status
-  }
+    colnames(scientific)   <- c("tsn", "combinedname")
+    colnames(common)       <- c("tsn", "commonName")
+    colnames(author)       <- c("tsn", "authorship")
+    colnames(rankname)     <- c("tsn", "rankname")
+    colnames(taxon_status) <- c("tsn", "taxonUsageRating")
 
-  # if more than 1 common name, condense
-  if(any(table(common$tsn) > 1)) {
-    common2 <- tapply(common$comname, INDEX = common$tsn, FUN = paste, collapse = file.sep)
-    common <- data.frame(comname = common2,
-                         tsn     = rownames(common2))
-  }
 
-  # make outtable
-  dat.out <- data.frame(user_name       = speciesNames,
-                        tsn             = as.numeric(tsns),
-                        scientific_name = NA,
-                        taxon_author    = NA,
-                        common_name     = NA,
-                        rankname        = NA,
-                        taxon_status    = NA,
-                        itis_url        = NA)
+    for(i in 1:length(tsns_worked)){
 
-  dat.out$scientific_name[match(scientific$tsn, dat.out$tsn)] <- scientific$combinedname
-  dat.out$taxon_author[match(author$tsn, dat.out$tsn)]        <- author$authorship
-  dat.out$common_name[match(common$tsn, dat.out$tsn)]         <- common$comname
-  dat.out$rankname[match(rankname$tsn, dat.out$tsn)]          <- rankname$rankname
-  dat.out$itis_url[match(tsns_worked, dat.out$tsn)]           <- attributes(tsns_worked)$uri
+      scientific_tmp   <- ritis::scientific_name  (tsns_worked[i])   # get scientific names
+      common_tmp       <- ritis::common_names     (tsns_worked[i])   # get common names
+      author_tmp       <- ritis::taxon_authorship (tsns_worked[i])   # get author
+      rankname_tmp     <- ritis::rank_name        (tsns_worked[i])   # get rank name
 
-  if(accepted == FALSE){
-    dat.out$taxon_status[match(taxon_status$tsn, dat.out$tsn)]  <- taxon_status$taxonusagerating
-  } else {
-    dat.out$taxon_status[!is.na(dat.out$tsn)]  <- "accepted"
-  }
+      if("tsn" %in% colnames(scientific_tmp)) {
+        scientific[i,] <- scientific_tmp [c("tsn", "combinedname")]
+      }
 
-  return(dat.out)
+      if("tsn" %in% colnames(common_tmp)) {
+        # if more than 1 common name, condense
+        if(table(common_tmp$tsn) > 1) {
+          common2 <- tapply(common_tmp$commonName, INDEX = common_tmp$tsn, FUN = paste, collapse = file.sep)
+          common_tmp <- data.frame(commonName = common2,
+                                   tsn        = rownames(common2),
+                                   stringsAsFactors = FALSE)
+        }
+        common[i,] <- common_tmp [,c("tsn", "commonName")]
+      }
 
-  } else {stop("found no TSNs for speciesNames")}   # error if no tsns found
+      if("tsn" %in% colnames(author_tmp)) {
+        author[i,] <- author_tmp [c("tsn", "authorship")]
+      }
+
+      if("tsn" %in% colnames(rankname_tmp)) {
+        rankname[i,] <- rankname_tmp [c("tsn", "rankname")]
+      }
+
+      if(accepted == FALSE){
+        taxon_status_tmp <- ritis::core_metadata (tsns_worked[i])  # get taxonomic status
+
+        if("tsn" %in% colnames(taxon_status_tmp)) {
+          taxon_status[i,] <- taxon_status_tmp [c("tsn", "taxonUsageRating")]
+        }
+      }
+    }
+
+
+    # make outtable
+    dat.out <- data.frame(user_name       = speciesNames,
+                          tsn             = as.numeric(tsns))
+
+
+    dat.out <- merge(x = dat.out, y = scientific, by = "tsn", all.x = TRUE, sort = FALSE)
+    dat.out <- merge(x = dat.out, y = common,     by = "tsn", all.x = TRUE, sort = FALSE)
+    dat.out <- merge(x = dat.out, y = author,     by = "tsn", all.x = TRUE, sort = FALSE)
+    dat.out <- merge(x = dat.out, y = rankname,   by = "tsn", all.x = TRUE, sort = FALSE)
+
+    dat.out$itis_url <- NA
+    dat.out$itis_url [match(tsns_worked, dat.out$tsn)]       <- attributes(tsns_worked)$uri
+
+    colnames(dat.out)[colnames(dat.out) == "combinedname"] <- "scientificName"
+
+    if(accepted == FALSE){
+      dat.out <- merge(x = dat.out, y = taxon_status, by = "tsn", all.x = TRUE, sort = FALSE)
+    } else {
+      dat.out$taxon_status[!is.na(dat.out$tsn)]  <- "valid"
+    }
+
+    return(dat.out)
+
+  } else {stop("found no TSNs for speciesNames", call. = FALSE)}   # error if no tsns found
 }

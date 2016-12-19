@@ -22,6 +22,8 @@ recordTable <- function(inDir,
   if(hasArg(stationCol) == FALSE) stationCol <- "Station"
   stopifnot(is.character(stationCol))
   speciesCol <- "Species"
+  
+  checkForSpacesInColumnNames(stationCol = stationCol)
 
   if(class(IDfrom) != "character"){stop("IDfrom must be of class 'character'")}
   if(IDfrom %in% c("metadata", "directory") == FALSE) stop("'IDfrom' must be 'metadata' or 'directory'")
@@ -48,7 +50,7 @@ recordTable <- function(inDir,
 
   if(hasArg(metadataSpeciesTag)){
     if(class(metadataSpeciesTag) != "character"){stop("metadataSpeciesTag must be of class 'character'", call. = FALSE)}
-    if(length(metadataSpeciesTag) != 1){stop("metadataSpeciesTag must be of lenght 1", call. = FALSE)}
+    if(length(metadataSpeciesTag) != 1){stop("metadataSpeciesTag must be of length 1", call. = FALSE)}
   }
 
   if(hasArg(cameraID)){
@@ -76,6 +78,11 @@ recordTable <- function(inDir,
 
   if(hasArg(additionalMetadataTags)){
     if(class(additionalMetadataTags) != "character"){stop("additionalMetadataTags must be of class 'character'", call. = FALSE)}
+    if(any(grep(pattern = " ", x = additionalMetadataTags, fixed = TRUE))) stop("In argument additionalMetadataTags, spaces are not allowed")
+    if("HierarchicalSubject" %in% additionalMetadataTags & IDfrom == "metadata")  {
+      warning("'HierarchicalSubject' may not be in 'additionalMetadataTags' if IDfrom = 'metadata'. It will be ignored because the function returns it anyway.", call. = FALSE)
+      additionalMetadataTags <- additionalMetadataTags[-grep(pattern = "HierarchicalSubject", x = additionalMetadataTags)]  # remove it
+    }
   }
 
   minDeltaTime <- as.integer(minDeltaTime)
@@ -257,14 +264,15 @@ recordTable <- function(inDir,
 
   # warning if additionalMetadataTags were not found
   if(hasArg(additionalMetadataTags)){
-    whichadditionalMetadataTagsFound <- which(additionalMetadataTags %in% colnames(record.table3))
+    whichadditionalMetadataTagsFound <- which(gsub(additionalMetadataTags, pattern = ":", replacement = ".") %in% colnames(record.table3))   # replace : in additionalMetadataTags (if specifying tag groups) with . as found in column names
     if(length(whichadditionalMetadataTagsFound) < length(additionalMetadataTags)){
       warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
     }
   }
 
   # remove hierarchicalSubject and independent columns
-  cols_to_remove <- which(colnames(record.table3) %in% c(metadata.tagname, "independent"))
+  #cols_to_remove <- which(colnames(record.table3) %in% c(metadata.tagname, "independent"))
+  cols_to_remove <- which(colnames(record.table3) %in% c("independent"))
   if(length(cols_to_remove) >= 1){
     record.table3 <- record.table3[,-cols_to_remove]
   }

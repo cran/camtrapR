@@ -1,5 +1,5 @@
 cameraOperation <- function(CTtable,
-                            stationCol,
+                            stationCol = "Station",
                             cameraCol,
                             setupCol,
                             retrievalCol,
@@ -14,16 +14,19 @@ cameraOperation <- function(CTtable,
   # check and prepare input
   wd0 <- getwd()
   on.exit(setwd(wd0))
-    
-  stopifnot(hasArg(stationCol))
+     
+  checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol)
+  if(!stationCol %in% colnames(CTtable))    stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!setupCol %in% colnames(CTtable))       stop(paste('setupCol = "',      setupCol,       '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!retrievalCol %in% colnames(CTtable)) stop(paste('retrievalCol = "', retrievalCol, '" is not a column name in CTtable', sep = ''), call. = FALSE)
+
+
   stopifnot(length(stationCol) == 1)
   CTtable[,stationCol] <- as.character(CTtable[,stationCol])
 
-  stopifnot(hasArg(setupCol))
   stopifnot(length(setupCol) == 1)
   CTtable[,setupCol] <- as.character(CTtable[,setupCol])
 
-  stopifnot(hasArg(retrievalCol))
   stopifnot(length(retrievalCol) == 1)
   CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
 
@@ -31,7 +34,7 @@ cameraOperation <- function(CTtable,
   stopifnot(is.logical(hasProblems))
 
 
-  
+
   if(hasArg(byCamera)) {
     stopifnot(is.logical(byCamera))
     if(isTRUE(byCamera) & hasArg(cameraCol) == FALSE){
@@ -43,6 +46,8 @@ cameraOperation <- function(CTtable,
 
 
   if(hasArg(cameraCol)){
+    checkForSpacesInColumnNames(cameraCol = cameraCol)
+    if(!cameraCol %in% colnames(CTtable)) stop(paste('cameraCol = "', cameraCol, '" is not a column name in CTtable', sep = ''), call. = FALSE)
     if(hasArg(byCamera) == FALSE) stop("if cameraCol is set, byCamera must be specified")
     CTtable[,cameraCol] <- as.character(CTtable[,cameraCol])
     stopifnot(cameraCol %in% colnames(CTtable))
@@ -86,17 +91,17 @@ cameraOperation <- function(CTtable,
   }
 
     if(isTRUE(hasProblems)){
-         
+
       cols.prob.from <- grep(colnames(CTtable), pattern = "Problem\\d\\Sfrom")
       cols.prob.to    <- grep(colnames(CTtable), pattern = "Problem\\d\\Sto")
-      
+
       if(length(cols.prob.from) == 0) stop("could not find column ProblemX_from")
       if(length(cols.prob.to) == 0) stop("could not find column ProblemX_to")
-          
+
       if(length(cols.prob.from) != length(cols.prob.to)){
         stop("length of 'Problem..._from' and 'Problem..._to' columns differs. Check format. Sample: 'Problem1_from', 'Problem1_to'")
       }
-      
+
       for(xy in c(cols.prob.from, cols.prob.to)){
         CTtable[,xy] <- as.Date(as.character(CTtable[,xy]), format = dateFormat,  origin = "1970-01-01")
       }
@@ -110,21 +115,24 @@ cameraOperation <- function(CTtable,
         if(any(CTtable[,retrievalCol] < CTtable[,xyz2], na.rm = TRUE)){
           stop(paste(paste(CTtable[which(CTtable[,retrievalCol] < CTtable[,xyz2]), stationCol], collapse = ", "), ": Problem ends after retrieval"))
         }
-      }  
+      }
       rm(xy, xyz, xyz2)
     }
-  
+
   # function
 
   if(hasArg(cameraCol)){      # there is a camera column, i.e., potentially > 1 cameras per station
-    stationcam <- paste(CTtable[,stationCol], CTtable[,cameraCol], sep = "_")
+    stationCamSeparator <- "__"
+    if(length(grep(pattern = stationCamSeparator, x = CTtable[,stationCol])) >= 1) stop("Station IDs may not contain double underscores ('__')", call. = FALSE)
+    if(length(grep(pattern = stationCamSeparator, x = CTtable[,cameraCol])) >= 1)  stop("Camera IDs may not contain double underscores ('__')",  call. = FALSE)
+    stationcam <- paste(CTtable[,stationCol], CTtable[,cameraCol], sep = stationCamSeparator)
     m <- matrix(ncol = abs(as.integer(max(CTtable[,retrievalCol]) - min(CTtable[,setupCol]))) + 1,
                 nrow  = length(stationcam))
     colnames(m) <- as.character(as.Date(min(CTtable[,setupCol]):max(CTtable[,retrievalCol]), origin = "1970-01-01"))
     rownames(m) <- stationcam
 
      # fill camera operation matrix (if at least 1 cam operational per station)
-    unique.tmp <- strsplit(stationcam, split = "_")
+    unique.tmp <- strsplit(stationcam, split = stationCamSeparator)
 
 
     for(i in 1:length(unique.tmp)){
@@ -135,7 +143,7 @@ cameraOperation <- function(CTtable,
     # camera retrieval date
       date1 <- as.character(max(CTtable[,retrievalCol][CTtable[,stationCol] == unique.tmp[[i]][1] &
                                                        CTtable[,cameraCol]  == unique.tmp[[i]][2]]))
-    
+
     # fill matrix between setup and retrieval with 1
       m[i, seq(from = match(date0, colnames(m)),
                to   = match(date1, colnames(m)), by = 1)] <- 1
@@ -179,8 +187,8 @@ cameraOperation <- function(CTtable,
         if(any(dat2.na == TRUE)){dat2[which(dat2.na == TRUE)] <- NA}
         rm(dat2.na)
 
-        if(camerasIndependent == FALSE){   
-          dat2 <- ifelse(dat2 >= 2,1,dat2) 
+        if(camerasIndependent == FALSE){
+          dat2 <- ifelse(dat2 >= 2,1,dat2)
         }
         dat2 <- dat2[match(unique(CTtable[,stationCol]), rownames(dat2)),]  # rearrange row order
         dat2 <- as.data.frame(dat2)
@@ -191,8 +199,8 @@ cameraOperation <- function(CTtable,
   } else {     # if there is no camera column, i.e., only 1 camera per station
 
   # return error if duplicate stations (i.e. more than 1 row per station)
-    if(any(duplicated(CTtable[,stationCol])))   stop("at least 1 station has more than 1 item in CTtable. Please specify 'cameraCol'", call. = FALSE)   
-    
+    if(any(duplicated(CTtable[,stationCol])))   stop("at least 1 station has more than 1 item in CTtable. Please specify 'cameraCol'", call. = FALSE)
+
     m <- matrix(ncol = abs(as.integer(max(CTtable[,retrievalCol]) - min(CTtable[,setupCol]))) + 1,
                 nrow = length(unique(CTtable[,stationCol])))
     colnames(m) <- as.character(as.Date(min(CTtable[,setupCol]):max(CTtable[,retrievalCol]),
@@ -237,12 +245,12 @@ cameraOperation <- function(CTtable,
   # assemble parts of outfile name (according to function arguments)
     hasProblemsString <- ifelse(isTRUE(hasProblems), "with_problems_", "")
 
-    if(hasArg(cameraCol)){ 
-      byCameraString <- ifelse(isTRUE(byCamera), "by_camera", "by_station")    
+    if(hasArg(cameraCol)){
+      byCameraString <- ifelse(isTRUE(byCamera), "by_camera", "by_station")
      } else {
       byCameraString <- "by_station"
      }
-     
+
     filename.out <- paste("CameraOperationMatrix_",byCameraString, "_", hasProblemsString, Sys.Date(), ".csv", sep = "")
 
     if(hasArg(outDir) == FALSE){

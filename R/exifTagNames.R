@@ -1,7 +1,12 @@
-exifTagNames <- function(inDir, whichSubDir = 1, returnMetadata = FALSE){
+exifTagNames <- function(inDir, 
+                                  whichSubDir = 1, 
+                                  returnMetadata = FALSE, 
+                                  returnTagGroup = TRUE){
 
   stopifnot(file.exists(inDir))
   stopifnot(is.logical(returnMetadata))
+  stopifnot(is.logical(returnTagGroup))
+  
   if(Sys.which("exiftool") == "") stop("cannot find ExifTool")
   dirs.tmp <- list.dirs(inDir, recursive = FALSE, full.names = TRUE)
 
@@ -14,12 +19,12 @@ exifTagNames <- function(inDir, whichSubDir = 1, returnMetadata = FALSE){
   if(length(file.tmp) == 0) stop(paste("found no jpg in ", dirs.tmp[whichSubDir], sep = "\n"))
 
   if(returnMetadata == FALSE){
-    command.tmp  <- paste('exiftool -csv "', file.tmp, '"', sep = "")
+    command.tmp  <- paste('exiftool -csv', ifelse(returnTagGroup, ' -G',  ''), ' "', file.tmp, '"', sep = "")
     metadata.tmp <- system(command.tmp, intern=TRUE)
     tagnames     <- sort(unlist(strsplit(metadata.tmp[[1]], split = ",")))
     return (tagnames)
   } else {
-    command.tmp  <- paste('exiftool  "', file.tmp, '"', sep = "")
+    command.tmp  <- paste('exiftool ', ifelse(returnTagGroup, ' -G',  ''), ' "', file.tmp, '"', sep = "")
     metadata.tmp <- system(command.tmp, intern=TRUE)
     return (metadata.tmp)
   }

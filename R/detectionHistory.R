@@ -22,6 +22,13 @@ detectionHistory <- function(recordTable,
   on.exit(setwd(wd0))
   #################
   # check input
+  
+  # check column names
+  checkForSpacesInColumnNames(stationCol = stationCol, speciesCol = speciesCol, recordDateTimeCol = recordDateTimeCol)
+  if(!stationCol %in% colnames(recordTable))  stop(paste('stationCol = "', stationCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!speciesCol %in% colnames(recordTable))  stop(paste('speciesCol = "', speciesCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!recordDateTimeCol %in% colnames(recordTable))  stop(paste('recordDateTimeCol = "', recordDateTimeCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  
 
   stopifnot(hasArg(species))
   stopifnot(is.character(species))
@@ -34,20 +41,17 @@ detectionHistory <- function(recordTable,
   stopifnot(hasArg(camOp))
 
   stopifnot(hasArg(stationCol))
-  stopifnot(stationCol %in% colnames(recordTable))
   stopifnot(length(stationCol) == 1)
   recordTable[,stationCol] <- as.character(recordTable[,stationCol])
   stopifnot(is.character(stationCol))
 
   stopifnot(hasArg(speciesCol))
-  stopifnot(speciesCol %in% colnames(recordTable))
   stopifnot(length(speciesCol) == 1)
   recordTable[,speciesCol] <- as.character(recordTable[,speciesCol])
   stopifnot(is.character(speciesCol))
 
 
   stopifnot(hasArg(recordDateTimeCol))
-  stopifnot(recordDateTimeCol %in% colnames(recordTable))
   stopifnot(length(recordDateTimeCol) == 1)
   recordTable[,recordDateTimeCol] <- as.character(recordTable[,recordDateTimeCol])   # make character to get rid of attributes. Will later assign time zone again
   stopifnot(is.character(recordDateTimeCol))

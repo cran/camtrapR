@@ -19,10 +19,12 @@ recordTableIndividual <- function(inDir,
   wd0 <- getwd()
   on.exit(setwd(wd0))
 
-  if(hasArg(stationCol) == FALSE) stationCol <- "Station"
+  if(!hasArg(stationCol)) stationCol <- "Station"
   stopifnot(is.character(stationCol))
   individualCol <- "Individual"
   speciesCol    <- "Species"
+  
+   checkForSpacesInColumnNames(stationCol = stationCol)
 
   # check input
   if(hasArg(timeZone) == FALSE) {
@@ -71,6 +73,11 @@ recordTableIndividual <- function(inDir,
 
   if(hasArg(additionalMetadataTags)){
     if(class(additionalMetadataTags) != "character"){stop("additionalMetadataTags must be of class 'character'", call. = FALSE)}
+    if(any(grep(pattern = " ", x = additionalMetadataTags, fixed = TRUE))) stop("In argument additionalMetadataTags, spaces are not allowed")
+    if("HierarchicalSubject" %in% additionalMetadataTags & IDfrom == "metadata")  {
+      warning("'HierarchicalSubject' may not be in 'additionalMetadataTags' if IDfrom = 'metadata'. It will be ignored because the function returns it anyway.", call. = FALSE)
+      additionalMetadataTags <- additionalMetadataTags[-grep(pattern = "HierarchicalSubject", x = additionalMetadataTags)]  # remove it
+    }
   }
   
   stopifnot(is.logical(removeDuplicateRecords))
@@ -142,6 +149,7 @@ recordTableIndividual <- function(inDir,
     } else {
 
       message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
+      
 
       # add individual ID to metadata table (from folders or metadata, otherwise NA)
 
@@ -253,9 +261,9 @@ recordTableIndividual <- function(inDir,
   record.table3$delta.time.hours <- round(record.table3$delta.time.mins  / 60, digits = 1)
   record.table3$delta.time.days  <- round(record.table3$delta.time.hours / 24, digits = 1)
 
-  # warning if additionalMetadataTags were not found
+   # warning if additionalMetadataTags were not found
   if(hasArg(additionalMetadataTags)){
-    whichadditionalMetadataTagsFound <- which(additionalMetadataTags %in% colnames(record.table3))
+    whichadditionalMetadataTagsFound <- which(gsub(additionalMetadataTags, pattern = ":", replacement = ".") %in% colnames(record.table3))   # replace : in additionalMetadataTags (if specifying tag groups) with . as found in column names
     if(length(whichadditionalMetadataTagsFound) < length(additionalMetadataTags)){
       warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
     }

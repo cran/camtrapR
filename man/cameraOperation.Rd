@@ -9,7 +9,7 @@ Construct a matrix of daily camera trap station operability for use in \code{\li
 }
 \usage{
 cameraOperation(CTtable, 
-  stationCol, 
+  stationCol = "Station", 
   cameraCol, 
   setupCol, 
   retrievalCol, 

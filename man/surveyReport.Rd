@@ -2,7 +2,7 @@
 \alias{surveyReport}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Create a report about s camera trapping survey and species detections
+Create a report about a camera trapping survey and species detections
 }
 \description{
 This function creates a report about a camera trapping survey and species records. It uses a camera trap station information table and a record table (generated with \code{\link{recordTable}}) as input. Output tables can be saved and a zip file for simple data sharing can be created easily.

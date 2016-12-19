@@ -15,16 +15,25 @@ surveyReport <- function(recordTable,
                          makezip
 ){
 
-  stopifnot(c(stationCol, setupCol, retrievalCol) %in% colnames(CTtable))
-  stopifnot(c(stationCol, recordDateTimeCol, speciesCol) %in% colnames(recordTable))
-
+  # check column names
+  checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol, 
+                                         recordDateTimeCol = recordDateTimeCol, speciesCol = speciesCol)
+  if(!stationCol %in% colnames(CTtable))     stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!setupCol %in% colnames(CTtable))        stop(paste('setupCol = "',   setupCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!retrievalCol %in% colnames(CTtable))  stop(paste('retrievalCol = "',   retrievalCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  
+  if(!stationCol %in% colnames(recordTable))            stop(paste('stationCol = "',   stationCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!recordDateTimeCol %in% colnames(recordTable))  stop(paste('recordDateTimeCol = "', recordDateTimeCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!speciesCol %in% colnames(recordTable))            stop(paste('speciesCol = "', speciesCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  
+  
   # make columns character
   recordTable[,speciesCol]        <- as.character(recordTable[,speciesCol])
   recordTable[,stationCol]        <- as.character(recordTable[,stationCol])
   recordTable[,recordDateTimeCol] <- as.character(recordTable[,recordDateTimeCol])
 
-  CTtable[,stationCol]   <- as.character(CTtable[,stationCol])
-  CTtable[,setupCol]     <- as.character(CTtable[,setupCol])
+  CTtable[,stationCol]    <- as.character(CTtable[,stationCol])
+  CTtable[,setupCol]       <- as.character(CTtable[,setupCol])
   CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
 
 

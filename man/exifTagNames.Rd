@@ -10,7 +10,8 @@ The function will return sample metadata and tag names of Exif metadata of JPEG 
 \usage{
 exifTagNames(inDir, 
   whichSubDir = 1,
-  returnMetadata = FALSE)
+  returnMetadata = FALSE,
+  returnTagGroup = TRUE)
 }
 
 \arguments{
@@ -23,12 +24,18 @@ exifTagNames(inDir,
 \item{returnMetadata}{
   logical. Return actual metadata (TRUE) or metadata tag names only (FALSE)
 }
+\item{returnTagGroup}{
+  logical. Return tag group along with tag names (e.g. EXIF, IPTC, XMP, MakerNotes)
+}
 }
 \details{
-Many digital cameras record information such as ambient temperature or moon phase under maker-specific tag names in Exif metadata of JPEG images. The tag names must be known to be passed to the functions \code{\link{recordTable}} and \code{\link{recordTableIndividual}} via the \code{additionalMetadataTags} argument to extract those information from images and add them to the record tables.
+Many digital cameras record information such as ambient temperature or moon phase under maker-specific tag names in Exif metadata of JPEG images. In addition, many technical information are stored in Exif metadata. In order to extract those information from images and add them to the record tables created by the functions \code{\link{recordTable}} and \code{\link{recordTableIndividual}}, the tag names must be known so they can be passed to these functions via the \code{additionalMetadataTags} argument.
+
+By default the function returns both metadata tag names and the metadata group they belong to (via argument \code{returnTagGroup}). This is helpful to unambiguously address specific metadata tags, because different groups can contain tags of identical names, which may cause problems executing the functions \code{\link{recordTable}} and \code{\link{recordTableIndividual}}. The format is "GROUP:tag", e.g. "EXIF:Flash". 
+
 }
 \value{
-A character vector containing available metadata or metadata tag names.
+A character vector containing available metadata or metadata tag names (and groups).
 }
 \references{
 Phil Harvey's ExifTool \url{http://www.sno.phy.queensu.ca/~phil/exiftool/ } \cr

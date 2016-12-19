@@ -20,6 +20,10 @@ activityOverlap <- function(recordTable,
   on.exit(setwd(wd0))
   on.exit(par(mar = mar0), add = TRUE)
 
+  checkForSpacesInColumnNames(speciesCol = speciesCol, recordDateTimeCol = recordDateTimeCol)
+  if(!speciesCol %in% colnames(recordTable))           stop(paste('speciesCol = "', speciesCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!recordDateTimeCol %in% colnames(recordTable)) stop(paste('recordDateTimeCol = "', recordDateTimeCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  
   stopifnot(is.logical(c(writePNG, plotR, createDir)))
   stopifnot(hasArg(speciesA))
   stopifnot(hasArg(speciesB))

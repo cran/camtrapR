@@ -14,6 +14,9 @@ getSpeciesImages <- function(species,
 
   if(hasArg(recordTable) & hasArg(inDir)) stop("recordTable and inDir cannot be both defined. Please define one only.", call. = FALSE)
 
+   # check column names
+  
+  
   stopifnot(is.logical(createStationSubfolders))
 
   if(hasArg(inDir)){
@@ -30,10 +33,16 @@ getSpeciesImages <- function(species,
   }
 
   if(hasArg(recordTable)){
-    if(!is.data.frame(recordTable)) stop("recordTable must be a data frame", call. = FALSE)
-    if(speciesCol %in% colnames(recordTable) == FALSE)  stop("speciesCol not found in recordTable", call. = FALSE)
+  checkForSpacesInColumnNames(speciesCol = speciesCol)
+  if(!is.data.frame(recordTable)) stop("recordTable must be a data frame", call. = FALSE)
+  
+  if(!speciesCol %in% colnames(recordTable))  stop(paste('speciesCol = "', speciesCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+
     if(createStationSubfolders == TRUE &
-       stationCol %in% colnames(recordTable) == FALSE)  stop("stationCol not found in recordTable", call. = FALSE)
+       stationCol %in% colnames(recordTable) == FALSE)  {
+          stop(paste('stationCol = "', stationCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+          checkForSpacesInColumnNames(stationCol = stationCol)
+          }
     if(species %in% recordTable[,speciesCol] == FALSE)  stop("species was not found in speciesCol of recordTable", call. = FALSE)
   }
 

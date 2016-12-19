@@ -67,7 +67,7 @@ recordTableIndividual(inDir,
   character. In custom image metadata, the individual ID tag name.
 }
   \item{additionalMetadataTags}{
-  character. additional camera model-specific metadata tags to be extracted.
+  character. additional camera model-specific metadata tags to be extracted. (If possible specify tag groups as returned by \code{\link{exifTagNames}})
 }
   \item{removeDuplicateRecords}{
   logical. If there are several records of the same individual at the same station (also same camera if cameraID is defined) at exactly the same time, show only one?
@@ -119,7 +119,7 @@ Juergen Niedballa
                                         camerasIndependent     = FALSE,
                                         writecsv               = FALSE,
                                         metadataIDTag          = "individual",
-                                        additionalMetadataTags = c("Model", "Make"),
+                                        additionalMetadataTags = c("EXIF:Model", "EXIF:Make"),
                                         timeZone               = "Asia/Kuala_Lumpur"
  )
 

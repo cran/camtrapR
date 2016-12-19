@@ -1,3 +1,26 @@
+Changes in camtrapR 0.99.6
+=======================
+
+bugfixes
+------------
+ o fixed crash in cameraOperation function caused by underscores in station / camera IDs (reported by Wyatt Petersen)
+
+new functions
+------------
+ o fixDateTimeOriginal: Makes DateTimeOriginal Exif metadata tag in Reconyx Hyperfire cameras readable 
+
+new features
+------------
+  o spatialDetectionHistory: argument 'sessionCol' can now create multi-session capthist objects by either assigning individuals to different sessions or assigning station to different sessions
+  o exifTagNames: gained argument 'returnTagGroup', and now by default returns metadata tag group in addition to metadata tag names (to unambiguously address specific metadata tags)
+
+other changes
+------------
+  o detectionHistory / spatialDetectionHistory: occasionLength can be any value between 1 and the number of columns in camOp (not half the number of columns in camOp as before)
+  o functions check for spaces in user-provided column names and report them as errors
+
+  
+  
 Changes in camtrapR 0.99.5
 =======================
 
@@ -17,6 +40,7 @@ other changes
   o imageRename will first check all directories before actually renaming anything. So the function won't break halfway through, leaving you with a half-full directory of renamed images if something goes wrong (e.g. unreadable date/time tags).
   
   
+  
 Changes in camtrapR 0.99.4
 =======================
 
@@ -33,6 +57,7 @@ other changes
 ------------
   o package shows startup message and checks automatically if local package version is up to date
 
+  
 
 Changes in camtrapR 0.99.3
 =======================
@@ -52,6 +77,7 @@ new features
   o detectionHistory gained argument "minActiveDaysPerOccasion". It can be used to define the minimum number of active trap days per occasion for that occasion be included (0/1 instead of NA)
   
   
+  
 Changes in camtrapR 0.99.2
 =======================
 
@@ -65,6 +91,7 @@ other changes
   o added section about defining date formats in camera station table to vignette 1 (Image Organisation)
 
 
+  
 Changes in camtrapR 0.99.1
 =======================
 
@@ -79,6 +106,7 @@ other changes
   o additional checks for consistency of input in a number of functions
   o code simplification invisible to the user
 
+  
 
 Changes in camtrapR 0.99.0
 =======================
@@ -168,6 +196,7 @@ other changes
   o getSpeciesImages: removed argument emptyOutDir (nothing can be deleted anymore)
   o recordDatabase: row names of object are 1:nrow
 
+  
 
 Changes in camtrapR 0.97.1
 =======================

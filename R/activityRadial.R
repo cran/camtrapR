@@ -16,7 +16,11 @@ activityRadial <- function(recordTable,
   mar0 <- par()$mar
   on.exit(setwd(wd0))
   on.exit(par(mar = mar0), add = TRUE)
-						   
+						                  
+  checkForSpacesInColumnNames(speciesCol = speciesCol, recordDateTimeCol = recordDateTimeCol)
+  if(!speciesCol %in% colnames(recordTable))           stop(paste('speciesCol = "', speciesCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!recordDateTimeCol %in% colnames(recordTable)) stop(paste('recordDateTimeCol = "', recordDateTimeCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
+
   stopifnot(is.logical(c(allSpecies, writePNG, plotR, createDir, byNumber)))
   if(allSpecies == FALSE) {
     stopifnot(hasArg(species))

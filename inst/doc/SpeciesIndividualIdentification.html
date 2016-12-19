@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2016-10-06" />
+<meta name="date" content="2016-12-19" />
 
 <title>Identifying species and individuals in camtrapR</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Identifying species and individuals in camtrapR</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2016-10-06</em></h4>
+<h4 class="date"><em>2016-12-19</em></h4>
 
 
 <div id="TOC">
@@ -81,7 +81,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#image-management-software-recommendations-for-metadata-tagging">Image management software recommendations for metadata tagging</a></li>
 <li><a href="#metadata-tag-structure">Metadata tag structure</a></li>
 <li><a href="#how-does-metadata-extraction-work">How does metadata extraction work?</a></li>
-<li><a href="#what-if-non-hierarchical-metadata-tags-were-assigned-already">What if non-hierarchical metadata tags were assigned already?</a></li>
+<li><a href="#what-if-non-hierarchical-metadata-tags-were-assigned-to-images-already">What if non-hierarchical metadata tags were assigned to images already?</a></li>
+<li><a href="#how-to-import-a-metadata-tag-tree-into-digikam">How to import a metadata tag tree into digiKam</a></li>
 </ul></li>
 <li><a href="#double-observer-identification">Double observer identification</a></li>
 <li><a href="#comparison-of-identification-methods">Comparison of identification methods</a></li>
@@ -191,8 +192,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Species|SpeciesA, Species|SpeciesB</p>
 <p>Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar (“|”). Adobe software also lets you use colon (“:”); you can tell camtrapR which to use using argument <code>metadataHierarchyDelimitor</code> in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.</p>
 </div>
-<div id="what-if-non-hierarchical-metadata-tags-were-assigned-already" class="section level3">
-<h3>What if non-hierarchical metadata tags were assigned already?</h3>
+<div id="what-if-non-hierarchical-metadata-tags-were-assigned-to-images-already" class="section level3">
+<h3>What if non-hierarchical metadata tags were assigned to images already?</h3>
 <p>If you have set of tagged images, but the tags are not structured hierarchically as explained above, but rather flat (no tag groups, only tags), they can easily be brought into the format needed by camtrapR in digiKam. This will, however, change your original metadata structure. So to be on the safe side, take some precautions:</p>
 <ul>
 <li>make a backup of your images,</li>
@@ -209,6 +210,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ol>
 <p>Afterwards, the “HierarchicalSubject” of your image metadata should contain the tag structure. You can check using the <code>exifTagNames</code> function as described in the section above.</p>
 <p>This procedure also works for other tags, not only “Species”.</p>
+</div>
+<div id="how-to-import-a-metadata-tag-tree-into-digikam" class="section level3">
+<h3>How to import a metadata tag tree into digiKam</h3>
+<p>Consider this scenario: you created an elaborate tag tree and would like to share it with colleagues for them to tag images independently, but using the same tags that you use. Instead of making them create the tags manually, you can use a dummy image, assign <em>all</em> possible metadata tags of interest to it and share that tagged dummy image. Once imported into digiKam on another machine, that machine’s digiKam tag tree will be updated automatically and will then contain all tags present in your dummy image.</p>
 </div>
 </div>
 <div id="double-observer-identification" class="section level2">
@@ -274,39 +279,47 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 checkNames1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="kw">c</span>(<span class="st">&quot;Moonrat&quot;</span>, <span class="st">&quot;Malayan Civet&quot;</span>),
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)
 checkNames1</code></pre></div>
-<pre><code>##       user_name    tsn     scientific_name    taxon_author   common_name
-## 1       Moonrat 633549 Echinosorex gymnura (Raffles, 1822)       Moonrat
-## 2 Malayan Civet 622004  Viverra tangalunga      Gray, 1832 Malayan Civet
-##   rankname taxon_status
-## 1  Species     accepted
-## 2  Species     accepted
+<pre><code>##      tsn     user_name      scientificName    commonName      authorship
+## 1 633549       Moonrat Echinosorex gymnura       Moonrat (Raffles, 1822)
+## 2 622004 Malayan Civet  Viverra tangalunga Malayan Civet      Gray, 1832
+##   rankname
+## 1  Species
+## 2  Species
 ##                                                                               itis_url
 ## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=633549
-## 2 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=622004</code></pre>
+## 2 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=622004
+##   taxon_status
+## 1        valid
+## 2        valid</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and with scientific names (note that in Echinosorex we provide a genus name only)</span>
 checkNames2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="kw">c</span>(<span class="st">&quot;Echinosorex&quot;</span>, <span class="st">&quot;Viverra tangalunga&quot;</span>),
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>)
 checkNames2</code></pre></div>
-<pre><code>##            user_name    tsn    scientific_name     taxon_author
-## 1        Echinosorex 633449        Echinosorex Blainville, 1838
-## 2 Viverra tangalunga 622004 Viverra tangalunga       Gray, 1832
-##     common_name rankname taxon_status
-## 1          &lt;NA&gt;    Genus     accepted
-## 2 Malayan Civet  Species     accepted
+<pre><code>##      tsn          user_name     scientificName    commonName
+## 1 622004 Viverra tangalunga Viverra tangalunga Malayan Civet
+## 2 633449        Echinosorex        Echinosorex          &lt;NA&gt;
+##         authorship rankname
+## 1       Gray, 1832  Species
+## 2 Blainville, 1838    Genus
 ##                                                                               itis_url
-## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=633449
-## 2 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=622004</code></pre>
+## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=622004
+## 2 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=633449
+##   taxon_status
+## 1        valid
+## 2        valid</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis</span>
 checkNames3 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Felis bengalensis&quot;</span>,
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>,
                                   <span class="dt">accepted     =</span> <span class="ot">FALSE</span>)
 checkNames3</code></pre></div>
-<pre><code>##           user_name    tsn   scientific_name taxon_author common_name
-## 1 Felis bengalensis 183793 Felis bengalensis   Kerr, 1792 leopard cat
-##   rankname taxon_status
-## 1  Species      invalid
+<pre><code>##      tsn         user_name    scientificName  commonName authorship
+## 1 183793 Felis bengalensis Felis bengalensis leopard cat Kerr, 1792
+##   rankname
+## 1  Species
 ##                                                                               itis_url
-## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=183793</code></pre>
+## 1 http://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=183793
+##   taxonUsageRating
+## 1          invalid</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## an ambiguous name name: Chevrotain (Tragulus)    
 ## this does not work in vignettes, but should run on your machine
 <span class="co"># checkNames4 &lt;- checkSpeciesNames (speciesNames = &quot;Chevrotain&quot;,</span>
@@ -338,9 +351,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                 directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationB
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -356,12 +369,12 @@ SpeciesFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createSpecie
 <pre><code>## created 6 directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpeciesFolderCreate1</code></pre></div>
 <pre><code>##                                                                                             directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationC/Bay Cat
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -377,12 +390,12 @@ SpecFolderCreate2 &lt;-<span class="st"> </span><span class="kw">createSpeciesFo
 <pre><code>## deleted 6 empty directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpecFolderCreate2</code></pre></div>
 <pre><code>##                                                                                             directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createSpeciesFoldersTest/StationC/Bay Cat
 ##   still.exists
 ## 1        FALSE
 ## 2        FALSE
@@ -437,9 +450,9 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 ##     station
 ## 7  StationC
 ## 29 StationC
-##                                                                                                         Directory
-## 7  C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationC/EGY
-## 29 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationC/TRA
+##                                                                                                                Directory
+## 7  C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationC/EGY
+## 29 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationC/TRA
 ##                                 FileName species    DateTimeOriginal
 ## 7  StationC__2009-04-27__00-17-00(1).JPG     EGY 2009-04-27 00:17:00
 ## 29 StationC__2009-04-27__00-19-00(1).JPG     TRA 2009-04-27 00:19:00
@@ -493,15 +506,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmpysh5ph/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\JRGENN~1\AppData\Local\Temp\RtmpOMmRCx/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_append)</code></pre></div>
 <pre><code>##                                                                          directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
 ##                            filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1).JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1).JPG     PBE
@@ -521,15 +534,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                                            <span class="dt">removeNames         =</span> <span class="ot">TRUE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmpysh5ph/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\JRGENN~1\AppData\Local\Temp\RtmpOMmRCx/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_remove)</code></pre></div>
 <pre><code>##                                                                          directory
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
-## 6 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sample_images/StationA/PBE
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
+## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sample_images/StationA/PBE
 ##                                 filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1)__PBE.JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1)__PBE.JPG     PBE
@@ -564,7 +577,7 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
                                   <span class="dt">outDir                  =</span> wd_images_species_copy,
                                   <span class="dt">createStationSubfolders =</span> <span class="ot">FALSE</span>
   )</code></pre></div>
-<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images   to   C:\Users\NIEDBA~1\AppData\Local\Temp\Rtmpysh5ph/sampleSpeciesImages/VTA</code></pre>
+<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images   to   C:\Users\JRGENN~1\AppData\Local\Temp\RtmpOMmRCx/sampleSpeciesImages/VTA</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">specImagecopy</code></pre></div>
 <pre><code>##   species
 ## 1     VTA
@@ -572,12 +585,12 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 3     VTA
 ## 4     VTA
 ## 5     VTA
-##                                                                                                    DirectoryOrig
-## 1 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/VTA
-## 2 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/VTA
-## 3 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationB/VTA
-## 4 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationB/VTA
-## 5 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationC/VTA
+##                                                                                                           DirectoryOrig
+## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/VTA
+## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/VTA
+## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationB/VTA
+## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationB/VTA
+## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationC/VTA
 ##                            FilenameOrig
 ## 1 StationA__2009-04-10__05-07-00(1).JPG
 ## 2 StationA__2009-05-06__19-06-00(1).JPG
@@ -585,11 +598,11 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 4 StationB__2009-04-27__05-07-00(1).JPG
 ## 5 StationC__2009-04-24__02-57-00(1).JPG
 ##                                                                   DirectoryCopy
-## 1 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
-## 2 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
-## 3 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
-## 4 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
-## 5 C:\\Users\\NIEDBA~1\\AppData\\Local\\Temp\\Rtmpysh5ph/sampleSpeciesImages/VTA
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sampleSpeciesImages/VTA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sampleSpeciesImages/VTA
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sampleSpeciesImages/VTA
+## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sampleSpeciesImages/VTA
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/sampleSpeciesImages/VTA
 ##                            FilenameCopy copy_ok
 ## 1 StationA__2009-04-10__05-07-00(1).JPG    TRUE
 ## 2 StationA__2009-05-06__19-06-00(1).JPG    TRUE

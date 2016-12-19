@@ -60,7 +60,7 @@ spatialDetectionHistory(recordTableIndividual,
   character. name of the column specifying species in \code{recordTableIndividual}
 }
   \item{sessionCol}{
-  integer. name of the column specifying session IDs in \code{recordTableIndividual}. Must be integer numbers beginning with 1 (i.e., values can only be 1,2,3,...).
+  character. name of the column specifying session IDs, either in \code{recordTableIndividual} or in \code{CTtable}. See 'Details' for more information. Session ID values must be a sequence of integer numbers beginning with 1 (i.e., 1,2,3,...).
 }
   \item{Xcol}{
   character. name of the column specifying x coordinates in \code{CTtable}
@@ -128,9 +128,9 @@ The function creates a \code{\link[secr]{capthist}} object by combining three di
 The number of days that are aggregated is controlled by \code{occasionLength}. \code{occasionStartTime} can be used to make occasions begin another hour than midnight (the default). This may be relevant for nocturnal animals, in which 1 whole night would be considered an occasion.
 Output can be returned as individual counts per occasion (\code{output = "count"}) or as binary observation (\code{output = "binary"}).
 
-Argument \code{sessionCol} can be used to assign session numbers to the \code{\link[secr]{capthist}} object. The capture information are thus split by sessions. Session information must be provided as a column in \code{recordTableIndividual} in the form of integer numbers >= 1, i.e., you provide the session number directly in \code{sessionCol}. Currently, the function assumes the same traps to apply to all sessions.
+Argument \code{sessionCol} can be used to a create multi-session \code{\link[secr]{capthist}} object. There are two different ways in which the argument is interpreted. It depends on whether a column named \code{sessionCol} exists in \code{recordTableIndividual} or in \code{CTtable}. If \code{sessionCol} is found in \code{recordTableIndividual}, the records will be assigned to the specified sessions, and it will be assumed that all camera trap station were used in all sessions. Alternatively, if \code{sessionCol} is found in\code{CTtable}, it will be assumed that only a subset of stations was used in each session, and the records will be assigned automatically (using the station IDs to identify which session they belong into). In both cases, session information must be provided as a column in \code{recordTableIndividual} as a sequence of integer numbers beginnign with 1, i.e., you provide the session number directly in \code{sessionCol}. See \code{\link[secr]{session}} for more information about sessions in \pkg{secr}.
 
-\code{\link[secr]{capthist}} objects (as created by \code{\link{spatialDetectionHistory}} for spatial capture-recapture analyses) expect the units of coordinates (\code{Xcol} and \code{col} in \code{CTtable}) to be meters.
+\code{\link[secr]{capthist}} objects (as created by \code{\link{spatialDetectionHistory}} for spatial capture-recapture analyses) expect the units of coordinates (\code{Xcol} and \code{col} in \code{CTtable}) to be meters. Therefore, please use a suitable coordinate system (e.g. UTM).
 }
 \value{
 Output depends on argument \code{makeRMarkInput}:

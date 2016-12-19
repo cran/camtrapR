@@ -21,6 +21,7 @@ Information about the camera-specific trapping periods (and periods of malfuncti
 The functions in this section set up a directory structure for storing camera trap images and identifying species and individuals from images. They build on one another and can be run in sequential order as needed.
 \tabular{ll}{
 \code{\link{createStationFolders}} \tab Create camera trap station directories for raw images \cr
+\code{\link{fixDateTimeOriginal}} \tab Fix DateTimeOriginal Exif metadata tag in Reconyx Hyperfire cameras \cr
 \code{\link{timeShiftImages}} \tab Apply time shifts to JPEG images \cr
 \code{\link{imageRename}} \tab Copy and rename images based on station ID and image creation date \cr
 \code{\link{addCopyrightTag}} \tab Write a copyright tag into JPEG image metadata \cr

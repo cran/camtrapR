@@ -53,7 +53,7 @@ exifTagNames(inDir = wd_images_ID, returnMetadata = TRUE)
 rec.db.species.metadata1 <- recordTable(inDir                  = wd_images_ID,
                                         IDfrom                 = "directory",
                                         timeZone               = "Asia/Kuala_Lumpur",
-                                        additionalMetadataTags = c("Model", "Make"))
+                                        additionalMetadataTags = c("EXIF:Model", "EXIF:Make"))
 
 head(rec.db.species.metadata1)
 

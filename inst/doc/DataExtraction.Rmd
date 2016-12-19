@@ -69,16 +69,16 @@ There are, amongst others, 3 images taken at 17:48:00 on the 28th of April 2009.
 Here is what the columns of the record table contain:
 
 | column  | content  |
-|---|---|
+|-------|-------------------------------------------------------------|
 | `Station`   |   the station the image is from |
 | `Species`   |   species name |
 | `DateTimeOriginal` |  Date and time of record in R-readable format  |
 | `Date` |  record date  |
 | `Time` |  record time of day |
-| `delta.time.secs` |  time difference between record and last (independent) record of same species at same station / camera* (in seconds) |
-| `delta.time.mins` |   time difference between record and last (independent) record of same species at same station / camera* (in minutes)  |
+| `delta.time.secs`  |  time difference between record and last (independent) record of same species at same station / camera* (in seconds) |
+| `delta.time.mins`  |  time difference between record and last (independent) record of same species at same station / camera* (in minutes)  |
 | `delta.time.hours` |  time difference between record and last (independent) record of same species at same station / camera* (in hours)   |
-| `delta.time.days` |  time difference between record and last (independent) record of same species at same station / camera* (in days)   |
+| `delta.time.days`  |  time difference between record and last (independent) record of same species at same station / camera* (in days)   |
 | `Directory` |  directory the image is in |
 | `FileName`   |  image file name |
 
@@ -86,7 +86,7 @@ Here is what the columns of the record table contain:
 
 ### Temporal independence between records
 
-Imagine a species that loves to hang out in front of your cameras. You will end up with hundreds of shots of the same species, maybe even the same animal. Therefore, images can be filtered using an adjustable criterion for temporal independence between subsequent records of the same species in an attempt to remove non-independent records. This is achieved via argument `minDeltaTime`. It is the minimum time difference (in minutes) between two records of the same species at the same station which are to be considered independent. The default is 0, causing the function to return all records. Setting it to a higher number, e.g. 60 (i.e., 1 hour), is commonly done to thin the number of records.
+Imagine a species that loves to hang out in front of your cameras. You will end up with hundreds of shots of the same species, maybe even the same animal. Therefore, images can be filtered using an adjustable criterion for temporal independence between subsequent records of the same species in an attempt to remove non-independent records. This is achieved via argument `minDeltaTime`. It is the minimum time difference (in minutes) between two records of the same species at the same station which are to be considered independent. The default is 0, causing the function to return all records. Setting it to a higher number, e.g. 60 (i.e., 1 hour), is commonly done to thin the number of records. Note that you will not lose records of different species, even if they fall within the specified time interval from a record.
 
 The argument `deltaTimeComparedTo` further controls how independence between records is assessed. Setting it to "lastRecord" returns only records taken `minDeltaTime` minutes after the last record. Setting it to "lastIndependentRecord" returns only records taken `minDeltaTime` minutes after the last *independent* record.
 
@@ -154,14 +154,17 @@ If one has no idea what kind of data are behind these tag names, `returnMetadata
 exifTagNames(inDir = wd_images_ID, returnMetadata = TRUE)
 ```
 
-Note that when `returnMetadata = TRUE` the tag names contain spaces whereas they don't when `returnMetadata = FALSE`. When supplying tagnames to the `recordTable` functions, use the tag names without spaces.
-Of the tags shown here, "DateTimeOriginal" contains the date and time that camtrapR reads out. Apart from that, there is little information of ecological interest. However, for demonstration purposes, let's extract information about the camera model and make:
+Note that when `returnMetadata = TRUE` the tag names contain spaces whereas they don't when `returnMetadata = FALSE`. When supplying tagnames to the `recordTable` functions, use the tag names without spaces (as returned when `returnMetadata = FALSE`).
+
+Please also note that `exifTagNames` by default returns the metadata tag group along with the tag names (since version 0.99.6), which is helpful to unambiguously identify and extract specific metadata tags as shown in the next step.
+
+Of the tags shown here, "DateTimeOriginal" contains the date and time that camtrapR reads out. Apart from that, there is little information of ecological interest in the example data. However, for demonstration purposes, let's extract information about the camera model and make:
 
 ```{r}
 rec.db.species.metadata1 <- recordTable(inDir                  = wd_images_ID,
                                         IDfrom                 = "directory",
                                         timeZone               = "Asia/Kuala_Lumpur",
-                                        additionalMetadataTags = c("Model", "Make"))
+                                        additionalMetadataTags = c("EXIF:Model", "EXIF:Make"))
 
 head(rec.db.species.metadata1)
 ```

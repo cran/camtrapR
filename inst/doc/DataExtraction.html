@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2016-10-06" />
+<meta name="date" content="2016-12-19" />
 
 <title>Extracting Data from Camera Trapping Images</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Extracting Data from Camera Trapping Images</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2016-10-06</em></h4>
+<h4 class="date"><em>2016-12-19</em></h4>
 
 
 <div id="TOC">
@@ -141,13 +141,13 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                        Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
+##                                                                                                               Directory
+## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName
 ## 1 StationA__2009-04-21__00-40-00(1).JPG
 ## 2 StationA__2009-04-22__20-19-00(1).JPG
@@ -171,10 +171,10 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## [10] &quot;StationB__2009-04-28__17-49-00(3).JPG&quot;</code></pre>
 <p>There are, amongst others, 3 images taken at 17:48:00 on the 28th of April 2009. Of these, only 1 will be returned.</p>
 <p>Here is what the columns of the record table contain:</p>
-<table style="width:11%;">
+<table style="width:97%;">
 <colgroup>
-<col width="5%"></col>
-<col width="5%"></col>
+<col width="11%"></col>
+<col width="86%"></col>
 </colgroup>
 <thead>
 <tr class="header">
@@ -232,7 +232,7 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 <p>*see below: Independence between cameras within stations</p>
 <div id="temporal-independence-between-records" class="section level3">
 <h3>Temporal independence between records</h3>
-<p>Imagine a species that loves to hang out in front of your cameras. You will end up with hundreds of shots of the same species, maybe even the same animal. Therefore, images can be filtered using an adjustable criterion for temporal independence between subsequent records of the same species in an attempt to remove non-independent records. This is achieved via argument <code>minDeltaTime</code>. It is the minimum time difference (in minutes) between two records of the same species at the same station which are to be considered independent. The default is 0, causing the function to return all records. Setting it to a higher number, e.g. 60 (i.e., 1 hour), is commonly done to thin the number of records.</p>
+<p>Imagine a species that loves to hang out in front of your cameras. You will end up with hundreds of shots of the same species, maybe even the same animal. Therefore, images can be filtered using an adjustable criterion for temporal independence between subsequent records of the same species in an attempt to remove non-independent records. This is achieved via argument <code>minDeltaTime</code>. It is the minimum time difference (in minutes) between two records of the same species at the same station which are to be considered independent. The default is 0, causing the function to return all records. Setting it to a higher number, e.g. 60 (i.e., 1 hour), is commonly done to thin the number of records. Note that you will not lose records of different species, even if they fall within the specified time interval from a record.</p>
 <p>The argument <code>deltaTimeComparedTo</code> further controls how independence between records is assessed. Setting it to “lastRecord” returns only records taken <code>minDeltaTime</code> minutes after the last record. Setting it to “lastIndependentRecord” returns only records taken <code>minDeltaTime</code> minutes after the last <em>independent</em> record.</p>
 <p>Note the warning about the missing time zone. It is much advised to set it to you study area’s time zone (one of <code>OlsonNames</code>). It is unlikely, but you may get into trouble if your cameras record daylight saving hours that UTC (the default) does not have. The time of day of your records will not shift when you change the time zone.</p>
 <p>Let’s now apply an 1-hour independence criterion and define a time zone.</p>
@@ -286,84 +286,77 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <p><code>recordTable</code> and <code>recordTableIndividual</code> can both extract additional metadata from images (apart from date and time). For example, some camera models record ambient temperature or moon phase, which may be of interest. Metadata tags are stored in the images at the time they are taken and can be accessed and extracted if their tag names are known. Some tag names are standardised (e.g. “DateTimeOriginal”) while others are manufacturer-specific. Therefore, function <code>exifTagNames</code> returns all Exif metadata it finds in a sample image. Users can then choose which to include in <code>recordTable</code> and <code>recordTableIndividual</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
 <span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>##  [1] &quot;BaseName&quot;                &quot;BitsPerSample&quot;          
-##  [3] &quot;ColorComponents&quot;         &quot;ColorSpace&quot;             
-##  [5] &quot;ComponentsConfiguration&quot; &quot;Compression&quot;            
-##  [7] &quot;CreateDate&quot;              &quot;DateTimeOriginal&quot;       
-##  [9] &quot;Directory&quot;               &quot;EncodingProcess&quot;        
-## [11] &quot;ExifByteOrder&quot;           &quot;ExifImageHeight&quot;        
-## [13] &quot;ExifImageWidth&quot;          &quot;ExifToolVersion&quot;        
-## [15] &quot;ExifVersion&quot;             &quot;FileAccessDate&quot;         
-## [17] &quot;FileCreateDate&quot;          &quot;FileExtension&quot;          
-## [19] &quot;FileModifyDate&quot;          &quot;FileName&quot;               
-## [21] &quot;FilePermissions&quot;         &quot;FileSize&quot;               
-## [23] &quot;FileType&quot;                &quot;FileTypeDescription&quot;    
-## [25] &quot;FileTypeExtension&quot;       &quot;FlashpixVersion&quot;        
-## [27] &quot;ImageHeight&quot;             &quot;ImageSize&quot;              
-## [29] &quot;ImageWidth&quot;              &quot;MIMEType&quot;               
-## [31] &quot;Make&quot;                    &quot;Megapixels&quot;             
-## [33] &quot;Model&quot;                   &quot;ModifyDate&quot;             
-## [35] &quot;PhysicalImageSize&quot;       &quot;ResolutionUnit&quot;         
-## [37] &quot;ShutterSpeed&quot;            &quot;ShutterSpeedValue&quot;      
-## [39] &quot;SourceFile&quot;              &quot;ThumbnailImage&quot;         
-## [41] &quot;ThumbnailLength&quot;         &quot;ThumbnailOffset&quot;        
-## [43] &quot;UserComment&quot;             &quot;Warning&quot;                
-## [45] &quot;XResolution&quot;             &quot;YCbCrPositioning&quot;       
-## [47] &quot;YCbCrSubSampling&quot;        &quot;YResolution&quot;</code></pre>
+<pre><code>##  [1] &quot;Composite:ImageSize&quot;          &quot;Composite:ShutterSpeed&quot;      
+##  [3] &quot;Composite:ThumbnailImage&quot;     &quot;EXIF:ColorSpace&quot;             
+##  [5] &quot;EXIF:ComponentsConfiguration&quot; &quot;EXIF:Compression&quot;            
+##  [7] &quot;EXIF:CreateDate&quot;              &quot;EXIF:DateTimeOriginal&quot;       
+##  [9] &quot;EXIF:ExifImageHeight&quot;         &quot;EXIF:ExifImageWidth&quot;         
+## [11] &quot;EXIF:ExifVersion&quot;             &quot;EXIF:FlashpixVersion&quot;        
+## [13] &quot;EXIF:Make&quot;                    &quot;EXIF:Model&quot;                  
+## [15] &quot;EXIF:ModifyDate&quot;              &quot;EXIF:ResolutionUnit&quot;         
+## [17] &quot;EXIF:ShutterSpeedValue&quot;       &quot;EXIF:ThumbnailLength&quot;        
+## [19] &quot;EXIF:ThumbnailOffset&quot;         &quot;EXIF:UserComment&quot;            
+## [21] &quot;EXIF:XResolution&quot;             &quot;EXIF:YCbCrPositioning&quot;       
+## [23] &quot;EXIF:YResolution&quot;             &quot;ExifTool:ExifToolVersion&quot;    
+## [25] &quot;ExifTool:Warning&quot;             &quot;File:BitsPerSample&quot;          
+## [27] &quot;File:ColorComponents&quot;         &quot;File:Directory&quot;              
+## [29] &quot;File:EncodingProcess&quot;         &quot;File:ExifByteOrder&quot;          
+## [31] &quot;File:FileAccessDate&quot;          &quot;File:FileCreateDate&quot;         
+## [33] &quot;File:FileModifyDate&quot;          &quot;File:FileName&quot;               
+## [35] &quot;File:FilePermissions&quot;         &quot;File:FileSize&quot;               
+## [37] &quot;File:FileType&quot;                &quot;File:ImageHeight&quot;            
+## [39] &quot;File:ImageWidth&quot;              &quot;File:MIMEType&quot;               
+## [41] &quot;File:YCbCrSubSampling&quot;        &quot;SourceFile&quot;</code></pre>
 <p>If one has no idea what kind of data are behind these tag names, <code>returnMetadata</code> can be set to TRUE to return the actual metadata instead of the tag names only.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>##  [1] &quot;ExifTool Version Number         : 10.09&quot;                                                                                                         
-##  [2] &quot;File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                         
-##  [3] &quot;Directory                       : C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE&quot;
-##  [4] &quot;File Size                       : 27 kB&quot;                                                                                                         
-##  [5] &quot;File Modification Date/Time     : 2016:10:06 14:50:17+02:00&quot;                                                                                     
-##  [6] &quot;File Access Date/Time           : 2016:10:06 14:50:17+02:00&quot;                                                                                     
-##  [7] &quot;File Creation Date/Time         : 2016:10:06 14:50:17+02:00&quot;                                                                                     
-##  [8] &quot;File Permissions                : rw-rw-rw-&quot;                                                                                                     
-##  [9] &quot;File Type                       : JPEG&quot;                                                                                                          
-## [10] &quot;File Type Extension             : jpg&quot;                                                                                                           
-## [11] &quot;MIME Type                       : image/jpeg&quot;                                                                                                    
-## [12] &quot;Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                                                     
-## [13] &quot;Make                            : G4&quot;                                                                                                            
-## [14] &quot;Camera Model Name               : CUDDEBACK&quot;                                                                                                     
-## [15] &quot;X Resolution                    : 72&quot;                                                                                                            
-## [16] &quot;Y Resolution                    : 72&quot;                                                                                                            
-## [17] &quot;Modify Date                     : 2009:04:21 00:40:00&quot;                                                                                           
-## [18] &quot;Resolution Unit                 : inches&quot;                                                                                                        
-## [19] &quot;Y Cb Cr Positioning             : Co-sited&quot;                                                                                                      
-## [20] &quot;Exif Version                    : 0200&quot;                                                                                                          
-## [21] &quot;Components Configuration        : Y, Cb, Cr, -&quot;                                                                                                  
-## [22] &quot;Flashpix Version                : 0100&quot;                                                                                                          
-## [23] &quot;Color Space                     : sRGB&quot;                                                                                                          
-## [24] &quot;Exif Image Width                : 100&quot;                                                                                                           
-## [25] &quot;Exif Image Height               : 75&quot;                                                                                                            
-## [26] &quot;Date/Time Original              : 2009:04:21 00:40:00&quot;                                                                                           
-## [27] &quot;Create Date                     : 2009:04:21 00:40:00&quot;                                                                                           
-## [28] &quot;Warning                         : Invalid EXIF text encoding for UserComment&quot;                                                                    
-## [29] &quot;User Comment                    : 1 ATTEMPT G1H&quot;                                                                                                 
-## [30] &quot;Shutter Speed Value             : 1&quot;                                                                                                             
-## [31] &quot;Compression                     : JPEG (old-style)&quot;                                                                                              
-## [32] &quot;Thumbnail Offset                : 408&quot;                                                                                                           
-## [33] &quot;Thumbnail Length                : 25353&quot;                                                                                                         
-## [34] &quot;Image Width                     : 100&quot;                                                                                                           
-## [35] &quot;Image Height                    : 75&quot;                                                                                                            
-## [36] &quot;Encoding Process                : Baseline DCT, Huffman coding&quot;                                                                                  
-## [37] &quot;Bits Per Sample                 : 8&quot;                                                                                                             
-## [38] &quot;Color Components                : 3&quot;                                                                                                             
-## [39] &quot;Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                                                              
-## [40] &quot;Base Name                       : StationA__2009-04-21__00-40-00(1)&quot;                                                                             
-## [41] &quot;File Extension                  : JPG&quot;                                                                                                           
-## [42] &quot;File Type Description           : Joint Photographic Experts Group&quot;                                                                              
-## [43] &quot;Image Size                      : 100x75&quot;                                                                                                        
-## [44] &quot;Megapixels                      : 0.007&quot;                                                                                                         
-## [45] &quot;Physical Image Size             : 1.4x1.0 inches&quot;                                                                                                
-## [46] &quot;Shutter Speed                   : 1&quot;                                                                                                             
-## [47] &quot;Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;</code></pre>
-<p>Note that when <code>returnMetadata = TRUE</code> the tag names contain spaces whereas they don’t when <code>returnMetadata = FALSE</code>. When supplying tagnames to the <code>recordTable</code> functions, use the tag names without spaces. Of the tags shown here, “DateTimeOriginal” contains the date and time that camtrapR reads out. Apart from that, there is little information of ecological interest. However, for demonstration purposes, let’s extract information about the camera model and make:</p>
+<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 9.69&quot;                                                                                                                 
+##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding&quot;                                                                                           
+##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                                
+##  [4] &quot;[File]          Directory                       : C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE&quot;
+##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                                                                
+##  [6] &quot;[File]          File Modification Date/Time     : 2016:12:19 22:58:12+01:00&quot;                                                                                            
+##  [7] &quot;[File]          File Access Date/Time           : 2016:12:19 22:58:12+01:00&quot;                                                                                            
+##  [8] &quot;[File]          File Creation Date/Time         : 2016:12:19 22:58:12+01:00&quot;                                                                                            
+##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                                                            
+## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                                                                 
+## [11] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                                                                           
+## [12] &quot;[File]          Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                                                            
+## [13] &quot;[File]          Image Width                     : 100&quot;                                                                                                                  
+## [14] &quot;[File]          Image Height                    : 75&quot;                                                                                                                   
+## [15] &quot;[File]          Encoding Process                : Baseline DCT, Huffman coding&quot;                                                                                         
+## [16] &quot;[File]          Bits Per Sample                 : 8&quot;                                                                                                                    
+## [17] &quot;[File]          Color Components                : 3&quot;                                                                                                                    
+## [18] &quot;[File]          Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                                                                     
+## [19] &quot;[EXIF]          Make                            : G4&quot;                                                                                                                   
+## [20] &quot;[EXIF]          Camera Model Name               : CUDDEBACK&quot;                                                                                                            
+## [21] &quot;[EXIF]          X Resolution                    : 72&quot;                                                                                                                   
+## [22] &quot;[EXIF]          Y Resolution                    : 72&quot;                                                                                                                   
+## [23] &quot;[EXIF]          Modify Date                     : 2009:04:21 00:40:00&quot;                                                                                                  
+## [24] &quot;[EXIF]          Resolution Unit                 : inches&quot;                                                                                                               
+## [25] &quot;[EXIF]          Y Cb Cr Positioning             : Co-sited&quot;                                                                                                             
+## [26] &quot;[EXIF]          Exif Version                    : 0200&quot;                                                                                                                 
+## [27] &quot;[EXIF]          Components Configuration        : Y, Cb, Cr, -&quot;                                                                                                         
+## [28] &quot;[EXIF]          Flashpix Version                : 0100&quot;                                                                                                                 
+## [29] &quot;[EXIF]          Color Space                     : sRGB&quot;                                                                                                                 
+## [30] &quot;[EXIF]          Exif Image Width                : 100&quot;                                                                                                                  
+## [31] &quot;[EXIF]          Exif Image Height               : 75&quot;                                                                                                                   
+## [32] &quot;[EXIF]          Date/Time Original              : 2009:04:21 00:40:00&quot;                                                                                                  
+## [33] &quot;[EXIF]          Create Date                     : 2009:04:21 00:40:00&quot;                                                                                                  
+## [34] &quot;[EXIF]          User Comment                    : 1 ATTEMPT G1H&quot;                                                                                                        
+## [35] &quot;[EXIF]          Shutter Speed Value             : 1&quot;                                                                                                                    
+## [36] &quot;[EXIF]          Compression                     : JPEG (old-style)&quot;                                                                                                     
+## [37] &quot;[EXIF]          Thumbnail Offset                : 408&quot;                                                                                                                  
+## [38] &quot;[EXIF]          Thumbnail Length                : 25353&quot;                                                                                                                
+## [39] &quot;[Composite]     Image Size                      : 100x75&quot;                                                                                                               
+## [40] &quot;[Composite]     Shutter Speed                   : 1&quot;                                                                                                                    
+## [41] &quot;[Composite]     Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;</code></pre>
+<p>Note that when <code>returnMetadata = TRUE</code> the tag names contain spaces whereas they don’t when <code>returnMetadata = FALSE</code>. When supplying tagnames to the <code>recordTable</code> functions, use the tag names without spaces (as returned when <code>returnMetadata = FALSE</code>).</p>
+<p>Please also note that <code>exifTagNames</code> by default returns the metadata tag group along with the tag names (since version 0.99.6), which is helpful to unambiguously identify and extract specific metadata tags as shown in the next step.</p>
+<p>Of the tags shown here, “DateTimeOriginal” contains the date and time that camtrapR reads out. Apart from that, there is little information of ecological interest in the example data. However, for demonstration purposes, let’s extract information about the camera model and make:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rec.db.species.metadata1 &lt;-<span class="st"> </span><span class="kw">recordTable</span>(<span class="dt">inDir                  =</span> wd_images_ID,
                                         <span class="dt">IDfrom                 =</span> <span class="st">&quot;directory&quot;</span>,
                                         <span class="dt">timeZone               =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>,
-                                        <span class="dt">additionalMetadataTags =</span> <span class="kw">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="st">&quot;Make&quot;</span>))</code></pre></div>
+                                        <span class="dt">additionalMetadataTags =</span> <span class="kw">c</span>(<span class="st">&quot;EXIF:Model&quot;</span>, <span class="st">&quot;EXIF:Make&quot;</span>))</code></pre></div>
 <pre><code>## StationA : 8 images</code></pre>
 <pre><code>## StationB : 23 images</code></pre>
 <pre><code>## Warning: removed 6 duplicate records at station StationB</code></pre>
@@ -384,20 +377,20 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                        Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images/StationA/PBE
-##                                FileName     Model Make
-## 1 StationA__2009-04-21__00-40-00(1).JPG CUDDEBACK   G4
-## 2 StationA__2009-04-22__20-19-00(1).JPG CUDDEBACK   G4
-## 3 StationA__2009-04-22__20-21-00(1).JPG CUDDEBACK   G4
-## 4 StationA__2009-04-23__00-07-00(1).JPG CUDDEBACK   G4
-## 5 StationA__2009-04-23__00-09-00(1).JPG CUDDEBACK   G4
-## 6 StationA__2009-05-07__17-11-00(1).JPG CUDDEBACK   G4</code></pre>
+##                                                                                                               Directory
+## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images/StationA/PBE
+##                                FileName EXIF.Model EXIF.Make
+## 1 StationA__2009-04-21__00-40-00(1).JPG  CUDDEBACK        G4
+## 2 StationA__2009-04-22__20-19-00(1).JPG  CUDDEBACK        G4
+## 3 StationA__2009-04-22__20-21-00(1).JPG  CUDDEBACK        G4
+## 4 StationA__2009-04-23__00-07-00(1).JPG  CUDDEBACK        G4
+## 5 StationA__2009-04-23__00-09-00(1).JPG  CUDDEBACK        G4
+## 6 StationA__2009-05-07__17-11-00(1).JPG  CUDDEBACK        G4</code></pre>
 <p>There are 2 additional columns containing the information from the metadata we requested.</p>
 </div>
 </div>
@@ -416,7 +409,7 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
                                      <span class="dt">metadataIDTag          =</span> <span class="st">&quot;individual&quot;</span>,  <span class="co"># the name of the metadata tag containing individual IDs</span>
                                      <span class="dt">timeZone               =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>
  )</code></pre></div>
-<pre><code>## C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
+<pre><code>## C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
 <pre><code>## Warning: removed 3 duplicate records at station StationA, StationB,
 ## StationC</code></pre>
 <div id="extracting-custom-image-metadata" class="section level3">
@@ -437,13 +430,13 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 ## 4           13680             228              3.8             0.2
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
-##                                                                                                             Directory
-## 1 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 2 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 3 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 4 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 5 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 6 C:/Users/niedballa/AppData/Local/Temp/Rtmp2LJC0G/Rinsta18579c791f/camtrapR/pictures/sample_images_tagged/LeopardCat
+##                                                                                                                    Directory
+## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/sample_images_tagged/LeopardCat
 ##                                FileName metadata_Species
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat

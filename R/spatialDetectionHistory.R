@@ -40,55 +40,84 @@ spatialDetectionHistory <- function(recordTableIndividual,
   stopifnot(is.character(species))
   stopifnot(length(species) == 1)
 
-  if(output %in% c("binary", "count") == FALSE) stop("'output' can only be 'binary' or 'count'")
+  if(hasArg(makeRMarkInput)) stopifnot(is.logical(makeRMarkInput))
+
+  output <- match.arg(output, choices = c("binary", "count"))
 
   stopifnot(hasArg(occasionLength))
 
+  # check recordTableIndividual
   stopifnot(c(speciesCol, recordDateTimeCol, stationCol, individualCol) %in% colnames(recordTableIndividual))
 
-
-  stopifnot(hasArg(stationCol))
-  stopifnot(stationCol %in% colnames(recordTableIndividual))
+  checkForSpacesInColumnNames(stationCol = stationCol, Xcol = Xcol, Ycol = Ycol, 
+                                         recordDateTimeCol = recordDateTimeCol, speciesCol = speciesCol, individualCol)
+  if(!stationCol %in% colnames(CTtable)) stop(paste('stationCol = "',   stationCol,  '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!Xcol %in% colnames(CTtable))         stop(paste('Xcol = "',   Xcol,  '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!Ycol %in% colnames(CTtable))         stop(paste('Ycol = "',   Ycol, '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  
+  if(!stationCol %in% colnames(recordTableIndividual))            stop(paste('stationCol = "',   stationCol,  '" is not a column name in recordTableIndividual', sep = ''), call. = FALSE)
+  if(!recordDateTimeCol %in% colnames(recordTableIndividual))  stop(paste('recordDateTimeCol = "', recordDateTimeCol,  '" is not a column name in recordTableIndividual', sep = ''), call. = FALSE)
+  if(!speciesCol %in% colnames(recordTableIndividual))            stop(paste('speciesCol = "', speciesCol,  '" is not a column name in recordTableIndividual', sep = ''), call. = FALSE)
+  if(!individualCol %in% colnames(recordTableIndividual))       stop(paste('individualCol = "', individualCol,  '" is not a column name in recordTableIndividual', sep = ''), call. = FALSE)
+  
+    
   stopifnot(length(stationCol) == 1)
-  recordTableIndividual[,stationCol] <- as.character(recordTableIndividual[,stationCol])
+  recordTableIndividual[, stationCol] <- as.character(recordTableIndividual[,   stationCol])
   stopifnot(is.character(stationCol))
 
-  stopifnot(hasArg(speciesCol))
-  stopifnot(speciesCol %in% colnames(recordTableIndividual))
   stopifnot(length(speciesCol) == 1)
-  recordTableIndividual[,speciesCol] <- as.character(recordTableIndividual[,speciesCol])
+  recordTableIndividual[, speciesCol] <- as.character(recordTableIndividual[, speciesCol])
   stopifnot(is.character(speciesCol))
 
-  stopifnot(hasArg(individualCol))
-  stopifnot(individualCol %in% colnames(recordTableIndividual))
   stopifnot(length(individualCol) == 1)
-  recordTableIndividual[,individualCol] <- as.character(recordTableIndividual[,individualCol])
+  recordTableIndividual[, individualCol] <- as.character(recordTableIndividual[, individualCol])
   stopifnot(is.character(individualCol))
 
-  stopifnot(hasArg(recordDateTimeCol))
-  stopifnot(recordDateTimeCol %in% colnames(recordTableIndividual))
   stopifnot(length(recordDateTimeCol) == 1)
-  recordTableIndividual[,recordDateTimeCol] <- as.character(recordTableIndividual[,recordDateTimeCol])
+  recordTableIndividual[, recordDateTimeCol] <- as.character(recordTableIndividual[, recordDateTimeCol])
   stopifnot(is.character(recordDateTimeCol))
 
-
-  if(hasArg(sessionCol)) {
-    stopifnot(sessionCol %in% colnames(recordTableIndividual))
-    stopifnot(is.numeric(recordTableIndividual[,sessionCol]))
-    if(!all(sort(unique(recordTableIndividual[,sessionCol])) == seq.int(from = 1, to = max(recordTableIndividual[,sessionCol]), by = 1)))
-      stop("Problem in sessionCol: Values must come from a gapless sequence of numbers starting with 1")
-  }
-
-  if(hasArg(makeRMarkInput)) stopifnot(is.logical(makeRMarkInput))
-
-  stopifnot(c(stationCol, Xcol, Ycol) %in% colnames(CTtable))
+  # check CTtable
   if(any(is.na(CTtable[,Xcol]))) stop("there are NAs in Xcol")
   if(any(is.na(CTtable[,Ycol]))) stop("there are NAs in Ycol")
   if(any(is.na(CTtable[,stationCol]))) stop("there are NAs in stationCol of CTtable")
 
   if(hasArg(stationCovariateCols)){
-    stopifnot(stationCovariateCols %in% colnames(CTtable))
+  checkForSpacesInColumnNames(stationCovariateCols = stationCovariateCols)
+    if(!all(stationCovariateCols %in% colnames(CTtable))) stop("did not find stationCovariateCols in column names of CTtable (",
+                                                               paste(stationCovariateCols[which(stationCovariateCols %in% colnames(CTtable) == FALSE)], collapse = ", "),
+                                                               ")", sep = "", call. = FALSE)
   }
+  if(!all(recordTableIndividual$Station %in% CTtable$Station)) stop ("there are entries in stationCol of recordTableIndividual that are not found in stationCol of CTtable")
+
+  # check sessionCol argument
+  if(hasArg(sessionCol)) {
+    checkForSpacesInColumnNames(sessionCol = sessionCol)
+  
+    if(sessionCol %in% colnames(recordTableIndividual) &
+       sessionCol %in% colnames(CTtable)) stop(paste("both CTtable and recordTableIndividual contain sessionCol '", sessionCol, "'", sep = ""), call. = FALSE)
+
+    if(sessionCol %in% colnames(recordTableIndividual) == FALSE &
+       sessionCol %in% colnames(CTtable) == FALSE) stop(paste("neither CTtable nor recordTableIndividual contain sessionCol '", sessionCol, "'", sep = ""), call. = FALSE)
+
+    if(sessionCol %in% colnames(recordTableIndividual)) {
+      stopifnot(is.numeric(recordTableIndividual[,sessionCol]))
+      if(!all(sort(unique(recordTableIndividual[,sessionCol])) == seq.int(from = 1, to = max(recordTableIndividual[,sessionCol]), by = 1)))
+        stop("Problem in sessionCol: Values must come from a gapless sequence of integer numbers starting with 1", call. = FALSE)
+    }
+
+    if(sessionCol %in% colnames(CTtable)){
+      stopifnot(is.numeric(CTtable[,sessionCol]))
+      if(!all(sort(unique(CTtable[,sessionCol])) == seq.int(from = 1, to = max(CTtable[,sessionCol]), by = 1)))
+        stop("Problem in sessionCol: Values must come from a gapless sequence of integer numbers starting with 1", call. = FALSE)
+      # introduce sessionCol in recordTable by matching station IDs
+      recordTableIndividual <- merge(recordTableIndividual, CTtable[,c(stationCol, sessionCol)], by = stationCol)
+    }
+  }
+
+  if(any(CTtable[,stationCol] != rownames(camOp))) stop ("there is a mismatch between station IDs in CTtable and rownames in camOp")
+
+
 
   if(hasArg(timeZone) == FALSE) {
     warning("timeZone is not specified. Assuming UTC", call. = FALSE)
@@ -153,6 +182,31 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   subset_species           <- subset(recordTableIndividual, recordTableIndividual[,speciesCol] == species)
   subset_species$DateTime2 <- as.POSIXlt(subset_species[,recordDateTimeCol], tz = timeZone, format = recordDateTimeFormat)
+
+
+  # if sessionCol is defined and present in CTtable, check if all records are within correct session. remove if not
+  if(hasArg(sessionCol)){
+    if(sessionCol %in% colnames(CTtable)){
+
+      rec_station_session <- unique(subset_species[,c(stationCol, sessionCol)])
+      cam_station_session <- unique(CTtable[,c(stationCol, sessionCol)])
+
+      rec_station_session$included_rec <- TRUE
+      cam_station_session$included_station <- TRUE
+      merged_tmp <- merge(rec_station_session, cam_station_session, all=TRUE)
+
+      if(any(is.na(merged_tmp$included_station))){
+        which_to_remove_mismatch <- which(subset_species[,stationCol] == merged_tmp[is.na(merged_tmp$included_station), stationCol] &
+                                            subset_species[,sessionCol] == merged_tmp[is.na(merged_tmp$included_station), sessionCol])
+        if(length(which_to_remove_mismatch) >= 1){
+          warning("there are records at stations which were not used during sessions. They will be ignored. \nrows: ",
+                  paste(rownames(subset_species)[which_to_remove_mismatch], collapse = ", "), call. = FALSE)
+          subset_species <- subset_species[-which_to_remove_mismatch,]
+        }
+      }
+    }
+  }
+
 
   # check consistency of argument day1
   stopifnot(class(day1) == "character")
@@ -259,14 +313,14 @@ spatialDetectionHistory <- function(recordTableIndividual,
     colnames(sdh0) <- c("ID", occasionCol, "trapID")
   }
 
-  # add required session column
+  # add required session column to captures
   if(hasArg(sessionCol)) {
     sdh1 <- cbind(Session = subset_species[,sessionCol], sdh0)
   } else {
     sdh1 <- cbind(Session = 1, sdh0)
   }
 
-  # remove unidentified individuals
+  # remove unidentified individuals from captures
   remove.tmp <- which(is.na(sdh1[,"ID"]))
   if(length(remove.tmp) >= 1){
     sdh1 <- sdh1[-remove.tmp,]
@@ -293,10 +347,12 @@ spatialDetectionHistory <- function(recordTableIndividual,
       rowindex_sdh_to_remove <- c(rowindex_sdh_to_remove, rowindex_sdh)                                   # save row index into temporary vector
     }
   }
-  # if there were records in occasios with effort = 0/NA, remove these records
+  # if there were records in occasions with effort = 0/NA, remove these records
   if(length(rowindex_sdh_to_remove) != 0){
+    warning(paste("removed ", length(rowindex_sdh_to_remove), " record(s) because of effort = 0/NA, incomplete occasions (if includeEffort = FALSE), or effort < minActiveDaysPerOccasion \n(rownames: ",
+                  paste(rownames(sdh2)[rowindex_sdh_to_remove], collapse = ", "), ")", sep = ""),
+            call. = FALSE)
     sdh2 <- sdh2[-rowindex_sdh_to_remove,]
-    warning(paste("removed", length(rowindex_sdh_to_remove), "records because of effort = 0/NA or effort < minActiveDaysPerOccasion"), call. = FALSE)
   }
   rm(rowindex_sdh, rowindex_sdh_to_remove)
 
@@ -304,6 +360,7 @@ spatialDetectionHistory <- function(recordTableIndividual,
   # make sure we have no NA in effort matrix (overwrite with 0)
   # otherwise secr::verify() will crash if there are NAs in the trap usage information
   effort[which(is.na(effort))] <- 0
+
 
   ############
   # make secr traps object
@@ -315,37 +372,105 @@ spatialDetectionHistory <- function(recordTableIndividual,
   # set detector type according to desired output (count or binary)
   detectortype <- ifelse (output == "binary", "proximity", "count")
 
-  if(includeEffort == TRUE) {
-    if(binaryEffort == TRUE){
-      secr.traps <- read.traps(data         = coord.ct,
-                               detector     = detectortype,
-                               binary.usage = TRUE)
-    } else {
-      secr.traps <- read.traps(data         = coord.ct,
-                               detector     = detectortype,
-                               binary.usage = FALSE)
-    }
-    secr::usage(secr.traps) <- effort
-  } else {
-    secr.traps <- read.traps(data     = coord.ct,
-                             detector = detectortype)
-  }
+
+# make station covariate data frame
 
   if(hasArg(stationCovariateCols)){
     whichstationCovariateCols <- which(colnames(CTtable) %in% stationCovariateCols)
-    stationCovsDF <- data.frame(CTtable[match(rownames(secr.traps), CTtable[,stationCol]), whichstationCovariateCols])
+    stationCovsDF <- data.frame(CTtable[, whichstationCovariateCols])
     if(length(stationCovariateCols) == 1) {
       colnames(stationCovsDF) <- stationCovariateCols
     }
-    secr::covariates(secr.traps) <- stationCovsDF
   }
+
+  # if sessionCol is defined and it is found in CTtable, make a list of traps objects (one for each session)
+
+  if(hasArg(sessionCol)){
+    if(sessionCol %in% colnames(CTtable)){
+      secr.traps <- list()
+
+      # if(any(CTtable[,stationCol] != rownames(cam.op.worked))) stop ("there is a mismatch between station IDs in CTtable and rownames in camop")
+      if(any(table(CTtable[,sessionCol]) == 1)) stop ("there is a session in CTtable that has only one station.")
+
+      for(sessionID in 1:max(CTtable[,sessionCol])){
+        which.session.tmp <- which(CTtable[,sessionCol] == sessionID)   # index of all stations active during session
+        if(includeEffort == TRUE) {
+          secr.traps[[sessionID]] <- read.traps(data         = coord.ct[which.session.tmp,],
+                                                detector     = detectortype,
+                                                binary.usage = binaryEffort)
+
+          effort_session_tmp <- effort[which.session.tmp,]              # subset effort to active stations only
+          secr::usage(secr.traps[[sessionID]]) <- effort_session_tmp[,which(colSums(effort_session_tmp) != 0)]  # only occasions with >1 active station
+          # fix occasions (if there were occasions without active cameras before an occasion)
+          # if a session is empty (e.g. because day1 was after end of that session, all records will be removed from sdh2)
+          # that session then needs to be deleted with a warning
+          sdh2[sdh2[, "Session"] == sessionID, "Occasion"] <- sapply(sdh2[sdh2[, "Session"] == sessionID, "Occasion"],
+                                                                     FUN = function(x){x - length(which(which(colSums(effort_session_tmp) == 0) <  x) == TRUE)})
+
+          rm(effort_session_tmp)
+        } else {
+          secr.traps[[sessionID]] <- read.traps(data         = coord.ct[which.session.tmp,],
+                                                detector     = detectortype)
+        }
+        if(exists("stationCovsDF")) secr::covariates(secr.traps[[sessionID]]) <- stationCovsDF[which.session.tmp,]
+        rm(which.session.tmp)
+      }
+# remove sessions with empty effort (caused by day1 after last station retrieval)
+      if(any(sapply(secr::usage(secr.traps), sum) == 0)){
+        if(day1switch == 3){
+          warning("will remove data from session  ", paste(which(sapply(secr::usage(secr.traps), sum) == 0), collapse = ", "), "  because the effort matrix was empty.
+                  This is probably due to the usage of a date outside the station operation range in argument 'day1'", call. = FALSE)
+        } else {
+          warning("will remove data from ", paste(which(sapply(usage(secr.traps), sum) == 0), collapse = ", "), " session because the effort matrix was empty.", call. = FALSE)
+        }
+        secr.traps <- secr.traps[-which(sapply(secr::usage(secr.traps), sum) == 0)]
+      }
+    }
+    }
+
+  # otherwise (sessionCol not in CTtable or not defined) make traps object for all stations
+  if(!exists("secr.traps")){
+    if(includeEffort == TRUE) {
+      secr.traps <- read.traps(data         = coord.ct,
+                               detector     = detectortype,
+                               binary.usage = binaryEffort)
+      # if there are columns in effort which have colSum = 0 (no station active), remove these from effort/usage information
+      secr::usage(secr.traps) <- effort[,which(colSums(effort) != 0)]
+      # consequently, occasions need to be adjusted too (if occasions were lost before a specific occasion, reduce occasion by number of removed occasions before that occasion)
+      sdh2$Occasion <- sapply(sdh2$Occasion, FUN = function(x){x - length(which(which(colSums(effort) == 0) <  x) == TRUE)})
+
+    } else {
+      secr.traps <- read.traps(data     = coord.ct,
+                               detector = detectortype)
+    }
+    if(exists("stationCovsDF")) secr::covariates(secr.traps) <- stationCovsDF
+  }
+
+
+  # find number of occasions
+  if(includeEffort == FALSE) {
+    noccasions <- ncol(effort)
+  } else {
+    if(all(class(secr.traps) == "list")) {
+      noccasions <- sapply(secr::usage(secr.traps), ncol)
+    } else {
+      if(class(secr::usage(secr.traps)) == "matrix"){
+        noccasions <- ncol(secr::usage(secr.traps))
+      } else {
+        noccasions <- ncol(effort)
+      }
+    }
+  }
+
 
   ###########
   # make capthist object
+
   capthist.secr <- make.capthist(captures   = sdh2,
                                  traps      = secr.traps,
                                  fmt        = "trapID",
-                                 noccasions = ncol(effort))
+                                 noccasions = noccasions,
+                                 bysession  = TRUE)
 
   if(hasArg(makeRMarkInput)){
     if(isTRUE(makeRMarkInput)){

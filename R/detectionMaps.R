@@ -25,9 +25,15 @@ detectionMaps <- function(CTtable,
   on.exit(setwd(wd0))
   on.exit(par(opar), add = TRUE)
 						  
-  stopifnot(stationCol %in% colnames(CTtable))
-  stopifnot(stationCol %in% colnames(recordTable))
+  # check column names
+  checkForSpacesInColumnNames(stationCol = stationCol, speciesCol = speciesCol, Xcol = Xcol, Ycol = Ycol)
+  if(!stationCol %in% colnames(CTtable))        stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!stationCol %in% colnames(recordTable))  stop(paste('stationCol = "',   stationCol,     '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!speciesCol %in% colnames(recordTable))  stop(paste('speciesCol = "', speciesCol,       '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!Xcol %in% colnames(CTtable))    stop(paste('Xcol = "',   Xcol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!Ycol %in% colnames(CTtable))        stop(paste('Ycol = "',   Ycol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
   
+    
   CTtable[,stationCol] <- as.character(CTtable[,stationCol])
   recordTable[,stationCol] <- as.character(recordTable[,stationCol])
   
@@ -35,11 +41,9 @@ detectionMaps <- function(CTtable,
   if(all(recordTable[,stationCol] %in% CTtable[,stationCol]) == FALSE) {
     stop(paste("items of stationCol in recordTable are not matched in stationCol of CTtable: ", paste(recordTable[-which(recordTable[,stationCol] %in% CTtable[,stationCol]),stationCol], collapse = ", ")))
   }
-
-  stopifnot(speciesCol %in% colnames(recordTable))
+  
   recordTable[,speciesCol] <- as.character(recordTable[,speciesCol])
   
-  stopifnot(c(Xcol, Ycol) %in% colnames(CTtable))
   if(any(is.na(CTtable[,Xcol])))stop("there are NAs in Xcol")
   if(any(is.na(CTtable[,Ycol])))stop("there are NAs in Ycol")
   if(any(is.na(CTtable[,stationCol])))stop("there are NAs in stationCol")
@@ -64,7 +68,7 @@ detectionMaps <- function(CTtable,
   colnames(t2) <- c(stationCol, names(t1[,2][[1]]))
   
   t3 <- t2[match(toupper(as.character(dat2[,stationCol])), toupper(as.character(t2[,stationCol]))),]    # matching IDs between recordTable and CTtable
-  cex.t3 <- data.frame(t3[,1], apply(data.frame(t3[,-1]),2,function(x){x/max(x, na.rm = TRUE)}))
+  cex.t3 <- data.frame(t3[,1], apply(data.frame(t3[,-1]), MARGIN = 2, FUN = function(x){x/max(x, na.rm = TRUE)}))
   colnames(cex.t3)[1] <- stationCol
 
   t4 <- data.frame(t3[,1], n_species = apply(as.data.frame(ifelse(t3[,-1] >=1, 1, 0)), 1, FUN = sum))    # number of species by station
@@ -110,7 +114,10 @@ detectionMaps <- function(CTtable,
     pngWidth <-  round(pngMaxPix / (X.tmp /  Y.tmp))
     pngHeight <-  pngMaxPix
   }
-
+  # if any of these is NA or NaN, set to pngMaxPix (may happen if only 1 station and x or y range is 0, bcause of division by 0)
+  if(is.na(pngWidth))  pngWidth <- pngMaxPix
+  if(is.na(pngHeight))  pngHeight <- pngMaxPix
+  
   if(isTRUE(writePNG)){
     if(hasArg(plotDirectory)){
       if(isTRUE(createPlotDir)){

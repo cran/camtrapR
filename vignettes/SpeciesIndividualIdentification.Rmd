@@ -107,7 +107,7 @@ Species|SpeciesA, Species|SpeciesB
 
 Note that multiple tags are separated by commas and hierarchy levels are by default separated by a vertical bar ("|"). Adobe software also lets you use colon (":"); you can tell camtrapR which to use using argument `metadataHierarchyDelimitor` in a number of functions). camtrapR reads these lines and can automatically tabulate the contents.
 
-### What if non-hierarchical metadata tags were assigned already?
+### What if non-hierarchical metadata tags were assigned to images already?
 
 If you have set of tagged images, but the tags are not structured hierarchically as explained above, but rather flat (no tag groups, only tags), they can easily be brought into the format needed by camtrapR in digiKam. This will, however, change your original metadata structure. So to be on the safe side, take some precautions:
 
@@ -127,6 +127,9 @@ Afterwards, the "HierarchicalSubject" of your image metadata should contain the 
 
 This procedure also works for other tags, not only "Species".
 
+### How to import a metadata tag tree into digiKam
+
+Consider this scenario: you created an elaborate tag tree and would like to share it with colleagues for them to tag images independently, but using the same tags that you use. Instead of making them create the tags manually, you can use a dummy image, assign *all* possible metadata tags of interest to it and share that tagged dummy image. Once imported into digiKam on another machine, that machine's digiKam tag tree will be updated automatically and will then contain all tags present in your dummy image.
 
 ## Double observer identification
 

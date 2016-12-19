@@ -12,13 +12,19 @@ timeShiftImages <- function(inDir,
 
   stopifnot(class(timeShiftTable) == "data.frame")
   
-  # make all columns character
+  # convert all columns to character
   for(i in 1:ncol(timeShiftTable)){
     timeShiftTable[,i] <- as.character(timeShiftTable[,i])
   }
   rm(i)
+  
+  # check column names
+  checkForSpacesInColumnNames(stationCol = stationCol, timeShiftColumn = timeShiftColumn, timeShiftSignColumn = timeShiftSignColumn)
+  if(!stationCol %in% colnames(timeShiftTable))         stop(paste('stationCol = "',   stationCol,     '" is not a column name in timeShiftTable', sep = ''), call. = FALSE)
+  if(!timeShiftColumn %in% colnames(timeShiftTable))  stop(paste('timeShiftColumn = "',   timeShiftColumn,     '" is not a column name in timeShiftTable', sep = ''), call. = FALSE)
+  if(!timeShiftSignColumn %in% colnames(timeShiftTable))  stop(paste('timeShiftSignColumn = "', timeShiftSignColumn,       '" is not a column name in timeShiftTable', sep = ''), call. = FALSE)
 
-  stopifnot(c(stationCol, timeShiftColumn, timeShiftSignColumn) %in% colnames(timeShiftTable))
+  
   if(isTRUE(hasCameraFolders)){
     stopifnot(cameraCol %in% colnames(timeShiftTable))
   } else {

@@ -67,7 +67,7 @@ recordTable(inDir,
   character. In custom image metadata, the species ID tag name.
 }
   \item{additionalMetadataTags}{
-  character. Additional camera model-specific metadata tags to be extracted.
+  character. Additional camera model-specific metadata tags to be extracted. (If possible specify tag groups as returned by \code{\link{exifTagNames}})
 }
   \item{removeDuplicateRecords}{
   logical. If there are several records of the same species at the same station (also same camera if cameraID is defined) at exactly the same time, show only one?
@@ -123,12 +123,13 @@ wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
 
 if (Sys.which("exiftool") != ""){        # only run these examples if ExifTool is available
 
+
 rec.db1 <- recordTable(inDir                  = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 60,
                        deltaTimeComparedTo    = "lastRecord",
                        writecsv               = FALSE,
-                       additionalMetadataTags = c("Model", "Make")
+                       additionalMetadataTags = c("EXIF:Model", "EXIF:Make")
 )
 
  
@@ -139,7 +140,9 @@ rec.db2 <- recordTable(inDir                  = wd_images_ID,
                        exclude                = "NO_ID",
                        writecsv               = FALSE,
                        timeZone               = "Asia/Kuala_Lumpur",
-                       additionalMetadataTags = c("Model", "Make", "NonExistingMetadataTag")    
+                       additionalMetadataTags = c("EXIF:Model", 
+                                                  "EXIF:Make", 
+                                                  "NonExistingMetadataTag")
 )
 # note the warning that the last tag in "additionalMetadataTags" was not found
 
