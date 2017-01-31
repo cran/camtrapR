@@ -90,8 +90,6 @@ Imagine a species that loves to hang out in front of your cameras. You will end 
 
 The argument `deltaTimeComparedTo` further controls how independence between records is assessed. Setting it to "lastRecord" returns only records taken `minDeltaTime` minutes after the last record. Setting it to "lastIndependentRecord" returns only records taken `minDeltaTime` minutes after the last *independent* record.
 
-Note the warning about the missing time zone. It is much advised to set it to you study area's time zone (one of `OlsonNames`). It is unlikely, but you may get into trouble if your cameras record daylight saving hours that UTC (the default) does not have. The time of day of your records will not shift when you change the time zone.
-
 Let's now apply an 1-hour independence criterion and define a time zone.
 
 
@@ -106,6 +104,21 @@ nrow(rec.db.species60)
 ```
 
 Now `r nrow(rec.db.species60)` records were returned instead of `r nrow(rec.db.species0)`. The missing records were taken less than 1 hour after the prior record of the same species at the same station and therefore omitted.
+
+
+### Time zones and daylight saving time
+
+Note the warning about the missing time zone in the minimal example above. By default, camtrapR will assume UTC time zone. This should work well in most situations (even though the time zone may not be correct, strictly speaking), because UTC does not use Daylight saving time (DST, aka 'summer time'), and camera traps normally don't use time zones (hence, camera traps will normally not respect DST of the area you work in).
+
+Now, if you work in an area that uses DST, and your camera does not know about DST, there will be a systematic 1-hour offset of all records taken during DST. In addition, records may fall into the non-existing when clocks are advanced in spring.
+
+So, the question whether or not your cameras record the time zone becomes very important. Here is some recommendations on how to use the argument.
+
+If your cameras save the time zone, set argument `timeZone` (both if your area has DST or not). 
+If your cameras don't save the time zone, and your time zone does not have DST, argument `timeZone`
+If your cameras don't save the time zone, and your time zone has DST, use the default UTC.
+
+In other words, it is strongly advised to set argument `timeZone` to your study area's time zone (one of `OlsonNames()`), *unless* your area has DST, but your cameras don't record it. 
 
 
 ### Independence between cameras within stations

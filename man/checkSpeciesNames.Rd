@@ -24,7 +24,7 @@ checkSpeciesNames(speciesNames,
   character. Type of names specified in \code{speciesNames}. One of 'scientific' or 'common'.
 }
   \item{accepted}{
-  logical. Return only accepted valid names? If TRUE, invalid names are returned as NA. Set to FALSE to return both accepted and unaccepted names. 
+  logical. Return only accepted valid names? If TRUE, invalid names are returned as NA. Set to FALSE to return both accepted and unaccepted names.
 }
   \item{ask}{
   logical. Should the function be run in interactive mode? If TRUE and more than one TSN is found for a species, the user is asked to choose one. If FALSE, NA is returned for multiple matches.
@@ -43,7 +43,7 @@ A \code{data.frame} with the names supplied by the user, matching common and sci
  \references{
 \url{http://www.itis.gov/}
  }
- 
+
 \author{
 Juergen Niedballa
 }

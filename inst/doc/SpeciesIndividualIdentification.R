@@ -22,10 +22,10 @@ checkNames3
 
 ## an ambiguous name name: Chevrotain (Tragulus)    
 ## this does not work in vignettes, but should run on your machine
-# checkNames4 <- checkSpeciesNames (speciesNames = "Chevrotain",
-#                                   searchtype   = "common")
-# 1              # making a choice from the menu
-# checkNames4
+ # checkNames4 <- checkSpeciesNames (speciesNames = c("Chevrotain"),
+ #                                   searchtype   = "common")
+ # 1              # making a choice from the menu
+ # checkNames4
 
 ## ------------------------------------------------------------------------
 

@@ -9,8 +9,8 @@ createStationFolders <- function(inDir,
 if(hasArg(createinDir) == FALSE) createinDir <- FALSE
 stopifnot(is.logical(createinDir))
 
-if(createinDir == FALSE & file.exists(inDir) == FALSE)  stop("inDir does not exist")
-if(createinDir == TRUE  & file.exists(inDir) == FALSE)  dir.create(inDir, recursive = TRUE)
+if(createinDir == FALSE & !dir.exists(inDir))  stop("Could not find inDir:\n", inDir, call. = FALSE)
+if(createinDir == TRUE  & !dir.exists(inDir))  dir.create(inDir, recursive = TRUE)
 
   stopifnot(is.character(stations))
   if(hasArg(cameras)){

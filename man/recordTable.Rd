@@ -96,6 +96,8 @@ A data frame containing species records and additional information about station
 Custom image metadata must be organised hierarchically (tag group - tag; e.g. "Species" - "Leopard Cat"). Detailed information on how to set up and use metadata tags can be found in \href{https://CRAN.R-project.org/package=camtrapR/vignettes/SpeciesIndividualIdentification.html#metadata-tagging}{vignette 2: Species and Individual Identification}.
 
 Custom image metadata tags must be written to the images. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
+
+Please note the section about defining argument \code{timeZone} in the vignette on data extraction (accessible via \code{vignette("DataExtraction")} or online (\url{https://cran.r-project.org/package=camtrapR/vignettes/DataExtraction.html})).
 }
 \references{
 Phil Harvey's ExifTool \url{http://www.sno.phy.queensu.ca/~phil/exiftool/ }
@@ -131,8 +133,8 @@ rec.db1 <- recordTable(inDir                  = wd_images_ID,
                        writecsv               = FALSE,
                        additionalMetadataTags = c("EXIF:Model", "EXIF:Make")
 )
+# note argument additionalMetadataTags: it contains tag names as returned by function exifTagNames
 
- 
 rec.db2 <- recordTable(inDir                  = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 60,
@@ -140,9 +142,7 @@ rec.db2 <- recordTable(inDir                  = wd_images_ID,
                        exclude                = "NO_ID",
                        writecsv               = FALSE,
                        timeZone               = "Asia/Kuala_Lumpur",
-                       additionalMetadataTags = c("EXIF:Model", 
-                                                  "EXIF:Make", 
-                                                  "NonExistingMetadataTag")
+                       additionalMetadataTags = c("EXIF:Model", "EXIF:Make", "NonExistingTag")
 )
 # note the warning that the last tag in "additionalMetadataTags" was not found
 

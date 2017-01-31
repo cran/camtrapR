@@ -12,6 +12,7 @@ imageRename(inDir,
   outDir, 
   hasCameraFolders,
   keepCameraSubfolders,
+  createEmptyDirectories = FALSE,
   copyImages = FALSE, 
   writecsv = FALSE)
 }
@@ -28,6 +29,9 @@ imageRename(inDir,
 }
   \item{keepCameraSubfolders}{
      logical. Should camera directories be preserved as subdirectories of \code{outDir} (e.g. "outDir/StationA/CameraA1")?
+}
+  \item{createEmptyDirectories}{
+     logical. If station or camera directories are empty, should they be copied nevertheless (causing empty directories in \code{inDir}, but preserving the whole directory structure)?
 }
   \item{copyImages}{
   logical. Copy images to \code{outDir}?

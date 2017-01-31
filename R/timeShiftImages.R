@@ -42,6 +42,9 @@ timeShiftImages <- function(inDir,
                                                                                                                                  timeShiftTable[xy,stationCol], ")")
   }
 
+  
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
+  
   if(isTRUE(hasCameraFolders)){
     shift.dirs <- file.path(inDir, timeShiftTable[,stationCol], timeShiftTable[,cameraCol])
   } else {

@@ -74,7 +74,7 @@ wd_images_raw_renamed <- file.path(tempdir(), "raw_images_renamed")
 renaming.table2 <- imageRename(inDir               = wd_images_raw,
                                outDir              = wd_images_raw_renamed,       
                                hasCameraFolders    = FALSE,
-                               copyImages          = TRUE
+                               copyImages          = FALSE
   )
 
 # here is the information for a few images 

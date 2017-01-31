@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2016-12-19" />
+<meta name="date" content="2017-01-31" />
 
 <title>Organising raw camera trap images in camtrapR</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Organising raw camera trap images in camtrapR</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2016-12-19</em></h4>
+<h4 class="date"><em>2017-01-31</em></h4>
 
 
 <div id="TOC">
@@ -113,6 +113,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <ol style="list-style-type: decimal">
 <li><code>createStationFolders</code></li>
+<li><code>fixDateTimeOriginal</code> (only if necessary)</li>
 <li><code>timeShiftImages</code> (only if necessary)</li>
 <li><code>imageRename</code></li>
 <li><code>addCopyrightTag</code></li>
@@ -211,7 +212,7 @@ camtraps</code></pre></div>
 <p>Note that the sample data contain only one camera per station. Thus, there is no need to differentiate between station and camera IDs. If there was more than one camera per station, an additional column for camera IDs would be needed. Consequently, there would be one row for each camera and thus several rows per station.</p>
 <div id="station-camera-ids" class="section level2">
 <h2>Station / Camera IDs</h2>
-<p>Station and camera IDs can be any combination of characters and numbers. Please don’t use underscores though, and more specifically, don’t use double underscores (“__“), as these are used in a number of functions to separate bits of information (e.g. in file names created by <code>imageRename</code> or row names in <code>cameraOperation</code>).</p>
+<p>Station and camera IDs can be any combination of characters and numbers. Please don’t use underscores though, and more specifically, don’t use double underscores (&quot;__&quot;), as these are used in a number of functions to separate bits of information (e.g. in file names created by <code>imageRename</code> or row names in <code>cameraOperation</code>).</p>
 </div>
 <div id="column-names" class="section level2">
 <h2>Column names</h2>
@@ -219,9 +220,9 @@ camtraps</code></pre></div>
 </div>
 <div id="date-format" class="section level2">
 <h2>Date format</h2>
-<p>All dates in this table (setup, retrieval and problem columns) should be of data type “character” and can be formatted in any way that function <code>as.Date</code> can interpret. <strong>camtrapR</strong> by default assumes the standard format “YYYY-MM-DD”, e.g. “2015-12-31”, and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.</p>
-<p>Two functions (<code>cameraOperation</code>, <code>surveyReport</code>) utilize these date information and therefore contain arguments to specify the date format (<code>dateFormat</code> and <code>CTDateFormat</code>, respectively). Internally, these arguments are passed to function <code>as.Date</code> as argument <code>format</code> and are needed to interpret the character string (e.g. “2015-12-31”) provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions <code>as.Date</code> and <code>strptime</code> or <a href="http://www.r-bloggers.com/date-formats-in-r/">here</a>.</p>
-<p>Here are a few examples for December 1st 2015 (“generic” is the abstract representation of your date string (Y = year, M = month, D = day), “example” is a formatted example and “dateFormat argument” is what you’d specify in <code>dateFormat</code> and <code>CTDateFormat</code>):</p>
+<p>All dates in this table (setup, retrieval and problem columns) should be of data type &quot;character&quot; and can be formatted in any way that function <code>as.Date</code> can interpret. <strong>camtrapR</strong> by default assumes the standard format &quot;YYYY-MM-DD&quot;, e.g. &quot;2015-12-31&quot;, and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.</p>
+<p>Two functions (<code>cameraOperation</code>, <code>surveyReport</code>) utilize these date information and therefore contain arguments to specify the date format (<code>dateFormat</code> and <code>CTDateFormat</code>, respectively). Internally, these arguments are passed to function <code>as.Date</code> as argument <code>format</code> and are needed to interpret the character string (e.g. &quot;2015-12-31&quot;) provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions <code>as.Date</code> and <code>strptime</code> or <a href="http://www.r-bloggers.com/date-formats-in-r/">here</a>.</p>
+<p>Here are a few examples for December 1st 2015 (&quot;generic&quot; is the abstract representation of your date string (Y = year, M = month, D = day), &quot;example&quot; is a formatted example and &quot;dateFormat argument&quot; is what you’d specify in <code>dateFormat</code> and <code>CTDateFormat</code>):</p>
 <table>
 <thead>
 <tr class="header">
@@ -268,7 +269,7 @@ camtraps</code></pre></div>
 </tr>
 </tbody>
 </table>
-<p> In the sample table (<code>camtraps</code>), we use another date format for demonstration purposes.</p>
+<p>In the sample table (<code>camtraps</code>), we use another date format for demonstration purposes.</p>
 <p>Data type of the ID and date columns in the table must be <code>character</code> or <code>factor</code>. Please don’t use data type <code>Date</code>. You can turn data type <code>Date</code> into <code>character</code> using <code>as.character</code>.</p>
 </div>
 <div id="station--camera-level-covariates" class="section level2">
@@ -314,9 +315,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                 directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createStationFoldersTest/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createStationFoldersTest/StationB
-## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/createStationFoldersTest/StationC
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/createStationFoldersTest/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/createStationFoldersTest/StationB
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -333,7 +334,7 @@ timeShiftTable</code></pre></div>
 <pre><code>##    Station camera    timeshift sign
 ## 1 StationA     NA  1:0:0 0:0:0    -
 ## 2 StationB     NA 0:0:0 12:0:0    +</code></pre>
-<p>There is a <code>station</code> column with station IDs, <code>camera</code> is NA because there was 1 camera per station only in our example, <code>timeshift</code> is the amount by which to shift the time of all images at that station, and <code>sign</code> specifies the direction in which to shift time. Setting <code>sign</code> to <code>+</code> sets image time ahead by the amount specified in <code>timeshift</code>, <code>-</code> sets image times back. <code>timeshift</code> format is “year:month:day hour:minute:second”, i.e. &quot;1:0:0 0:0:0&quot; is a shift of exactly 1 year and &quot;0:0:0 12:10:01&quot; 12 hours and 10 minutes and 1 second. In the above table, time stampes of images taken at StationA are shifted back by 1 year, and images taken at StationB are shifted ahead by 12 hours.</p>
+<p>There is a <code>station</code> column with station IDs, <code>camera</code> is NA because there was 1 camera per station only in our example, <code>timeshift</code> is the amount by which to shift the time of all images at that station, and <code>sign</code> specifies the direction in which to shift time. Setting <code>sign</code> to <code>+</code> sets image time ahead by the amount specified in <code>timeshift</code>, <code>-</code> sets image times back. <code>timeshift</code> format is &quot;year:month:day hour:minute:second&quot;, i.e. &quot;1:0:0 0:0:0&quot; is a shift of exactly 1 year and &quot;0:0:0 12:10:01&quot; 12 hours and 10 minutes and 1 second. In the above table, time stampes of images taken at StationA are shifted back by 1 year, and images taken at StationB are shifted ahead by 12 hours.</p>
 <p>The function <code>timeShiftImages</code> should be run directly after saving the raw images on the hard disk.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy sample images to another location (so we don't mess around in the package directory)</span>
 wd_images_raw &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/raw_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
@@ -348,12 +349,12 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
                                  <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
                                  <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
 )</code></pre></div>
-<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpOMmRCx/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpOMmRCx/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpUTOsQY/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpUTOsQY/raw_images/StationB</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre></div>
 <pre><code>##                                                                   directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images/StationB
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -369,8 +370,8 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
 
 timeshift_undo</code></pre></div>
 <pre><code>##                                                                   directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images/StationB
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -390,7 +391,7 @@ timeshift_undo</code></pre></div>
 <p>StationID__CameraID__Date__Time(X).JPG</p>
 </blockquote>
 <p>Station ID and camera ID are derived from the raw image directory structure created earlier with <code>createStationFolders</code> Date and time are taken from image Exif metadata (read using ExifTool). (X) is a numeric identifier that is assigned to all images taken at the same station (and camera, if applicable) within one minute. This is to avoid identical image names if images were taken in the same second (or in the same minute, if cameras record time in hours and minutes only).</p>
-<p>Again, please be aware that temporary directories are used in the example. Set <code>outDir</code> to a permanent directory.</p>
+<p>Again, please be aware that temporary directories are used in the example. Set <code>outDir</code> to a permanent directory. In addition, images are not actually copied (argument <code>copyImages = FALSE</code>), but copying and renaming is mererly simulated in out example). So, in real world data, set <code>copyImages = TRUE</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># raw image location</span>
 wd_images_raw &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/raw_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)      
   <span class="co"># destination for renamed images to be copied to</span>
@@ -399,19 +400,19 @@ wd_images_raw_renamed &lt;-<span class="st"> </span><span class="kw">file.path</
 renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span>(<span class="dt">inDir               =</span> wd_images_raw,
                                <span class="dt">outDir              =</span> wd_images_raw_renamed,       
                                <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
-                               <span class="dt">copyImages          =</span> <span class="ot">TRUE</span>
+                               <span class="dt">copyImages          =</span> <span class="ot">FALSE</span>
   )</code></pre></div>
 <pre><code>## StationA : 3 images</code></pre>
 <pre><code>## StationB : 3 images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
 <span class="kw">head</span>(renaming.table2)</code></pre></div>
-<pre><code>##                                                                                                        Directory
-## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/Rtmpcnd4z5/Rinstee44ef85d42/camtrapR/pictures/raw_images/StationB
+<pre><code>##                                                                                                       Directory
+## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -420,19 +421,19 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                              outDir
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images_renamed/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images_renamed/StationA
-## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images_renamed/StationA
-## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images_renamed/StationB
-## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images_renamed/StationB
-## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpOMmRCx/raw_images_renamed/StationB
-##                            filename_new CopyStatus
-## 1 StationA__2009-04-10__05-07-00(1).JPG       TRUE
-## 2 StationA__2009-04-21__00-40-00(1).JPG       TRUE
-## 3 StationA__2009-04-22__20-19-00(1).JPG       TRUE
-## 4 StationB__2009-04-05__00-11-00(1).JPG       TRUE
-## 5 StationB__2009-04-05__23-13-00(1).JPG       TRUE
-## 6 StationB__2009-04-07__00-23-00(1).JPG       TRUE</code></pre>
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationA
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationA
+## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationB
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationB
+## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationB
+##                            filename_new fileExistsAlready CopyStatus
+## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
+## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
+## 3 StationA__2009-04-22__20-19-00(1).JPG             FALSE      FALSE
+## 4 StationB__2009-04-05__00-11-00(1).JPG             FALSE      FALSE
+## 5 StationB__2009-04-05__23-13-00(1).JPG             FALSE      FALSE
+## 6 StationB__2009-04-07__00-23-00(1).JPG             FALSE      FALSE</code></pre>
 <p>So, the first image, &quot;IMG0001.JPG&quot; was renamed to &quot;StationA__2009-04-10__05-07-00(1).JPG&quot;. Here is what the columns mean:</p>
 <table style="width:97%;">
 <colgroup>
@@ -489,7 +490,7 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 <div id="writing-a-copyright-tag-into-image-metadata" class="section level2">
 <h2>Writing a copyright tag into image metadata</h2>
 <p>The function <code>addCopyrightTag</code> can write a copyright tag into image Exif metadata. While this can be useful when sharing or publishing data, it is not required in the camtrapR workflow. The function will recursively find all images in <code>inDir</code> and its subdirectories and writes a user-defined text into the Copyright field of the Exif metadata.</p>
-<p>In doing so, Exiftool normally keeps the original images as .JPG_original files. Note that this behaviour will instantly double the number of images in inDir and the disk space required. If this is not desired, users can set the function argument <code>keepJPG_original = FALSE</code> (default is <code>TRUE</code>) in order to replace the original files without creating .JPG_original files. I recommend to first try this on a subdataset and to then check the function output. If there are warnings like “Warning: [minor] Maker notes could not be parsed” image makernotes may be unreadable afterwards (background to this can be found <a href="http://exiv2.org/makernote.html">here</a>). On the other hand, you may never need these for analysing camera trapping data.</p>
+<p>In doing so, Exiftool normally keeps the original images as .JPG_original files. Note that this behaviour will instantly double the number of images in inDir and the disk space required. If this is not desired, users can set the function argument <code>keepJPG_original = FALSE</code> (default is <code>TRUE</code>) in order to replace the original files without creating .JPG_original files. I recommend to first try this on a subdataset and to then check the function output. If there are warnings like &quot;Warning: [minor] Maker notes could not be parsed&quot; image makernotes may be unreadable afterwards (background to this can be found <a href="http://exiv2.org/makernote.html">here</a>). On the other hand, you may never need these for analysing camera trapping data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy sample images to temporary directory (so we don't mess around in the package directory)</span>
 wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
 <span class="kw">file.copy</span>(<span class="dt">from =</span> wd_images_ID, <span class="dt">to =</span> <span class="kw">tempdir</span>(), <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -509,11 +510,11 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
 <pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 9.69&quot;                                                                      
 ##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding&quot;                                                
 ##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                     
-##  [4] &quot;[File]          Directory                       : C:/Users/JRGENN~1/AppData/Local/Temp/RtmpOMmRCx/sample_images/StationA/PBE&quot;
+##  [4] &quot;[File]          Directory                       : C:/Users/JRGENN~1/AppData/Local/Temp/RtmpUTOsQY/sample_images/StationA/PBE&quot;
 ##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                     
-##  [6] &quot;[File]          File Modification Date/Time     : 2016:12:19 22:59:01+01:00&quot;                                                 
-##  [7] &quot;[File]          File Access Date/Time           : 2016:12:19 22:59:01+01:00&quot;                                                 
-##  [8] &quot;[File]          File Creation Date/Time         : 2016:12:19 22:58:59+01:00&quot;                                                 
+##  [6] &quot;[File]          File Modification Date/Time     : 2017:01:31 10:15:01+01:00&quot;                                                 
+##  [7] &quot;[File]          File Access Date/Time           : 2017:01:31 10:15:01+01:00&quot;                                                 
+##  [8] &quot;[File]          File Creation Date/Time         : 2017:01:31 10:14:59+01:00&quot;                                                 
 ##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                 
 ## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                      
 ## [11] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                                

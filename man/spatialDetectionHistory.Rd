@@ -5,7 +5,7 @@
 Generate a \code{capthist} object for spatial capture-recapture analyses from camera-trapping data
 }
 \description{
-This function generates spatial detection histories of individuals of a species for spatial capture-recapture analyses with package \code{\link[secr]{secr}}. Data are stored in a \code{\link[secr]{capthist}} object. The \code{\link[secr]{capthist}} object contains detection histories, camera-trap station location and possibly individual and station-level covariates. Detection histories can have adjustable occasion length and occasion start time (as in the function \code{\link{detectionHistory}}]).
+This function generates spatial detection histories of individuals of a species for spatial capture-recapture analyses with package \code{\link[secr]{secr}}. Data are stored in a \code{\link[secr]{capthist}} object. The \code{\link[secr]{capthist}} object contains detection histories, camera-trap station location and possibly individual and station-level covariates. Detection histories can have adjustable occasion length and occasion start time (as in the function \code{\link{detectionHistory}}).
 }
 \usage{
 spatialDetectionHistory(recordTableIndividual,
@@ -86,7 +86,7 @@ spatialDetectionHistory(recordTableIndividual,
   \item{occasionLength}{
   integer. occasion length in days
 }
-\item{minActiveDaysPerOccasion}{
+  \item{minActiveDaysPerOccasion}{
   integer. minimum number of active trap days for occasions to be included (optional)
 }
   \item{occasionStartTime}{
@@ -132,6 +132,13 @@ Argument \code{sessionCol} can be used to a create multi-session \code{\link[sec
 
 \code{\link[secr]{capthist}} objects (as created by \code{\link{spatialDetectionHistory}} for spatial capture-recapture analyses) expect the units of coordinates (\code{Xcol} and \code{col} in \code{CTtable}) to be meters. Therefore, please use a suitable coordinate system (e.g. UTM).
 }
+
+\section{Warning }{
+Please note the section about defining argument \code{timeZone} in the vignette on data extraction (accessible via \code{vignette("DataExtraction")} or online (\url{https://cran.r-project.org/package=camtrapR/vignettes/DataExtraction.html})).
+}
+
+
+
 \value{
 Output depends on argument \code{makeRMarkInput}:
 

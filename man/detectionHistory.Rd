@@ -38,7 +38,7 @@ detectionHistory(recordTable,
   character. the species for which to compute the detection history
 }
   \item{camOp}{
-  The camera operability matrix as created by \code{\link{cameraOperation}} 
+  The camera operability matrix as created by \code{\link{cameraOperation}}
 }
   \item{stationCol}{
   character. name of the column specifying Station ID in \code{recordTable}
@@ -55,7 +55,7 @@ detectionHistory(recordTable,
   \item{occasionLength}{
   integer. occasion length in days
 }
-\item{minActiveDaysPerOccasion}{
+  \item{minActiveDaysPerOccasion}{
   integer. minimum number of active trap days for occasions to be included (optional)
 }
   \item{maxNumberDays}{
@@ -77,7 +77,7 @@ detectionHistory(recordTable,
   integer. time of day (the full hour) at which to begin occasions.
 }
   \item{datesAsOccasionNames}{
-  If \code{day1 = "survey"}, occasion names in the detection history will be composed of first and last day of that occasion. 
+  If \code{day1 = "survey"}, occasion names in the detection history will be composed of first and last day of that occasion.
 }
   \item{timeZone}{
   character. must be an argument of \code{\link[base]{OlsonNames}}
@@ -95,7 +95,7 @@ The function computes a species detection matrix, either as a detection-by-date 
 
 \code{includeEffort} controls whether an additional effort matrix is computed or not. This also affects the detection matrices. If \code{includeEffort = FALSE}, all occasions in which a station was not set up or malfunctioning (NA or 0 in \code{camOp}) will result in NAs in the detection history. If \code{includeEffort = TRUE}, the record history will only contain 0 and 1, and no NAs. The effort matrix can then be included in occupancy models as a (continuous) observation covariate to estimate the effect of effort on detection probability.
 
-The number of days that are aggregated is controlled by \code{occasionLength}. \code{occasionStartTime} can be used to make occasions begin another hour than midnight (the default). This may be relevant for nocturnal animals, in which 1 whole night would be considered an occasion.   
+The number of days that are aggregated is controlled by \code{occasionLength}. \code{occasionStartTime} can be used to make occasions begin another hour than midnight (the default). This may be relevant for nocturnal animals, in which 1 whole night would be considered an occasion.
 The values of \code{stationCol} in \code{recordTable} must be matched by the row names of \code{camOp} (case-insensitive), otherwise an error is raised.
 \code{DateTimeFormat} defaults to "\%Y-\%m-\%d \%H:\%M:\%S", e.g. "2014-09-30 22:59:59". For details on how to specify date and time formats in R see \code{\link[base]{strptime}}.
 
@@ -105,23 +105,17 @@ Depending on the value of \code{includeEffort} and \code{scaleEffort}, a list wi
   \item{detection_history}{A species detection matrix}
   \item{effort}{A matrix giving the number of active camera trap days per station and occasion (= camera trapping effort). It is only returned if \code{includeEffort = TRUE}}
   \item{effort_scaling_parameters}{Scaling parameters of the effort matrix. It is only returned if \code{includeEffort} and \code{scaleEffort} are \code{TRUE}}
-%% ...
 }
-% \references{
-% ~put references to the literature/web site here ~
-% }
+
+ \section{Warning}{
+ Please note the section about defining argument \code{timeZone} in the vignette on data extraction (accessible via \code{vignette("DataExtraction")} or online (\url{https://cran.r-project.org/package=camtrapR/vignettes/DataExtraction.html})).
+ }
+
+
 \author{
 Juergen Niedballa
 }
-% \note{
-%  ~~further notes~~
-% }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-% \seealso{
-% ~~objects to See Also as \code{\link{help}}, ~~~
-% }
 \examples{
 
 # define image directory
@@ -143,7 +137,7 @@ camop_no_problem <- cameraOperation(CTtable      = camtraps,
 if (Sys.which("exiftool") != ""){        # only run this function if ExifTool is available
 recordTableSample <- recordTable(inDir               = wd_images_ID,
                                  IDfrom              = "directory",
-                                 minDeltaTime        = 60,  
+                                 minDeltaTime        = 60,
                                  deltaTimeComparedTo = "lastRecord",
                                  exclude             = "NO_ID",
                                  timeZone            = "Asia/Kuala_Lumpur"
@@ -168,7 +162,9 @@ DetHist1 <- detectionHistory(recordTable         = recordTableSample,
                             timeZone             = "Asia/Kuala_Lumpur"
 )
 
-DetHist1
+DetHist1                     # this is a list with 1 element
+DetHist1$detection_history   # this is the contained detection/non-detection matrix
+
 
 # with effort
 DetHist2 <- detectionHistory(recordTable          = recordTableSample,
@@ -185,7 +181,7 @@ DetHist2 <- detectionHistory(recordTable          = recordTableSample,
                              timeZone             = "Asia/Kuala_Lumpur"
 )
 
-DetHist2[[1]]  # detection history
-DetHist2[[2]]  # effort
+DetHist2$detection_history  # detection history  (alternatively, use: DetHist2[[1]])
+DetHist2$effort             # effort (alternatively, use: DetHist2[[2]])
 
 }

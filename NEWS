@@ -1,5 +1,25 @@
+Changes in camtrapR 0.99.7
+==========================
+
+bugfixes
+------------
+ o recordTable: returned station ID as camera ID if IDfrom = "metadata" and cameraID = "directory"
+ 
+new features
+------------
+  o detectionMaps: gained argument 'backgroundPolgygon' for plotting a SpatialPolygon object in the background of the maps
+  o imageRename: new argument 'createEmptyDirectories' to control whether empty directories should be copied or not
+  o imageRename: if outDir contains images already, the function will not stop with an error, but asks you whether or not to copy new images (useful if data come in over time)
+  
+other changes
+------------
+  o recordTable / recordTableIndividual: improved handling and reporting of stations without images (warning instead of error)
+  o recordTable / recordTableIndividual: improved handling and reporting of stations where all images lack species/individual metadata tags (if using metadata ID only, functions will throw warning instead of error, reported by Aditya Malgaonkar)
+
+
+
 Changes in camtrapR 0.99.6
-=======================
+==========================
 
 bugfixes
 ------------
@@ -11,18 +31,19 @@ new functions
 
 new features
 ------------
-  o spatialDetectionHistory: argument 'sessionCol' can now create multi-session capthist objects by either assigning individuals to different sessions or assigning station to different sessions
+  o spatialDetectionHistory: argument 'sessionCol' can now create multi-session capthist objects by either assigning individuals to different sessions or assigning stations to different sessions
   o exifTagNames: gained argument 'returnTagGroup', and now by default returns metadata tag group in addition to metadata tag names (to unambiguously address specific metadata tags)
 
 other changes
 ------------
+  o new dependency: "ritis" - this is because parts of package taxize (used internally by function "checkSpeciesNames") were migrated to ritis
   o detectionHistory / spatialDetectionHistory: occasionLength can be any value between 1 and the number of columns in camOp (not half the number of columns in camOp as before)
   o functions check for spaces in user-provided column names and report them as errors
 
   
   
 Changes in camtrapR 0.99.5
-=======================
+==========================
 
 bugfixes
 ------------
@@ -42,7 +63,7 @@ other changes
   
   
 Changes in camtrapR 0.99.4
-=======================
+==========================
 
 bugfixes
 ------------
@@ -60,7 +81,7 @@ other changes
   
 
 Changes in camtrapR 0.99.3
-=======================
+==========================
 
 new functions
 ------------
@@ -79,7 +100,7 @@ new features
   
   
 Changes in camtrapR 0.99.2
-=======================
+==========================
 
 bugfixes
 ------------
@@ -93,7 +114,7 @@ other changes
 
   
 Changes in camtrapR 0.99.1
-=======================
+==========================
 
 bugfixes
 ------------
@@ -109,7 +130,7 @@ other changes
   
 
 Changes in camtrapR 0.99.0
-=======================
+==========================
 
 new functions
 ------------
@@ -158,7 +179,7 @@ other changes
 
   
 Changes in camtrapR 0.98.0
-=======================
+==========================
 
 new functions
 ------------
@@ -199,7 +220,7 @@ other changes
   
 
 Changes in camtrapR 0.97.1
-=======================
+==========================
 
   o surveyReport: fixed bug which caused wrong numbers of active trap nights to be returned
   o surveyReport: does not depend on function cameraOperation anymore

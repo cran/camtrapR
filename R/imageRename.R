@@ -2,14 +2,15 @@ imageRename <- function(inDir,
                         outDir,
                         hasCameraFolders,
                         keepCameraSubfolders,
+                        createEmptyDirectories = FALSE,
                         copyImages = FALSE,
                         writecsv = FALSE){
 
   wd0 <- getwd()
   on.exit(setwd(wd0))
-  
+
   file.sep <- .Platform$file.sep
-  
+
   stationCol <- "Station"
   cameraCol  <- "Camera"
 
@@ -17,7 +18,7 @@ imageRename <- function(inDir,
   stopifnot(is.logical(copyImages))
   stopifnot(is.logical(writecsv))
   stopifnot(is.logical(hasCameraFolders))
-  
+
     if(isTRUE(hasCameraFolders)){
       stopifnot(hasArg(keepCameraSubfolders))
       stopifnot(is.logical(keepCameraSubfolders))
@@ -27,19 +28,21 @@ imageRename <- function(inDir,
    if(hasArg(hasCameraFolders) & hasArg(keepCameraSubfolders)){
     if(keepCameraSubfolders == TRUE & hasCameraFolders == FALSE){stop("If hasCameraFolders is FALSE, keepCameraSubfolders must be FALSE too", call. = FALSE)}
    }
-  
-  
+
+
   stopifnot(length(inDir) == 1)
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
+
   if(hasArg(outDir)){
     stopifnot(length(outDir) == 1)
     if(isTRUE(all(unlist(strsplit(tolower(inDir), split = file.sep)) %in%
                   unlist(strsplit(tolower(outDir), split = file.sep))))) stop("outDir may not be identical to or a subdirectory of inDir", call. = FALSE)
 
-    list.files.tmp <- list.files(outDir, recursive = TRUE)
-    if(copyImages == TRUE & length(list.files.tmp) >= 1) stop("outDir must be empty if you wish to copy images", call. = FALSE)
+    #list.files.tmp <- list.files(outDir, recursive = TRUE)
+    #if(copyImages == TRUE & length(list.files.tmp) >= 1) stop("outDir must be empty if you wish to copy images", call. = FALSE)
   }
   if(copyImages == TRUE){
-    
+
     if(any(c(grep("/$", inDir) == 1, grep("/$", outDir) == 1))) stop("inDir and outDir may not end with /", call. = FALSE)
 
   } else {
@@ -59,15 +62,23 @@ imageRename <- function(inDir,
   list_n_files <- lapply(dirs, list.files, pattern = ".jpg$|.JPG$", recursive = TRUE)
 
   if(any(unlist(lapply(list_n_files, length)) == 0)){
-    warning("at least one station directory contains no JPEGs:  ", paste(names(which(lapply(list_n_files, length) == 0)), collapse = "; "), call. = FALSE, immediate. = TRUE)
+    warning("at least one station directory contains no JPEGs:  ", paste(dirs_short[which(lapply(list_n_files, length) == 0)], collapse = "; "), call. = FALSE, immediate. = TRUE)
   }
 
+  # remove dirs and dirs_short if they contain no images (and if user overrides default createEmptyDirectories = FALSE)
+  if(!isTRUE(createEmptyDirectories)){
+    stations2remove  <- which(lapply(list_n_files, length) == 0)
+    if(length(stations2remove) >= 1){
+      dirs          <- dirs[-stations2remove]
+      dirs_short  <- dirs_short[-stations2remove]
+    }
+  }
 
   # function body
 
   copy.info.table <- data.frame()
 
-  for(i in which(lapply(list_n_files, length) >= 1)){     # for all non-empty directories
+  for(i in 1:length(dirs_short)){     # for all non-empty directories
 
     # check if there are any images not in camera trap subfolders
     if(hasCameraFolders == TRUE && length(list.files(dirs[i], pattern = ".jpg$|.JPG$", recursive = FALSE)) >= 1){
@@ -76,14 +87,14 @@ imageRename <- function(inDir,
 
     command.tmp  <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -ext JPG "', dirs[i], '"', sep = "")
     colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal")
-    
+
     # run exiftool to get image date and time
     metadata.tmp <- runExiftool(command.tmp = command.tmp, colnames.tmp = colnames.tmp)
 
 
     if(length(metadata.tmp) == 0){
       length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
-      warning(paste(dirs[i], "seems to contain no images;", " found", length.tmp, "jpgs"))    # give message if station directory contains no jpgs
+      warning(paste(dirs_short[i], "seems to contain no images;", " found", length.tmp, "jpgs"), call. = FALSE, immediate. = TRUE)    # give message if station directory contains no jpgs
     } else {
 
       message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
@@ -157,7 +168,7 @@ imageRename <- function(inDir,
       rm(time.tmp, time.tmp2)
 
       # create outfilename
-      if(isTRUE(copyImages)){
+      if(hasArg(outDir)){
         if(keepCameraSubfolders == TRUE){
           metadata.tmp2$outDir <- file.path(outDir, metadata.tmp2[,stationCol], metadata.tmp2[,cameraCol])
         } else {
@@ -183,13 +194,64 @@ imageRename <- function(inDir,
     }
   }
 
+    # create directory structure in outDir
+      if(isTRUE(copyImages)){
+          #sapply(unique(copy.info.table$outDir), dir.create, recursive = TRUE)   # old
+
+          if(!isTRUE(keepCameraSubfolders))   dir2create <- file.path (outDir, dirs_short)    # outDir with station subdirectories
+
+          if(isTRUE(keepCameraSubfolders)) {
+            # create list of directories to create
+            dirs_recursive <- lapply(dirs, FUN = list.dirs, recursive = TRUE, full.names = FALSE)
+            names(dirs_recursive) <- dirs_short
+            for(xyz in 1:length(dirs_recursive)){
+              dirs_recursive[[xyz]] <- file.path(names(dirs_recursive)[[xyz]], dirs_recursive[[xyz]])
+            }
+            dirs_recursive <- unlist(dirs_recursive)
+
+            dirs_recursive2 <- dirs_recursive[lapply(strsplit(dirs_recursive, file.sep), length) == 1 |  # find all entries with 1 items (all Stations) and
+                                                           lapply(strsplit(dirs_recursive, file.sep), length) == 2]   # find all entries with 2 items (Station + Camera)
+            dir2create <- file.path (outDir, dirs_recursive2)                                                                         # outDir with station and camera subdirectories
+            }
+
+            #if(isTRUE(createEmptyDirectories)) sapply(file.path(outDir, dirs_short), FUN = dir.create, recursive = TRUE, showWarnings = FALSE)     # create station directories
+            sapply(dir2create, FUN = dir.create, recursive = TRUE, showWarnings = FALSE)           # create directories (recursively)
+        }
+
+        # check if renamed images exist already
+        if(hasArg(outDir)) {
+          copy.info.table$fileExistsAlready <- file.exists(file.path(copy.info.table$outDir, copy.info.table[,stationCol], copy.info.table$filename_new))
+        } else {
+          copy.info.table$fileExistsAlready <- FALSE
+        }
+
+          if(any(copy.info.table$fileExistsAlready)) {
+          message(paste(sum(copy.info.table$fileExistsAlready), "out of", nrow(copy.info.table), "images existed already in outDir. They will not be copied"))
+          }
+
+
       # copy images
       if(isTRUE(copyImages)){
-        sapply(unique(copy.info.table$outDir), dir.create, recursive = TRUE)
-        copy.info.table$CopyStatus[copy.info.table$DateReadable == TRUE] <- file.copy(from      = apply(copy.info.table[copy.info.table$DateReadable == TRUE, c("Directory", "FileName")],  MARGIN = 1, FUN = paste, collapse = file.sep),
-                                                                                      to        = apply(copy.info.table[copy.info.table$DateReadable == TRUE, c("outDir", "filename_new")], MARGIN = 1, FUN = paste, collapse = file.sep),
-                                                                                      overwrite = FALSE)
-        copy.info.table$CopyStatus[copy.info.table$DateReadable == FALSE] <- FALSE
+
+         if(any(copy.info.table$fileExistsAlready)) {
+          switch(menu(choices = c("Copy only images that are not in outDir", "Copy nothing"), title =  "outDir is not empty. What should I do?"),
+                 proceed <- TRUE ,
+                 proceed <- FALSE)
+             } else {
+                 proceed <- TRUE
+             }
+
+      if(isTRUE(proceed)){
+      # find items to copy
+          items_to_copy <- which(copy.info.table$DateReadable == TRUE & copy.info.table$fileExistsAlready == FALSE)
+
+          copy.info.table$CopyStatus[items_to_copy] <- file.copy(from      = apply(copy.info.table[items_to_copy, c("Directory", "FileName")],  MARGIN = 1, FUN = paste, collapse = file.sep),
+                                                                                       to        = apply(copy.info.table[items_to_copy, c("outDir", "filename_new")], MARGIN = 1, FUN = paste, collapse = file.sep),
+                                                                                       overwrite = FALSE)
+          copy.info.table$CopyStatus[-items_to_copy] <- FALSE
+        } else {
+          copy.info.table$CopyStatus <- FALSE
+        }
       } else {
         copy.info.table$CopyStatus <- FALSE
       }

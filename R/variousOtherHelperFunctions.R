@@ -2,10 +2,10 @@
 # adapted from http://thecoatlessprofessor.com/programming/automatically-check-if-r-package-is-the-latest-version-on-package-load/. Thank you!
 
 
-.pkgVersionCRAN = function(pkg, cran_url="http://cran.r-project.org/web/packages/")
+.pkgVersionCRAN <- function(pkg, cran_url="http://cran.r-project.org/web/packages/")
 {
   # Create URL
-  cran_pkg_loc = paste0(cran_url,pkg)
+  cran_pkg_loc <- paste0(cran_url,pkg)
 
   # Try to establish a connection
   suppressWarnings( conn <- try( url(cran_pkg_loc) , silent=TRUE ) )
@@ -55,6 +55,9 @@ runExiftool <- function(command.tmp,
                         colnames.tmp)
 {
   tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
+
+  if(length(tmp1) == 0) return(NULL) # if nothing returned (no images, no metadata)
+
   metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
                                      ncol = length(colnames.tmp),
                                      byrow = TRUE),
@@ -164,7 +167,8 @@ assignSpeciesID <- function(intable,
 
         return(intable)
       } else {
-        stop(paste("station", dirs_short[i_tmp], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'.", sep = ""), call. = FALSE)
+        warning(paste(dirs_short[i_tmp], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'.", sep = ""), call. = FALSE, immediate. = TRUE)
+        return("found no species tag")
       }
     } else {
       stop(paste("station", dirs_short[i_tmp], ":   cannot figure out species names. Is metadataSpeciesTag defined?"), call. = FALSE)
@@ -201,7 +205,8 @@ addStationCameraID <- function(intable,
                                cameraCol,
                                cameraID,
                                hasStationFolders,
-                               i)
+                               i,
+                               IDfrom)
 {
 
   file.sep <- .Platform$file.sep
@@ -234,8 +239,13 @@ addStationCameraID <- function(intable,
       }
     }
     if(cameraID == "directory"){            # this can only happen in recordTable. Not in recordTableIndividual
-      intable <- cbind(intable,
-                       sapply(strsplit(intable$Directory, split = file.sep, fixed = TRUE), FUN = function(X){X[length(X) - 1]}))  # assumes directory structure: Station/Camera/Species
+      if(IDfrom == "directory"){             # assumes directory structure: Station/Camera/Species
+        intable <- cbind(intable,
+                         sapply(strsplit(intable$Directory, split = file.sep, fixed = TRUE), FUN = function(X){X[length(X) - 1]}))  
+        } else {                                    # assumes directory structure: Station/Camera
+        intable <- cbind(intable,
+                         sapply(strsplit(intable$Directory, split = file.sep, fixed = TRUE), FUN = function(X){X[length(X)]}))  
+        }
       colnames(intable)[ncol(intable)]     <- cameraCol
     }
   }
@@ -252,13 +262,13 @@ addStationCameraID <- function(intable,
               remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", stationCol, speciesCol, cameraCol)]))
               if(length(remove.tmp >= 1)){
                 metadata.tmp <- metadata.tmp[-remove.tmp,]
-                warning("removed ", length(remove.tmp), " duplicate records at station ", paste(unique(metadata.tmp[,stationCol]), collapse = ", "), call. = FALSE, immediate. = TRUE)
+                message(paste(unique(metadata.tmp[,stationCol]), collapse = ", "), ": removed ", length(remove.tmp), " duplicate records")
               }
             } else {
               remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", stationCol, speciesCol)]))
               if(length(remove.tmp >= 1)) {
                 metadata.tmp <- metadata.tmp[-remove.tmp,]
-                warning("removed ", length(remove.tmp), " duplicate records at station ", paste(unique(metadata.tmp[,stationCol]), collapse = ", "), call. = FALSE, immediate. = TRUE)
+                message(paste(unique(metadata.tmp[,stationCol]), collapse = ", "), ": removed ", length(remove.tmp), " duplicate records")
               }
             }
           }
@@ -384,7 +394,7 @@ addNewColumnsToGlobalTable <- function(intable,
                                        record.table)
 {
 
-  if(i != 1){
+  if( nrow(record.table) >= 1){
     which_cols_to_add_to_d1 <- seq(1, ncol(record.table))[-which(colnames(record.table) %in% colnames(intable))]   # columns in record.table but not in intable
 
     # if intable lacks columns present in record.table, add them here (filled with NA)
@@ -410,6 +420,11 @@ addNewColumnsToGlobalTable <- function(intable,
 
 #####################################################
 # for detectionHistory functions
+
+checkCamOpColumnNames <- function(cameraOperationMatrix){
+camopTest <- try(as.Date(colnames(cameraOperationMatrix)), silent = TRUE)
+if(class(camopTest) == "try-error") stop(paste('could not interpret column names in camOp as Dates. Desired format is YYYY-MM-DD, e.g. "2016-12-31". First column name in your camera operation matrix is "', colnames(cameraOperationMatrix)[1], '"', sep = '' ), call. = FALSE)
+}
 
 
 createDateRangeTable <- function(cam.op,
@@ -444,9 +459,9 @@ createDateRangeTable <- function(cam.op,
 
     # check if images were taken between setup and retrieval dates (Error if images outside station date range)
   if(any(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE)) stop(paste("record date outside camera operation date range: ",
-                                                                                                                          paste(rownames(date_ranges)[which(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp))], collapse = ", " )))
+                                                                                                                          paste(rownames(date_ranges)[which(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp))], collapse = ", " )), call. = FALSE)
   if(any(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE)) stop(paste("record date outside camera operation date range: ",
-                                                                                                                          paste(rownames(date_ranges)[which(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp))], collapse = ", " )))
+                                                                                                                          paste(rownames(date_ranges)[which(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp))], collapse = ", " )), call. = FALSE)
 
   # define when first occasion begins (to afterwards remove prior records in function    cleanSubsetSpecies)
   if(!hasArg(buffer_tmp)) buffer_tmp <- 0
@@ -974,6 +989,6 @@ makeSurveyZip <- function(output,
 
 
   # remove temporary directory
-  unlink(dir.zip, recursive = TRUE)
+  #unlink(dir.zip, recursive = TRUE)
 
 }

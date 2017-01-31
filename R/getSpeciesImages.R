@@ -20,6 +20,7 @@ getSpeciesImages <- function(species,
   stopifnot(is.logical(createStationSubfolders))
 
   if(hasArg(inDir)){
+    if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
     if (isTRUE(all(unlist(strsplit(tolower(inDir), split = file.sep)) %in%
                    unlist(strsplit(tolower(outDir), split = file.sep)))))    stop("outDir may not be identical to or a subdirectory of inDir", call. = FALSE)
 

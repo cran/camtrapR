@@ -81,7 +81,7 @@ As with species identification, individuals can be identified in 2 different way
 \code{minDeltaTime} is a criterion for temporal independence of records of an individual at the same station/location. Setting it to 0 will make the function return all records. \code{camerasIndependent} defines if the cameras at a station are to be considered independent (e.g. \code{FALSE} if both cameras face each other and possibly \code{TRUE} if they face different trails).
 \code{stationCol} is the station column name to be used in the resulting table. Station IDs are read from the station directory names if \code{hasStationFolders = TRUE}. Otherwise, the function will try to extract station IDs from the image filenames (requires images renamed with \code{\link{imageRename}}.
 
-If individual IDs were assigned with image metadata tags, \code{metadataIDTag} must be set to the name of the metadata tag group used for individual identification. \code{metadataHierarchyDelimitor} is "|" for images tagged in DigiKam and images tagged in Adobe Bridge/ Lightroom with the default settings. 
+If individual IDs were assigned with image metadata tags, \code{metadataIDTag} must be set to the name of the metadata tag group used for individual identification. \code{metadataHierarchyDelimitor} is "|" for images tagged in DigiKam and images tagged in Adobe Bridge/ Lightroom with the default settings.
 Manufacturer-specific Exif metadata tags such as "AmbientTemperature" or "MoonPhase" can be extracted if specified in \code{additionalMetadataTags}. Multiple names can be specified as a character vector as: \code{c(Tag1, Tag2, ...)}. Because they are not standardized, function \code{\link{exifTagNames}} provides a vector of all available tag names. The metadata tags thus extracted may be used as individual covariates in spatial capture-recapture models.
 
 
@@ -92,8 +92,10 @@ A data frame containing species records with individual IDs and additional infor
 
 \section{Warning }{
 Be sure to read the section on individual identification in the package vignette (\url{https://CRAN.R-project.org/package=camtrapR/vignettes/SpeciesIndividualIdentification.html}).
-  
+
 Af you use image metadata tags for identification, the tags must be written to the image metadata. The function cannot read tags from .xmp sidecar files. Make sure you set the preferences of your image management software accordingly. In DigiKam, go to Settings/Configure digiKam/Metadata. There, make sure "Write to sidecar files" is unchecked.
+
+Please note the section about defining argument \code{timeZone} in the vignette on data extraction (accessible via \code{vignette("DataExtraction")} or online (\url{https://cran.r-project.org/package=camtrapR/vignettes/DataExtraction.html})).
 }
 
 \references{
@@ -105,9 +107,10 @@ Juergen Niedballa
 }
 
  \examples{
- 
+
  wd_images_ID <- system.file("pictures/sample_images_tagged/LeopardCat", package = "camtrapR")
  # missing space in species = "LeopardCat" is because of CRAN package policies
+ # note argument additionalMetadataTags: it contains tag names as returned by function exifTagNames
 
  if (Sys.which("exiftool") != ""){        # only run these examples if ExifTool is available
 

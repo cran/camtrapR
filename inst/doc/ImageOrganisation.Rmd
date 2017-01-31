@@ -32,6 +32,7 @@ The workflow in camptrapR is made up of a number of function that build upon one
 
 * Organising raw images
 1. `createStationFolders`
+1. `fixDateTimeOriginal` (only if necessary)
 1. `timeShiftImages` (only if necessary)
 1. `imageRename`
 1. `addCopyrightTag`
@@ -125,18 +126,18 @@ Note that the sample data contain only one camera per station. Thus, there is no
 
 ## Station / Camera IDs
 
-Station and camera IDs can be any combination of characters and numbers. Please don't use underscores though, and more specifically, don't use double underscores ("__"), as these are used in a number of functions to separate bits of information (e.g. in file names created by `imageRename` or row names in `cameraOperation`).
+Station and camera IDs can be any combination of characters and numbers. Please don't use underscores though, and more specifically, don't use double underscores (\"__\"), as these are used in a number of functions to separate bits of information (e.g. in file names created by `imageRename` or row names in `cameraOperation`).
 
 ## Column names
 
 Column names are not prescribed to allow users freedom in naming their data the way they wish (with one exception detailed below). In the sample table, 'Station' contains station IDs, 'utm_y' and 'utm_x' contain the station's geographic coordinates. 'Setup_date' and 'Retrieval_date' are the dates the stations were set up and retrieved from the field. All of these may have user-defined names. 'Problem1_from' and 'Problem1_to' are optional columns to specify periods in which cameras/stations were not operational.  Additional pairs of columns such as 'Problem2_from' and 'Problem2_to' etc. can be added if cameras/stations malfunctioned repeatedly. Their names must follow the pattern given here.
 
 ## Date format
-All dates in this table (setup, retrieval and problem columns) should be of data type "character" and can be formatted in any way that function `as.Date` can interpret. **camtrapR** by default assumes the standard format "YYYY-MM-DD", e.g. "2015-12-31", and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.
+All dates in this table (setup, retrieval and problem columns) should be of data type \"character\" and can be formatted in any way that function `as.Date` can interpret. **camtrapR** by default assumes the standard format \"YYYY-MM-DD\", e.g. \"2015-12-31\", and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.
 
-Two functions (`cameraOperation`, `surveyReport`) utilize these date information and therefore contain arguments to specify the date format (`dateFormat` and `CTDateFormat`, respectively). Internally, these arguments are passed to function `as.Date` as  argument `format` and are needed to interpret the character string (e.g. "2015-12-31") provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions `as.Date` and `strptime` or [here]( http://www.r-bloggers.com/date-formats-in-r/).
+Two functions (`cameraOperation`, `surveyReport`) utilize these date information and therefore contain arguments to specify the date format (`dateFormat` and `CTDateFormat`, respectively). Internally, these arguments are passed to function `as.Date` as  argument `format` and are needed to interpret the character string (e.g. \"2015-12-31\") provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions `as.Date` and `strptime` or [here]( http://www.r-bloggers.com/date-formats-in-r/).
 
-Here are a few examples for December 1st 2015 ("generic" is the abstract representation of your date string (Y = year, M = month, D = day), "example" is a formatted example and "dateFormat argument" is what you'd specify in `dateFormat` and `CTDateFormat`):
+Here are a few examples for December 1st 2015 (\"generic\" is the abstract representation of your date string (Y = year, M = month, D = day), \"example\" is a formatted example and \"dateFormat argument\" is what you'd specify in `dateFormat` and `CTDateFormat`):
 
 generic  | example  | dateFormat argument  |
 |---|---|---|
@@ -148,7 +149,7 @@ generic  | example  | dateFormat argument  |
 \"DD.MM.YY\" |\"1.12.15\" | \"%d.%m.%y\"  |
 \"DD-MMM-YY\" |\"01-Dec-15\" | \"%d-%b-%y\"  |
 
-
+
 In the sample table (`camtraps`), we use another date format for demonstration purposes. 
 
 
@@ -214,7 +215,7 @@ In any case, systematic offsets of date and time recorded by cameras can be corr
 data(timeShiftTable)
 timeShiftTable
 ```
-There is a `station` column with station IDs, `camera` is NA because there was 1 camera per station only in our example, `timeshift` is the amount by which to shift the time of all images at that station, and `sign` specifies the direction in which to shift time. Setting `sign` to `+` sets image time ahead by the amount specified in `timeshift`, `-` sets image times back. `timeshift` format is "year:month:day hour:minute:second", i.e. \"1:0:0 0:0:0\" is a shift of exactly 1 year and \"0:0:0 12:10:01\" 12 hours and 10 minutes and 1 second. In the above table, time stampes of images taken at StationA are shifted back by 1 year, and images taken at StationB are shifted ahead by 12 hours.
+There is a `station` column with station IDs, `camera` is NA because there was 1 camera per station only in our example, `timeshift` is the amount by which to shift the time of all images at that station, and `sign` specifies the direction in which to shift time. Setting `sign` to `+` sets image time ahead by the amount specified in `timeshift`, `-` sets image times back. `timeshift` format is \"year:month:day hour:minute:second\", i.e. \"1:0:0 0:0:0\" is a shift of exactly 1 year and \"0:0:0 12:10:01\" 12 hours and 10 minutes and 1 second. In the above table, time stampes of images taken at StationA are shifted back by 1 year, and images taken at StationB are shifted ahead by 12 hours.
 
 The function `timeShiftImages` should be run directly after saving the raw images on the hard disk. 
 
@@ -270,6 +271,8 @@ Raw images are copied from the raw image directories into a new location and ren
 Station ID and camera ID are derived from the raw image directory structure created earlier with `createStationFolders` Date and time are taken from image Exif metadata (read using ExifTool). (X) is a numeric identifier that is assigned to all images taken at the same station (and camera, if applicable) within one minute. This is to avoid identical image names if images were taken in the same second (or in the same minute, if cameras record time in hours and minutes only).
 
 Again, please be aware that temporary directories are used in the example. Set `outDir` to a permanent directory.
+In addition, images are not actually copied (argument `copyImages = FALSE`), but copying and renaming is mererly simulated in out example). So, in real world data, set `copyImages = TRUE`.
+
 ```{r}
  # raw image location
 wd_images_raw <- system.file("pictures/raw_images", package = "camtrapR")      
@@ -279,7 +282,7 @@ wd_images_raw_renamed <- file.path(tempdir(), "raw_images_renamed")
 renaming.table2 <- imageRename(inDir               = wd_images_raw,
                                outDir              = wd_images_raw_renamed,       
                                hasCameraFolders    = FALSE,
-                               copyImages          = TRUE
+                               copyImages          = FALSE
   )
 
 # here is the information for a few images 
@@ -308,7 +311,7 @@ At this point you created a copy of your raw images and renamed them.
 
 The function `addCopyrightTag` can write a copyright tag into image Exif metadata. While this can be useful when sharing or publishing data, it is not required in the camtrapR workflow. The function will recursively find all images in `inDir` and its subdirectories and writes a user-defined text into the Copyright field of the Exif metadata. 
 
-In doing so, Exiftool normally keeps the original images as .JPG_original files. Note that this behaviour will instantly double the number of images in inDir and the disk space required. If this is not desired, users can set the function argument `keepJPG_original = FALSE` (default is `TRUE`) in order to replace the original files without creating .JPG_original files. I recommend to first try this on a subdataset and to then check the function output. If there are warnings like "Warning: [minor] Maker notes could not be parsed" image makernotes may be unreadable afterwards (background to this can be found [here](http://exiv2.org/makernote.html)). On the other hand, you may never need these for analysing camera trapping data.
+In doing so, Exiftool normally keeps the original images as .JPG_original files. Note that this behaviour will instantly double the number of images in inDir and the disk space required. If this is not desired, users can set the function argument `keepJPG_original = FALSE` (default is `TRUE`) in order to replace the original files without creating .JPG_original files. I recommend to first try this on a subdataset and to then check the function output. If there are warnings like \"Warning: [minor] Maker notes could not be parsed\" image makernotes may be unreadable afterwards (background to this can be found [here](http://exiv2.org/makernote.html)). On the other hand, you may never need these for analysing camera trapping data.
 
 
 ```{r}

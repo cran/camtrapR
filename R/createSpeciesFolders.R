@@ -6,7 +6,8 @@ createSpeciesFolders <- function(inDir,
   stopifnot(is.character(species))
   stopifnot(is.logical(removeFolders))
   stopifnot(is.logical(hasCameraFolders))
-  if(file.exists(inDir) == FALSE) stop("inDir does not exist")
+  
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
 
   dirs <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
   dirs_short <- list.dirs(inDir, full.names = FALSE , recursive = FALSE)

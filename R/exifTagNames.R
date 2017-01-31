@@ -8,9 +8,11 @@ exifTagNames <- function(inDir,
   stopifnot(is.logical(returnTagGroup))
   
   if(Sys.which("exiftool") == "") stop("cannot find ExifTool")
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
+  
   dirs.tmp <- list.dirs(inDir, recursive = FALSE, full.names = TRUE)
 
-  if(file.exists(dirs.tmp[whichSubDir]) == FALSE) stop("the specified subdirectory does not exist")
+  if(file.exists(dirs.tmp[whichSubDir]) == FALSE) stop("the specified subdirectory does not exist. Check argument 'whichSubDir'")
 
   file.tmp <- list.files(dirs.tmp[whichSubDir],
                          full.names = TRUE,

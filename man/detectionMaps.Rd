@@ -8,22 +8,23 @@ Generate maps of observed species richness and species presences by station
 Generates maps of observed species richness and species presence by species and station. Output can be R graphics, PNG graphics or a shapefile for use in GIS software.
 }
 \usage{
-detectionMaps(CTtable, 
-  recordTable, 
-  Xcol, 
-  Ycol, 
-  stationCol = "Station", 
-  speciesCol = "Species", 
+detectionMaps(CTtable,
+  recordTable,
+  Xcol,
+  Ycol,
+  backgroundPolygon,
+  stationCol = "Station",
+  speciesCol = "Species",
   speciesToShow,
-  richnessPlot = TRUE, 
+  richnessPlot = TRUE,
   speciesPlots = TRUE,
   addLegend = TRUE,
-  printLabels = FALSE, 
+  printLabels = FALSE,
   smallPoints,
-  plotR = TRUE, 
-  writePNG = FALSE, 
-  plotDirectory, 
-  createPlotDir = FALSE,       
+  plotR = TRUE,
+  writePNG = FALSE,
+  plotDirectory,
+  createPlotDir = FALSE,
   pngMaxPix = 1000,
   writeShapefile = FALSE,
   shapefileName,
@@ -41,6 +42,9 @@ detectionMaps(CTtable,
 }
   \item{Ycol}{
   character. name of the column specifying y coordinates in \code{CTtable}
+}
+  \item{backgroundPolygon}{
+  SpatialPolygons or SpatialPolygonsDataFrame. Polygon to be plotted in the background of the map (e.g. project area boundary)
 }
   \item{stationCol}{
   character. name of the column specifying station ID in \code{CTtable} and \code{recordTable}
@@ -67,7 +71,7 @@ detectionMaps(CTtable,
   logical. Create \code{plotDirectory}?
 }
   \item{richnessPlot}{
-  logical. Generate a species richness plot? 
+  logical. Generate a species richness plot?
 }
   \item{speciesPlots}{
   logical. Generate plots of all species number of independent events?
@@ -126,19 +130,46 @@ data(camtraps)
 # load record table
 data(recordTableSample)
 
+
 # create maps
-Mapstest <- detectionMaps(CTtable      = camtraps,
-                          recordTable  = recordTableSample,
-                          Xcol         = "utm_x",
-                          Ycol         = "utm_y",
-                          stationCol   = "Station",
-                          speciesCol   = "Species",
-                          writePNG     = FALSE,
-                          plotR        = TRUE,
-                          printLabels  = TRUE,
-                          richnessPlot = TRUE,
-                          addLegend    = TRUE
+Mapstest <- detectionMaps(CTtable           = camtraps,
+                          recordTable       = recordTableSample,
+                          Xcol              = "utm_x",
+                          Ycol              = "utm_y",
+                          stationCol        = "Station",
+                          speciesCol        = "Species",
+                          writePNG          = FALSE,
+                          plotR             = TRUE,
+                          printLabels       = TRUE,
+                          richnessPlot      = TRUE,
+                          addLegend         = TRUE
 )
+
+
+\dontrun{
+
+# with a polygon in the background
+
+# make a dummy polygon for the background
+poly1 <- Polygon(cbind(c(523500,524500,525000),c(606500, 605000, 606000)))
+poly2 <- Polygons(list(poly1), "s1")
+poly3 <- SpatialPolygons(list(poly2))
+
+Mapstest2 <- detectionMaps(CTtable           = camtraps,
+                           recordTable       = recordTableSample,
+                           Xcol              = "utm_x",
+                           Ycol              = "utm_y",
+                           backgroundPolygon = poly3,         # this was added
+                           stationCol        = "Station",
+                           speciesCol        = "Species",
+                           writePNG          = FALSE,
+                           plotR             = TRUE,
+                           printLabels       = TRUE,
+                           richnessPlot      = TRUE,
+                           addLegend         = TRUE
+)
+
+}
 }
 
 \references{

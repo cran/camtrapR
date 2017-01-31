@@ -2,6 +2,7 @@ detectionMaps <- function(CTtable,
                           recordTable,
                           Xcol,
                           Ycol,
+                          backgroundPolygon,
                           stationCol = "Station",
                           speciesCol = "Species",
                           speciesToShow,
@@ -24,26 +25,26 @@ detectionMaps <- function(CTtable,
   opar <- par(no.readonly = TRUE)
   on.exit(setwd(wd0))
   on.exit(par(opar), add = TRUE)
-						  
+
   # check column names
   checkForSpacesInColumnNames(stationCol = stationCol, speciesCol = speciesCol, Xcol = Xcol, Ycol = Ycol)
-  if(!stationCol %in% colnames(CTtable))        stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!stationCol %in% colnames(CTtable))      stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!stationCol %in% colnames(recordTable))  stop(paste('stationCol = "',   stationCol,     '" is not a column name in recordTable', sep = ''), call. = FALSE)
   if(!speciesCol %in% colnames(recordTable))  stop(paste('speciesCol = "', speciesCol,       '" is not a column name in recordTable', sep = ''), call. = FALSE)
-  if(!Xcol %in% colnames(CTtable))    stop(paste('Xcol = "',   Xcol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
-  if(!Ycol %in% colnames(CTtable))        stop(paste('Ycol = "',   Ycol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
-  
-    
+  if(!Xcol %in% colnames(CTtable))            stop(paste('Xcol = "',   Xcol, '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!Ycol %in% colnames(CTtable))            stop(paste('Ycol = "',   Ycol, '" is not a column name in CTtable', sep = ''), call. = FALSE)
+
+
   CTtable[,stationCol] <- as.character(CTtable[,stationCol])
   recordTable[,stationCol] <- as.character(recordTable[,stationCol])
-  
+
   # check all stations in recordTable are matched in CTtable
   if(all(recordTable[,stationCol] %in% CTtable[,stationCol]) == FALSE) {
     stop(paste("items of stationCol in recordTable are not matched in stationCol of CTtable: ", paste(recordTable[-which(recordTable[,stationCol] %in% CTtable[,stationCol]),stationCol], collapse = ", ")))
   }
-  
+
   recordTable[,speciesCol] <- as.character(recordTable[,speciesCol])
-  
+
   if(any(is.na(CTtable[,Xcol])))stop("there are NAs in Xcol")
   if(any(is.na(CTtable[,Ycol])))stop("there are NAs in Ycol")
   if(any(is.na(CTtable[,stationCol])))stop("there are NAs in stationCol")
@@ -52,7 +53,9 @@ detectionMaps <- function(CTtable,
     stopifnot(hasArg(shapefileDirectory))
     stopifnot(file.exists(shapefileDirectory))
   }
-  
+
+  if(hasArg(backgroundPolygon)) stopifnot(class(backgroundPolygon) %in% c("SpatialPolygons", "SpatialPolygonsDataFrame"))
+
   if(hasArg(speciesToShow)){
     stopifnot(is.character(speciesToShow))
     if(any(!speciesToShow %in% recordTable[,speciesCol])) stop(" these speciesToShow are not in speciesCol of recordTable:   ", paste(speciesToShow[!speciesToShow %in% recordTable[,speciesCol]], collapse = ", "), call. = FALSE)
@@ -66,7 +69,7 @@ detectionMaps <- function(CTtable,
   t1 <- aggregate(recordTable[, speciesCol], by = list(recordTable[,stationCol]), FUN = table, simplify = FALSE)   # number of species records by station
   t2 <- data.frame(as.character(t1[,1]), matrix(unlist(t1$x), nrow = length(unique(recordTable[,stationCol])), byrow = TRUE))
   colnames(t2) <- c(stationCol, names(t1[,2][[1]]))
-  
+
   t3 <- t2[match(toupper(as.character(dat2[,stationCol])), toupper(as.character(t2[,stationCol]))),]    # matching IDs between recordTable and CTtable
   cex.t3 <- data.frame(t3[,1], apply(data.frame(t3[,-1]), MARGIN = 2, FUN = function(x){x/max(x, na.rm = TRUE)}))
   colnames(cex.t3)[1] <- stationCol
@@ -96,6 +99,9 @@ detectionMaps <- function(CTtable,
   par.mar.tmp <- c(5.1, 4.1, 4.1, 8.1)
   pch1 <- 21
   pch2 <- 16
+  col_polygon_border <- rgb(0.5,0.5,0.5,1)
+  lwd_polygon_border <- 1.5
+  lty_polygon_border <- 1
 
   range.expand.factor <- 0.04
   x.range <- extendrange(r = range(range(dat2[Xcol])), f = range.expand.factor)
@@ -117,7 +123,7 @@ detectionMaps <- function(CTtable,
   # if any of these is NA or NaN, set to pngMaxPix (may happen if only 1 station and x or y range is 0, bcause of division by 0)
   if(is.na(pngWidth))  pngWidth <- pngMaxPix
   if(is.na(pngHeight))  pngHeight <- pngMaxPix
-  
+
   if(isTRUE(writePNG)){
     if(hasArg(plotDirectory)){
       if(isTRUE(createPlotDir)){
@@ -140,14 +146,22 @@ detectionMaps <- function(CTtable,
       png(filename = paste("n_Species_", Sys.Date(), ".png", sep = ""),
           width = pngWidth, height = pngHeight, units = "px", res = 96, type = "cairo")
       par(mar = par.mar.tmp, xpd=TRUE, xaxs = "i")
-      plot(y = dat2[, Ycol], x = dat2[, Xcol], pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
-           cex = cex_pt1, main = "Species Richness", ylab = Ycol, xlab = Xcol,
-           xlim = x.range, ylim = y.range,
-           asp = 1,
-           xaxs = "i", yaxs = "i")
+
+      plot(x = 0, type = "n", main = "Species Richness", ylab = Ycol, xlab = Xcol,
+             xlim = x.range, ylim = y.range,
+             asp = 1,
+             xaxs = "i", yaxs = "i")
+
+      if(hasArg(backgroundPolygon)){plot(backgroundPolygon, add = TRUE, border = col_polygon_border, lty = lty_polygon_border, lwd = lwd_polygon_border)}
+
+      # station points
+      points(y = dat2[, Ycol], x = dat2[, Xcol], pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
+           cex = cex_pt1)
+      # detection points (scaled)
       points(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch2,
              col = col_pt2,
              cex = cex.t4$n_species_scaled * (cex_pt2.max))
+
       if(isTRUE(printLabels)){
         text(y = dat2[, Ycol], x = dat2[, Xcol], labels = dat2[,stationCol], cex = cex.labels, pos = 1, col = "red")
       }
@@ -184,15 +198,22 @@ detectionMaps <- function(CTtable,
       #         coord_fixed(ratio = 1) +
       #         scale_size_discrete(name = "n species")
 
-      plot(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
-           cex = cex_pt1, main = "Species Richness", ylab = Ycol, xlab = Xcol,
+
+      plot(x = 0, type = "n", main = "Species Richness", ylab = Ycol, xlab = Xcol,
            xlim = x.range, ylim = y.range,
            asp = 1,
            xaxs = "i", yaxs = "i")
 
+      if(hasArg(backgroundPolygon)){plot(backgroundPolygon, add = TRUE, border = col_polygon_border, lty = lty_polygon_border, lwd = lwd_polygon_border)}
+
+      # station points
+      points(y = dat2[, Ycol], x = dat2[, Xcol], pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
+             cex = cex_pt1)
+      # detection points (scaled)
       points(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch2,
              col = col_pt2,
              cex = cex.t4$n_species_scaled * (cex_pt2.max))
+
       if(isTRUE(printLabels)){
         text(y = dat2[, Ycol], x = dat2[, Xcol], labels = dat2[,stationCol], cex = cex.labels, pos = 1, col = "red")
       }
@@ -227,14 +248,34 @@ detectionMaps <- function(CTtable,
         png(filename = paste("Presence_", i2, "_", Sys.Date(), ".png", sep = ""),
             width = pngWidth, height = pngHeight, units = "px", res = 96, type = "cairo")
         par(mar = par.mar.tmp, xpd=TRUE, xaxs = "i")
-        plot(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
-             cex = cex_pt1, main = i2a, ylab = Ycol, xlab = Xcol,
+
+        plot(x = 0, type = "n", main = i2a, ylab = Ycol, xlab = Xcol,
              xlim = x.range, ylim = y.range,
              asp = 1,
              xaxs = "i", yaxs = "i")
+
+        if(hasArg(backgroundPolygon)){plot(backgroundPolygon, add = TRUE, border = col_polygon_border, lty = lty_polygon_border, lwd = lwd_polygon_border)}
+
+        # station points
+        points(y = dat2[, Ycol], x = dat2[, Xcol], pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
+               cex = cex_pt1)
+        # detection points (scaled)
         points(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch2,
                col = col_pt2,
                cex = cex.t3[,i]^(1/2) * (cex_pt2.max))
+
+
+
+
+        # plot(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
+        #      cex = cex_pt1, main = i2a, ylab = Ycol, xlab = Xcol,
+        #      xlim = x.range, ylim = y.range,
+        #      asp = 1,
+        #      xaxs = "i", yaxs = "i")
+        # points(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch2,
+        #        col = col_pt2,
+        #        cex = cex.t3[,i]^(1/2) * (cex_pt2.max))
+
         if(isTRUE(printLabels)){
           text(y = dat2[, Ycol], x = dat2[, Xcol], labels = dat2[,stationCol], cex = cex.labels, pos = 1, col = "red")
         }
@@ -255,14 +296,21 @@ detectionMaps <- function(CTtable,
       }
 
       if(isTRUE(plotR)){
-        plot(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
-             cex = cex_pt1, main = i2a, ylab = Ycol, xlab = Xcol,
+        plot(x = 0, type = "n", main = i2a, ylab = Ycol, xlab = Xcol,
              xlim = x.range, ylim = y.range,
              asp = 1,
              xaxs = "i", yaxs = "i")
+
+        if(hasArg(backgroundPolygon)){plot(backgroundPolygon, add = TRUE, border = col_polygon_border, lty = lty_polygon_border, lwd = lwd_polygon_border)}
+
+        # station points
+        points(y = dat2[, Ycol], x = dat2[, Xcol], pch = pch1,  bg  = col_pt1_fill, col = col_pt1_border,
+               cex = cex_pt1)
+        # detection points (scaled)
         points(y = dat2[, Ycol], x = dat2[, Xcol],  pch = pch2,
                col = col_pt2,
                cex = cex.t3[,i]^(1/2) * (cex_pt2.max))
+
         if(isTRUE(printLabels)){
           text(y = dat2[, Ycol], x = dat2[, Xcol], labels = dat2[,stationCol], cex = cex.labels, pos = 1, col = "red")
         }

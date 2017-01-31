@@ -23,7 +23,7 @@ recordTableIndividual <- function(inDir,
   stopifnot(is.character(stationCol))
   individualCol <- "Individual"
   speciesCol    <- "Species"
-  
+
    checkForSpacesInColumnNames(stationCol = stationCol)
 
   # check input
@@ -79,11 +79,11 @@ recordTableIndividual <- function(inDir,
       additionalMetadataTags <- additionalMetadataTags[-grep(pattern = "HierarchicalSubject", x = additionalMetadataTags)]  # remove it
     }
   }
-  
+
   stopifnot(is.logical(removeDuplicateRecords))
 
   metadata.tagname <- "HierarchicalSubject"    # for extracting metadata assigned in tagging software
-    
+
   minDeltaTime <- as.integer(minDeltaTime)
   stopifnot(class(minDeltaTime) == "integer")
 
@@ -105,7 +105,7 @@ recordTableIndividual <- function(inDir,
 
   if(class(inDir)  != "character"){stop("inDir must be of class 'character'", call. = FALSE)}
   if(length(inDir) != 1){stop("inDir may only consist of 1 element only", call. = FALSE)}
-  if(file.exists(inDir) == FALSE){stop("inDir does not exist", call. = FALSE)}
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
 
 
   # find image directories
@@ -134,22 +134,22 @@ recordTableIndividual <- function(inDir,
     # execute exiftool
     metadata.tmp <- runExiftool(command.tmp = command.tmp[i], colnames.tmp = colnames.tmp)
 
-    # now split HierarchicalSubject tags and add as columns to table
-   metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
-                                         metadata.tagname           = metadata.tagname,
-                                         metadataHierarchyDelimitor = metadataHierarchyDelimitor,
-                                         multiple_tag_separator     = multiple_tag_separator)
 
-
-    if(nrow(metadata.tmp) == 0){            # omit station if no images found
+    if(class(metadata.tmp) == "NULL"){            # omit station if no images found
 
       length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
-      warning(paste(dirs[i], "contain no images;", " found", length.tmp, "JPEGs"), call. = FALSE, immediate. = TRUE)
+      warning(paste(dirs_short[i], "contain no images;", " found", length.tmp, "JPEGs"), call. = FALSE, immediate. = TRUE)
 
     } else {
 
       message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
-      
+
+      # now split HierarchicalSubject tags and add as columns to table
+      metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
+                                            metadata.tagname           = metadata.tagname,
+                                            metadataHierarchyDelimitor = metadataHierarchyDelimitor,
+                                            multiple_tag_separator     = multiple_tag_separator)
+
 
       # add individual ID to metadata table (from folders or metadata, otherwise NA)
 
@@ -161,6 +161,9 @@ recordTableIndividual <- function(inDir,
                                        i_tmp                  = i,
                                        multiple_tag_separator = multiple_tag_separator
       )
+      
+      # if no tagged images in current station, go to next one
+      if(class(metadata.tmp) != "data.frame")       next
 
       # remove empty metadata columns (if HierarchicalSubject is all empty or if additionalMetadataTags were not found)
       empty_cols <- which(apply(metadata.tmp, MARGIN = 2, FUN = function(X){all(X == "-")}))
@@ -169,7 +172,7 @@ recordTableIndividual <- function(inDir,
       }
 
       # add station and camera id to metadata table
-      arg.list0 <- list(intable = metadata.tmp, dirs_short = dirs_short, stationCol = stationCol, hasStationFolders = hasStationFolders, cameraCol = cameraCol, i = i)
+      arg.list0 <- list(intable = metadata.tmp, dirs_short = dirs_short, stationCol = stationCol, hasStationFolders = hasStationFolders, cameraCol = cameraCol, i = i, IDfrom = IDfrom)
 
       if(!hasArg(cameraID)) metadata.tmp <- do.call(addStationCameraID, arg.list0)
       if( hasArg(cameraID)) metadata.tmp <- do.call(addStationCameraID, c(arg.list0, cameraID = cameraID))   # if cameraID is defined, it will be extracted from file names
@@ -191,11 +194,11 @@ recordTableIndividual <- function(inDir,
         }
 
         #remove duplicate records of same individual taken in same second at the same station (by the same camera, if relevant)
-        metadata.tmp2 <- removeDuplicatesOfRecords(metadata.tmp           = metadata.tmp, 
-                                                  removeDuplicateRecords = removeDuplicateRecords, 
-                                                  camerasIndependent     = camerasIndependent, 
-                                                  stationCol             = stationCol, 
-                                                  speciesCol             = speciesCol, 
+        metadata.tmp2 <- removeDuplicatesOfRecords(metadata.tmp           = metadata.tmp,
+                                                  removeDuplicateRecords = removeDuplicateRecords,
+                                                  camerasIndependent     = camerasIndependent,
+                                                  stationCol             = stationCol,
+                                                  speciesCol             = speciesCol,
                                                   cameraCol              = cameraCol)
 
         # assess independence between records and calculate time differences
@@ -223,7 +226,7 @@ recordTableIndividual <- function(inDir,
   }       # end loop through station directories
 
   if(nrow(record.table) == 0){
-    stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty"))
+    stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty"), call. = FALSE)
   }
 
   # rearrange table, add date and time as separate columns. add additional column names as needed.
@@ -268,11 +271,17 @@ recordTableIndividual <- function(inDir,
       warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
     }
   }
-
-  # remove hierarchicalSubject and independent columns
-  cols_to_remove <- which(colnames(record.table3) %in% c(metadata.tagname, "independent"))
+  
+   # remove "independent" column
+  cols_to_remove <- which(colnames(record.table3) %in% c("independent"))
   if(length(cols_to_remove) >= 1){
     record.table3 <- record.table3[,-cols_to_remove]
+  }
+  # make column "HierarchicalSubject" the last column
+  col_to_move <- which(colnames(record.table3) %in% metadata.tagname)
+  if(length(col_to_move) >= 1){
+	  record.table3 <- cbind(record.table3, record.table3[,col_to_move])
+	  record.table3 <- record.table3[,-col_to_move]
   }
 
 

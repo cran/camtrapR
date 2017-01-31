@@ -45,6 +45,7 @@ checkSpeciesIdentification <- function(inDir,
 
   multiple_tag_separator <- "_&_"
 
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
   # find station directories
   dirs       <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
   dirs_short <- list.dirs(inDir, full.names = FALSE, recursive = FALSE)

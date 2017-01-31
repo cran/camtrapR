@@ -11,6 +11,10 @@ It suggests a simple data structure and provides functions for managing digital 
 The only manual input needed it species (and individual) identification, which is achieved by moving images into species directories or by tagging images in image management software. Besides, a table holding basic information about camera trap station IDs, locations and trapping periods must be created in spreadsheet software.
 }
 
+\section{User support}{
+The camtrapR Google group is an online support and help forum for camtrapR users. You can find it here: \url{https://groups.google.com/forum/#!forum/camtrapr}.
+}
+
 \details{
 Image metadata (such as date and time or user-assigned tags) are extracted from the images using Phil Harvey's ExifTool (available from \url{http://www.sno.phy.queensu.ca/~phil/exiftool/}) and the information is stored in a record table. An adjustable criterion for temporal independence of records can be applied. Maps of species presence and species richness can be generated. Several functions are available for plotting single- and two-species activity patterns.
 Information about the camera-specific trapping periods (and periods of malfunction) are summarized into information about camera trap operability. These, together with the record table, are used to generate species detection histories for occupancy and spatial capture-recapture analyses. The user has considerable freedom in generating the detection histories; sampling occasion length, beginning date and and occasion start times are adjustable. In addition, trapping effort (i.e. active trap nights per station and occasion) can be computed for use as a covariate / offset on detection probability.
@@ -27,7 +31,7 @@ The functions in this section set up a directory structure for storing camera tr
 \code{\link{addCopyrightTag}} \tab Write a copyright tag into JPEG image metadata \cr
 \code{\link{appendSpeciesNames}} \tab Add or remove species names from image filenames \cr
 
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
+--------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 
 }
 }
@@ -40,7 +44,7 @@ These functions assist in species identification and prepare individual identifi
 \code{\link{createSpeciesFolders}} \tab Create directories for species identification\cr
 \code{\link{checkSpeciesIdentification}} \tab Consistency check on species image identification \cr
 \code{\link{getSpeciesImages}} \tab Gather all images of a species in a new directory \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
+--------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 }
 }
 
@@ -53,7 +57,7 @@ These function use the directory structure built above (Section 'Image managemen
 \code{\link{recordTableIndividual}} \tab Create a single-species record table from camera trap images with individual IDs \cr
 \code{\link{exifTagNames}} \tab Return Exif metadata tags and tag names from JPEG images \cr
 \code{\link{exiftoolPath}}\tab Add the directory containing exiftool.exe to PATH temporarily (Windows only) \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
+--------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 
 }
 }
@@ -67,7 +71,7 @@ These plots are generated from the record table and the camera trap table.
 \code{\link{activityDensity}} \tab Single-species diel activity kernel density estimation plots \cr
 \code{\link{activityRadial}} \tab Single-species diel activity radial plot \cr
 \code{\link{activityOverlap}} \tab Two-species diel activity overlap plots and estimates \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
+--------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 
 }
 }
@@ -79,7 +83,7 @@ These plots are generated from the record table and the camera trap table.
 \code{\link{detectionHistory}} \tab Species detection histories for occupancy analyses \cr
 \code{\link{spatialDetectionHistory}} \tab Detection histories of individuals for spatial capture-recapture analyses  \cr
 \code{\link{surveyReport}} \tab Create a report about camera trap surveys and species detections \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
+--------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 
 }
 }
@@ -91,7 +95,7 @@ These plots are generated from the record table and the camera trap table.
 \code{\link{recordTableSample}} \tab Sample species record table \cr
 \code{\link{recordTableIndividualSample}} \tab Single-species record table with individual IDs\cr
 \code{\link{timeShiftTable}} \tab Sample camera trap time shift information \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr  
+--------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 
 }
 }
@@ -103,8 +107,15 @@ Maintainer:Juergen Niedballa <niedballa@izw-berlin.de>
 }
 
 \references{
+
+Niedballa, J., Sollmann, R., Courtiol, A., Wilting, A. (2016): camtrapR: an R package for efficient camera trap data management. Methods in Ecology and Evolution, 7(12). \url{http://onlinelibrary.wiley.com/doi/10.1111/2041-210X.12600/full} \cr
+
+camtrapR Google Group \url{https://groups.google.com/forum/#!forum/camtrapr} \cr
+
 Lemon, J. (2006) Plotrix: a package in the red light district of R. R-News, 6(4): 8-12. \cr
+
 Mike Meredith and Martin Ridout (2014). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.2.4. \url{https://CRAN.R-project.org/package=overlap} \cr
+
 Phil Harvey's ExifTool \url{http://www.sno.phy.queensu.ca/~phil/exiftool/ } \cr
 }
 
@@ -116,5 +127,6 @@ Phil Harvey's ExifTool \url{http://www.sno.phy.queensu.ca/~phil/exiftool/ } \cr
 \pkg{secr}
 \pkg{plotrix}
 \pkg{taxize}
+\pkg{ritis}
 }
 

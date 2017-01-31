@@ -43,6 +43,7 @@ surveyReport <- function(recordTable,
   } else {makezip <- FALSE}
   if(isTRUE(makezip)){
     if(hasArg(sinkpath) == FALSE) stop("if makezip is TRUE, please define sinkpath")
+    if(!dir.exists(sinkpath)) stop("Could not find sinkpath:\n", sinkpath, call. = FALSE)
   }
 
   if(hasArg(cameraCol)){

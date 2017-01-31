@@ -126,7 +126,7 @@ detectionHistory <- function(recordTable,
   if("POSIXlt" %in% class(subset_species$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
   if(any(is.na(subset_species$DateTime2))) stop("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat")
 
-
+  checkCamOpColumnNames (cameraOperationMatrix = camOp)
   cam.op.worked0 <- as.matrix(camOp)
 
   if(all(as.character(unique(subset_species[,stationCol])) %in% rownames(cam.op.worked0)) == FALSE){

@@ -22,7 +22,7 @@ recordTable <- function(inDir,
   if(hasArg(stationCol) == FALSE) stationCol <- "Station"
   stopifnot(is.character(stationCol))
   speciesCol <- "Species"
-  
+
   checkForSpacesInColumnNames(stationCol = stationCol)
 
   if(class(IDfrom) != "character"){stop("IDfrom must be of class 'character'")}
@@ -59,7 +59,7 @@ recordTable <- function(inDir,
     if(!hasArg(camerasIndependent)){stop("camerasIndependent is not defined. It must be defined if cameraID is defined", call. = FALSE)}
     if(class(camerasIndependent) != "logical"){stop("camerasIndependent must be of class 'logical'", call. = FALSE)}
   } else { camerasIndependent <- FALSE}
-  
+
   cameraCol <- "Camera"
 
 
@@ -71,7 +71,7 @@ recordTable <- function(inDir,
   if(hasArg(exclude)){
     if(class(exclude) != "character"){stop("exclude must be of class 'character'", call. = FALSE)}
   }
-  
+
   stopifnot(is.logical(removeDuplicateRecords))
 
   metadata.tagname <- "HierarchicalSubject"    # for extracting metadata assigned in tagging software
@@ -105,7 +105,7 @@ recordTable <- function(inDir,
 
   if(class(inDir) != "character"){stop("inDir must be of class 'character'", call. = FALSE)}
   if(length(inDir) != 1){stop("inDir may only consist of 1 element only", call. = FALSE)}
-  if(file.exists(inDir) == FALSE){stop("inDir does not exist", call. = FALSE)}
+  if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
 
 
   # find image directories
@@ -129,22 +129,21 @@ recordTable <- function(inDir,
     # execute exiftool
     metadata.tmp <- runExiftool(command.tmp = command.tmp[i], colnames.tmp = colnames.tmp)
 
-    # now split HierarchicalSubject tags and add as columns to table
-       metadata.tmp <- addMetadataAsColumns (intable                     = metadata.tmp,
-                                              metadata.tagname           = metadata.tagname,
-                                              metadataHierarchyDelimitor = metadataHierarchyDelimitor,
-                                              multiple_tag_separator     = multiple_tag_separator)
 
-
-    if(nrow(metadata.tmp) == 0){            # omit station if no images found
+    if(class(metadata.tmp) == "NULL"){            # omit station if no images found
 
       length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
-      warning(paste(dirs[i], "contains no images;", " found", length.tmp, "JPEGs"), call. = FALSE,  immediate. = TRUE)
+      warning(paste(dirs_short[i], "contains no images;", " found", length.tmp, "JPEGs"), call. = FALSE,  immediate. = TRUE)
 
     } else {
 
       message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
 
+      # now split HierarchicalSubject tags and add as columns to table
+      metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
+                                            metadata.tagname           = metadata.tagname,
+                                            metadataHierarchyDelimitor = metadataHierarchyDelimitor,
+                                            multiple_tag_separator     = multiple_tag_separator)
 
       # add species names to metadata table (from folders or metadata, otherwise NA)
 
@@ -157,6 +156,10 @@ recordTable <- function(inDir,
                                        multiple_tag_separator = multiple_tag_separator
       )
 
+      # if no tagged images in current station, go to next one
+      if(class(metadata.tmp) != "data.frame")       next
+
+
       # remove empty metadata columns (if HierarchicalSubject is all empty or if additionalMetadataTags were not found)
       empty_cols <- which(apply(metadata.tmp, MARGIN = 2, FUN = function(X){all(X == "-")}))
       if(length(empty_cols) >= 1){
@@ -164,7 +167,7 @@ recordTable <- function(inDir,
       }
 
       # add station and camera id to metadata table
-      arg.list0 <- list(intable = metadata.tmp, dirs_short = dirs_short, stationCol = stationCol, hasStationFolders = TRUE, cameraCol = cameraCol, i = i)  # assumes station directories
+      arg.list0 <- list(intable = metadata.tmp, dirs_short = dirs_short, stationCol = stationCol, hasStationFolders = TRUE, cameraCol = cameraCol, i = i, IDfrom = IDfrom)  # assumes station directories
 
       if(!hasArg(cameraID)) metadata.tmp <- do.call(addStationCameraID, arg.list0)
       if( hasArg(cameraID)) metadata.tmp <- do.call(addStationCameraID, c(arg.list0, cameraID = cameraID))
@@ -188,19 +191,19 @@ recordTable <- function(inDir,
           metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,speciesCol], metadata.tmp$DateTimeOriginal),]
         }
 
-    
+
 
         #remove duplicate records of same species taken in same second at the same station (by the same camera, if relevant)
-        metadata.tmp2 <- removeDuplicatesOfRecords(metadata.tmp           = metadata.tmp, 
-                                                  removeDuplicateRecords = removeDuplicateRecords, 
-                                                  camerasIndependent     = camerasIndependent, 
-                                                  stationCol             = stationCol, 
-                                                  speciesCol             = speciesCol, 
+        metadata.tmp2 <- removeDuplicatesOfRecords(metadata.tmp           = metadata.tmp,
+                                                  removeDuplicateRecords = removeDuplicateRecords,
+                                                  camerasIndependent     = camerasIndependent,
+                                                  stationCol             = stationCol,
+                                                  speciesCol             = speciesCol,
                                                   cameraCol              = cameraCol)
-        
+
 
         # assess independence between records and calculate time differences
-        d1 <- assessTemporalIndependence (intable             = metadata.tmp2, 
+        d1 <- assessTemporalIndependence (intable             = metadata.tmp2,
                                           deltaTimeComparedTo = deltaTimeComparedTo,
                                           camerasIndependent  = camerasIndependent,
                                           columnOfInterest    = speciesCol,
@@ -224,7 +227,7 @@ recordTable <- function(inDir,
   }      # end      for(i in 1:length(dirs)){   # loop through station directories
 
   if(nrow(record.table) == 0){
-    stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty. Maybe you excluded too many species?"))
+    stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty. Maybe you excluded too many species?"), call. = FALSE)
   }
 
   # rearrange table, add date and time as separate columns. add additional column names as needed.
@@ -270,11 +273,16 @@ recordTable <- function(inDir,
     }
   }
 
-  # remove hierarchicalSubject and independent columns
-  #cols_to_remove <- which(colnames(record.table3) %in% c(metadata.tagname, "independent"))
+  # remove "independent" column
   cols_to_remove <- which(colnames(record.table3) %in% c("independent"))
   if(length(cols_to_remove) >= 1){
     record.table3 <- record.table3[,-cols_to_remove]
+  }
+  # make column "HierarchicalSubject" the last column
+  col_to_move <- which(colnames(record.table3) %in% metadata.tagname)
+  if(length(col_to_move) >= 1){
+	  record.table3 <- cbind(record.table3, record.table3[,col_to_move])
+	  record.table3 <- record.table3[,-col_to_move]
   }
 
   # save table
