@@ -244,6 +244,8 @@ imageRename <- function(inDir,
       if(isTRUE(proceed)){
       # find items to copy
           items_to_copy <- which(copy.info.table$DateReadable == TRUE & copy.info.table$fileExistsAlready == FALSE)
+          
+          message(paste("copying", length(items_to_copy), "images to", outDir, " ... This may take some time."))
 
           copy.info.table$CopyStatus[items_to_copy] <- file.copy(from      = apply(copy.info.table[items_to_copy, c("Directory", "FileName")],  MARGIN = 1, FUN = paste, collapse = file.sep),
                                                                                        to        = apply(copy.info.table[items_to_copy, c("outDir", "filename_new")], MARGIN = 1, FUN = paste, collapse = file.sep),

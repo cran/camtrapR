@@ -33,7 +33,7 @@ spatialDetectionHistory <- function(recordTableIndividual,
   #################
   # check input
   stopifnot(hasArg(recordTableIndividual))
-  stopifnot(class(recordTableIndividual) == "data.frame")
+  if(class(recordTableIndividual) != "data.frame") stop("recordTableIndividual must be a data.frame", call. = FALSE)
   stopifnot(hasArg(camOp))
 
   stopifnot(hasArg(species))
@@ -51,6 +51,7 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   checkForSpacesInColumnNames(stationCol = stationCol, Xcol = Xcol, Ycol = Ycol, 
                                          recordDateTimeCol = recordDateTimeCol, speciesCol = speciesCol, individualCol)
+  if(class(CTtable) != "data.frame") stop("CTtable must be a data.frame", call. = FALSE)
   if(!stationCol %in% colnames(CTtable)) stop(paste('stationCol = "',   stationCol,  '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!Xcol %in% colnames(CTtable))         stop(paste('Xcol = "',   Xcol,  '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!Ycol %in% colnames(CTtable))         stop(paste('Ycol = "',   Ycol, '" is not a column name in CTtable', sep = ''), call. = FALSE)

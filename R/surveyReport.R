@@ -18,6 +18,9 @@ surveyReport <- function(recordTable,
   # check column names
   checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol, 
                                          recordDateTimeCol = recordDateTimeCol, speciesCol = speciesCol)
+  if(class(CTtable) != "data.frame") stop("CTtable must be a data.frame", call. = FALSE)
+  if(class(recordTable) != "data.frame") stop("recordTable must be a data.frame", call. = FALSE)
+  
   if(!stationCol %in% colnames(CTtable))     stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!setupCol %in% colnames(CTtable))        stop(paste('setupCol = "',   setupCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!retrievalCol %in% colnames(CTtable))  stop(paste('retrievalCol = "',   retrievalCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)

@@ -74,7 +74,7 @@ This function plots kernel density estimates of two species' diel activity data 
 }
 }
 \details{
-\code{...} can be graphical parameters, e.g. \code{linetype}, \code{linewidth}, \code{linecol}.
+\code{...} can be graphical parameters passed on to function \code{\link[overlap]{overlapPlot}}, e.g. \code{linetype}, \code{linewidth}, \code{linecol}.
 }
 \value{
 Returns invisibly the \code{data.frame} with plot coordinates returned by \code{\link[overlap]{overlapPlot}}.

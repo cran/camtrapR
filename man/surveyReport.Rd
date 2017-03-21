@@ -28,19 +28,19 @@ surveyReport (recordTable,
 
 \arguments{
   \item{recordTable}{
-   data.frame containing a species record table as calculated by \code{\link{recordTable}}
+   data.frame containing a species record table as given by \code{\link{recordTable}}
 }
   \item{CTtable}{
-   data.frame containing information about location and trapping period of camera trap stations
+   data.frame containing information about location and trapping period of camera trap stations (equivalent to \code{\link{camtraps}}
 }
   \item{speciesCol}{
-  character. name of the column specifying Species ID in \code{CTtable}
+  character. name of the column specifying Species ID in \code{recordTable}
 }
   \item{stationCol}{
-  character. name of the column specifying Station ID in \code{CTtable}
+  character. name of the column specifying Station ID in \code{CTtable} and \code{recordTable}
 }
   \item{cameraCol}{
-  character. name of the column specifying Camera ID in \code{CTtable} 
+  character. name of the column specifying Camera ID in \code{CTtable} and \code{recordTable}
 }
   \item{setupCol}{
   character. name of the column containing camera setup dates in \code{CTtable}
@@ -49,13 +49,13 @@ surveyReport (recordTable,
   character. name of the column containing camera retrieval dates in \code{CTtable}
 }
   \item{CTDateFormat}{
-  character. The format of columns \code{setupCol} and \code{retrievalCol} in \code{CTtable}. 
+  character. The date format in columns \code{setupCol} and \code{retrievalCol} of \code{CTtable}. 
 }
 \item{CTHasProblems}{
   logical. Are there periods of camera malfunction specified in \code{CTtable}?
 }
   \item{recordDateTimeCol}{
-  character. The names of the column containing date and time of record in \code{recordTable}
+  character. The name of the column containing date and time of records in \code{recordTable}
 }
   \item{recordDateTimeFormat}{
   character. The date/time format of column \code{recordDateTimeCol} in \code{recordTable}. 

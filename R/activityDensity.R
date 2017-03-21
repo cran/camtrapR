@@ -22,6 +22,7 @@ activityDensity <- function(recordTable,
   tz <- "UTC"
 
   checkForSpacesInColumnNames(speciesCol = speciesCol, recordDateTimeCol = recordDateTimeCol)
+  if(!is.data.frame(recordTable)) stop("recordTable must be a data frame", call. = FALSE)
   if(!speciesCol %in% colnames(recordTable))           stop(paste('speciesCol = "', speciesCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
   if(!recordDateTimeCol %in% colnames(recordTable)) stop(paste('recordDateTimeCol = "', recordDateTimeCol, '" is not a column name in recordTable', sep = ''), call. = FALSE)
 

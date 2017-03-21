@@ -96,6 +96,7 @@ check.folders <- checkSpeciesIdentification(inDir             = wd_images_ID,
                                      
 check.folders   # In the example, 2 different species were photographed within 2 minutes. 
 
+\dontrun{
 # now exclude one of these 2 species 
 check.folders2 <- checkSpeciesIdentification(inDir             = wd_images_ID,
                                              IDfrom            = "directory",
@@ -114,7 +115,7 @@ check.folders3 <- checkSpeciesIdentification(inDir             = wd_images_ID,
                                              stationsToCheck   = "StationB",
                                              writecsv          = FALSE)
 check.folders3   # the data frame is empty
-
+}
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

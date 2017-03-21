@@ -13,7 +13,7 @@ getSpeciesImages <- function(species,
   file.sep <- .Platform$file.sep
 
   if(hasArg(recordTable) & hasArg(inDir)) stop("recordTable and inDir cannot be both defined. Please define one only.", call. = FALSE)
-
+    
    # check column names
   
   

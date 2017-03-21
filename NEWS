@@ -1,9 +1,21 @@
+Changes in camtrapR 0.99.8
+==========================
+
+bugfixes
+------------
+  o recordTable / recordTableIndividual: column "HierarchicalSubject" (containing digiKam metadata tags in their native format) was called "record.table3[, col_to_move]" by mistake (thanks to Ross Pitman for reporting)
+
+other changes
+------------
+  o improved checks that function input has correct class (to make sure data.frames are provided where the functions expect them)
+
+ 
 Changes in camtrapR 0.99.7
 ==========================
 
 bugfixes
 ------------
- o recordTable: returned station ID as camera ID if IDfrom = "metadata" and cameraID = "directory"
+  o recordTable: returned station ID as camera ID if IDfrom = "metadata" and cameraID = "directory"
  
 new features
 ------------
@@ -14,7 +26,7 @@ new features
 other changes
 ------------
   o recordTable / recordTableIndividual: improved handling and reporting of stations without images (warning instead of error)
-  o recordTable / recordTableIndividual: improved handling and reporting of stations where all images lack species/individual metadata tags (if using metadata ID only, functions will throw warning instead of error, reported by Aditya Malgaonkar)
+  o recordTable / recordTableIndividual: improved handling and reporting of stations where all images lack species/individual metadata tags (only if using metadata ID, functions will throw warning instead of error, reported by Aditya Malgaonkar)
 
 
 
@@ -23,11 +35,11 @@ Changes in camtrapR 0.99.6
 
 bugfixes
 ------------
- o fixed crash in cameraOperation function caused by underscores in station / camera IDs (reported by Wyatt Petersen)
+  o fixed crash in cameraOperation function caused by underscores in station / camera IDs (reported by Wyatt Petersen)
 
 new functions
 ------------
- o fixDateTimeOriginal: Makes DateTimeOriginal Exif metadata tag in Reconyx Hyperfire cameras readable 
+  o fixDateTimeOriginal: Makes DateTimeOriginal Exif metadata tag in Reconyx Hyperfire cameras readable 
 
 new features
 ------------
@@ -85,7 +97,7 @@ Changes in camtrapR 0.99.3
 
 new functions
 ------------
- o addCopyrightTag: Write a copyright tag into image Exif metadata
+  o addCopyrightTag: Write a copyright tag into image Exif metadata
 
 bugfixes
 ------------

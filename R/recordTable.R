@@ -281,8 +281,9 @@ recordTable <- function(inDir,
   # make column "HierarchicalSubject" the last column
   col_to_move <- which(colnames(record.table3) %in% metadata.tagname)
   if(length(col_to_move) >= 1){
-	  record.table3 <- cbind(record.table3, record.table3[,col_to_move])
+     record.table3 <- cbind(record.table3, record.table3[,col_to_move])
 	  record.table3 <- record.table3[,-col_to_move]
+    colnames(record.table3)[ncol(record.table3)] <- metadata.tagname
   }
 
   # save table

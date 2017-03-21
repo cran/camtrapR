@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2017-01-31" />
+<meta name="date" content="2017-03-21" />
 
 <title>Organising raw camera trap images in camtrapR</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Organising raw camera trap images in camtrapR</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2017-01-31</em></h4>
+<h4 class="date"><em>2017-03-21</em></h4>
 
 
 <div id="TOC">
@@ -315,9 +315,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                 directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/createStationFoldersTest/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/createStationFoldersTest/StationB
-## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/createStationFoldersTest/StationC
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/createStationFoldersTest/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/createStationFoldersTest/StationB
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -349,12 +349,12 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
                                  <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
                                  <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
 )</code></pre></div>
-<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpUTOsQY/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpUTOsQY/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpIN6UnE/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpIN6UnE/raw_images/StationB</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre></div>
 <pre><code>##                                                                   directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationB
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -370,8 +370,8 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
 
 timeshift_undo</code></pre></div>
 <pre><code>##                                                                   directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images/StationB
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -406,13 +406,13 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 <pre><code>## StationB : 3 images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
 <span class="kw">head</span>(renaming.table2)</code></pre></div>
-<pre><code>##                                                                                                       Directory
-## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpCCC9Ye/Rinst150c1631d3/camtrapR/pictures/raw_images/StationB
+<pre><code>##                                                                                                        Directory
+## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -421,12 +421,12 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                              outDir
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationA
-## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationA
-## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationB
-## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationB
-## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpUTOsQY/raw_images_renamed/StationB
+## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationA
+## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationA
+## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationA
+## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationB
+## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationB
+## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationB
 ##                            filename_new fileExistsAlready CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
@@ -510,11 +510,11 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
 <pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 9.69&quot;                                                                      
 ##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding&quot;                                                
 ##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                     
-##  [4] &quot;[File]          Directory                       : C:/Users/JRGENN~1/AppData/Local/Temp/RtmpUTOsQY/sample_images/StationA/PBE&quot;
+##  [4] &quot;[File]          Directory                       : C:/Users/JRGENN~1/AppData/Local/Temp/RtmpIN6UnE/sample_images/StationA/PBE&quot;
 ##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                     
-##  [6] &quot;[File]          File Modification Date/Time     : 2017:01:31 10:15:01+01:00&quot;                                                 
-##  [7] &quot;[File]          File Access Date/Time           : 2017:01:31 10:15:01+01:00&quot;                                                 
-##  [8] &quot;[File]          File Creation Date/Time         : 2017:01:31 10:14:59+01:00&quot;                                                 
+##  [6] &quot;[File]          File Modification Date/Time     : 2017:03:21 10:47:19+01:00&quot;                                                 
+##  [7] &quot;[File]          File Access Date/Time           : 2017:03:21 10:47:19+01:00&quot;                                                 
+##  [8] &quot;[File]          File Creation Date/Time         : 2017:03:21 10:47:19+01:00&quot;                                                 
 ##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                 
 ## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                      
 ## [11] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                                

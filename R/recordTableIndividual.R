@@ -24,7 +24,7 @@ recordTableIndividual <- function(inDir,
   individualCol <- "Individual"
   speciesCol    <- "Species"
 
-   checkForSpacesInColumnNames(stationCol = stationCol)
+  checkForSpacesInColumnNames(stationCol = stationCol)
 
   # check input
   if(hasArg(timeZone) == FALSE) {
@@ -282,6 +282,7 @@ recordTableIndividual <- function(inDir,
   if(length(col_to_move) >= 1){
 	  record.table3 <- cbind(record.table3, record.table3[,col_to_move])
 	  record.table3 <- record.table3[,-col_to_move]
+    colnames(record.table3)[ncol(record.table3)] <- metadata.tagname
   }
 
 
