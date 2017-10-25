@@ -5,12 +5,12 @@ data(camtraps)
 ## ------------------------------------------------------------------------
 
 # find data for 2 species with correctly spelled names
-checkNames1 <- checkSpeciesNames (speciesNames = c("Moonrat", "Malayan Civet"),
+checkNames1 <- checkSpeciesNames (speciesNames = c("Bearded Pig", "Malayan Civet"),
                                   searchtype   = "common")
 checkNames1
 
-# and with scientific names (note that in Echinosorex we provide a genus name only)
-checkNames2 <- checkSpeciesNames (speciesNames = c("Echinosorex", "Viverra tangalunga"),
+# and with scientific names (note that this is for a subspecies)
+checkNames2 <- checkSpeciesNames (speciesNames = "Viverra tangalunga tangalunga",
                                   searchtype   = "scientific")
 checkNames2
 
@@ -20,7 +20,7 @@ checkNames3 <- checkSpeciesNames (speciesNames = "Felis bengalensis",
                                   accepted     = FALSE)
 checkNames3
 
-## an ambiguous name name: Chevrotain (Tragulus)    
+## an ambiguous name name: Chevrotain (Tragulus)
 ## this does not work in vignettes, but should run on your machine
  # checkNames4 <- checkSpeciesNames (speciesNames = c("Chevrotain"),
  #                                   searchtype   = "common")

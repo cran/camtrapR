@@ -14,7 +14,7 @@ cameraOperation <- function(CTtable,
   # check and prepare input
   wd0 <- getwd()
   on.exit(setwd(wd0))
-     
+
   checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol)
   if(class(CTtable) != "data.frame") stop("CTtable must be a data.frame", call. = FALSE)
   if(!stationCol %in% colnames(CTtable))    stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
@@ -123,6 +123,10 @@ cameraOperation <- function(CTtable,
   # function
 
   if(hasArg(cameraCol)){      # there is a camera column, i.e., potentially > 1 cameras per station
+
+    if(any(CTtable[,cameraCol] == "")) stop("there are empty cells in cameraCol. Please provide camera IDs for all cameras",
+                                            call. = FALSE)    # if there are emtpy cells a camera column, fill them with 1
+
     stationCamSeparator <- "__"
     if(length(grep(pattern = stationCamSeparator, x = CTtable[,stationCol])) >= 1) stop("Station IDs may not contain double underscores ('__')", call. = FALSE)
     if(length(grep(pattern = stationCamSeparator, x = CTtable[,cameraCol])) >= 1)  stop("Camera IDs may not contain double underscores ('__')",  call. = FALSE)
@@ -162,7 +166,7 @@ cameraOperation <- function(CTtable,
                                                   CTtable[,cameraCol]  == unique.tmp[[i]][2], cols.prob.to[j]]))
 
           if(!is.na(date.p0.tmp) & !is.na(date.p1.tmp)){
-            if(date.p1.tmp < date.p0.tmp)stop(paste("Camera", stationcam[i], ", Problem ", j, ": 'to' is smaller than 'from'", sep = ""))
+            if(date.p1.tmp < date.p0.tmp)stop(paste("Camera ", stationcam[i], ", Problem ", j, ": 'to' is smaller than 'from'", sep = ""))
             m[match(stationcam[i], rownames(m)), seq(from = match(date.p0.tmp, colnames(m)),
                                                      to   = match(date.p1.tmp, colnames(m)), by = 1)] <- 0
           }

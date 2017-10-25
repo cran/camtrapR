@@ -34,7 +34,8 @@ activityOverlap <- function(recordTable,
 
   recordTable$DateTime2 <- strptime(as.character(recordTable[,recordDateTimeCol]), format = recordDateTimeFormat, tz = tz)
   if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
-  if(any(is.na(recordTable$DateTime2))) stop("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat")
+  if(any(is.na(recordTable$DateTime2))) stop(paste("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat. row",
+                                                   paste(which(is.na(recordTable$DateTime2)), collapse = ", ")))
   recordTable$Time2 <-   format(recordTable$DateTime2, format = "%H:%M:%S", usetz = FALSE)
 
   # convert time to radians

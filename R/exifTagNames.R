@@ -20,6 +20,8 @@ exifTagNames <- function(inDir,
                          recursive  = TRUE)[1]
   if(length(file.tmp) == 0) stop(paste("found no jpg in ", dirs.tmp[whichSubDir], sep = "\n"))
 
+  message(paste("Extracted metadata of:", file.tmp))
+  
   if(returnMetadata == FALSE){
     command.tmp  <- paste('exiftool -csv', ifelse(returnTagGroup, ' -G',  ''), ' "', file.tmp, '"', sep = "")
     metadata.tmp <- system(command.tmp, intern=TRUE)

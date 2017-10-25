@@ -114,6 +114,7 @@ detectionHistory <- function(recordTable,
 
   # check consistency of argument day1
   stopifnot(class(day1) == "character")
+  day1 <- tolower(day1)
   if(day1 == "survey") {day1switch <- 1} else {
     if(day1 == "station") {day1switch <- 2} else {
       try(date.test <- as.Date(day1), silent = TRUE)
@@ -125,7 +126,8 @@ detectionHistory <- function(recordTable,
   }
 
   if("POSIXlt" %in% class(subset_species$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
-  if(any(is.na(subset_species$DateTime2))) stop("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat")
+  if(any(is.na(subset_species$DateTime2))) stop(paste("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat. row",
+                                                   paste(which(is.na(subset_species$DateTime2)), collapse = ", ")))
 
   checkCamOpColumnNames (cameraOperationMatrix = camOp)
   cam.op.worked0 <- as.matrix(camOp)

@@ -16,20 +16,20 @@ surveyReport <- function(recordTable,
 ){
 
   # check column names
-  checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol, 
+  checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol,
                                          recordDateTimeCol = recordDateTimeCol, speciesCol = speciesCol)
   if(class(CTtable) != "data.frame") stop("CTtable must be a data.frame", call. = FALSE)
   if(class(recordTable) != "data.frame") stop("recordTable must be a data.frame", call. = FALSE)
-  
+
   if(!stationCol %in% colnames(CTtable))     stop(paste('stationCol = "',   stationCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!setupCol %in% colnames(CTtable))        stop(paste('setupCol = "',   setupCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
   if(!retrievalCol %in% colnames(CTtable))  stop(paste('retrievalCol = "',   retrievalCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
-  
+
   if(!stationCol %in% colnames(recordTable))            stop(paste('stationCol = "',   stationCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
   if(!recordDateTimeCol %in% colnames(recordTable))  stop(paste('recordDateTimeCol = "', recordDateTimeCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
   if(!speciesCol %in% colnames(recordTable))            stop(paste('speciesCol = "', speciesCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
-  
-  
+
+
   # make columns character
   recordTable[,speciesCol]        <- as.character(recordTable[,speciesCol])
   recordTable[,stationCol]        <- as.character(recordTable[,stationCol])
@@ -62,9 +62,9 @@ surveyReport <- function(recordTable,
     stopifnot(c(Xcol, Ycol) %in% colnames(CTtable))
     CTtable[,Xcol] <- as.numeric(as.character(CTtable[,Xcol]))
     CTtable[,Ycol] <- as.numeric(as.character(CTtable[,Ycol]))
-  } else {
-    Xcol <- Ycol <- NA
-  }
+   } #else {
+  #   Xcol <- Ycol <- NA
+  # }
 
   recordTable$DateTime2 <- strptime(recordTable[,recordDateTimeCol],
                                     format = recordDateTimeFormat,
@@ -239,7 +239,7 @@ surveyReport <- function(recordTable,
 
   for(i in 1:length(unique(recordTable[, speciesCol]))){
 
-    tmp                           <- unique(recordTable[, speciesCol])[i]
+    tmp                              <- unique(recordTable[, speciesCol])[i]
     subset.tmp                    <- subset(recordTable, recordTable[, speciesCol] == tmp)
     species_record_table[i, ]     <- c(tmp, nrow(subset.tmp), length(unique(subset.tmp[,stationCol])))
     rm(subset.tmp, tmp)
@@ -307,20 +307,24 @@ surveyReport <- function(recordTable,
 
   # make zip file
   if(isTRUE(makezip)){
-    makeSurveyZip(output               = output,
-                  recordTable          = recordTable,
-                  CTtable              = CTtable,
-                  Xcol                 = Xcol,
-                  Ycol                 = Ycol,
-                  speciesCol           = speciesCol,
-                  stationCol           = stationCol,
-                  setupCol             = setupCol,
-                  retrievalCol         = retrievalCol,
-                  CTDateFormat         = CTDateFormat,
-                  CTHasProblems        = CTHasProblems,
-                  recordDateTimeCol    = recordDateTimeCol,
-                  recordDateTimeFormat = recordDateTimeFormat,
-                  sinkpath             = sinkpath)
+
+    arglist_zip <-  list(output               = output,
+                         recordTable          = recordTable,
+                         CTtable              = CTtable,
+                         speciesCol           = speciesCol,
+                         stationCol           = stationCol,
+                         setupCol             = setupCol,
+                         retrievalCol         = retrievalCol,
+                         CTDateFormat         = CTDateFormat,
+                         CTHasProblems        = CTHasProblems,
+                         recordDateTimeCol    = recordDateTimeCol,
+                         recordDateTimeFormat = recordDateTimeFormat,
+                         sinkpath             = sinkpath)
+
+    if(hasArg(Xcol) & hasArg(Ycol)) arglist_zip <- c(arglist_zip,  Xcol = Xcol, Ycol = Ycol)
+
+    do.call(makeSurveyZip, arglist_zip)
+
   }
 
   return(invisible(output))

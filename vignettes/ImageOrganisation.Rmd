@@ -253,12 +253,51 @@ timeshift_undo <- timeShiftImages(inDir               = wd_images_raw_copy,
 timeshift_undo
 ```
 
+<!--  ## Date/Time problems with Reconyx Hyperfire and Maginon cameras -->
 ## Date/Time problems with Reconyx Hyperfire cameras
 
-Some Reconyx Hyperfire cameras don't store date and time in the standard Exif format. Consequently, camtrapR cannot read the DateTimeOriginal tag from these images. This can be fixed easily by using the camtrapR function `fixDateTimeOriginal` or by following the instructions given by Mathias Tobler in the CameraBase documentation (page 7):
+<!--  ### Date/Time problems with Reconyx Hyperfire cameras -->
+
+Some Reconyx Hyperfire cameras (e.g. Hyperfire HC500) don't store date and time in the standard Exif format. Consequently, camtrapR cannot read the DateTimeOriginal tag from these images. This can be fixed easily by using the camtrapR function `fixDateTimeOriginal` or by following the instructions given by Mathias Tobler in the CameraBase documentation (page 7):
 
 http://www.atrium-biodiversity.org/tools/camerabase/files/CameraBaseDoc1.7.pdf
 
+<!-- ### Date/Time problems with Maginon cameras -->
+
+<!-- Camera trap model Maginon WK1 (and possibly also other models my this manufacturer) also don't store date and time in the standard Exif format, but in a different way compared to Reconyx HC500, hence the `fixDateTimeOriginal` doesn't work on these (currently).  -->
+
+<!-- Maginon cameras don't create the DateTimeOriginal tag of the Exif metadata that camtrapR reads out. The best alternative available is the Exif Modify Date, which corresponds to the date and time in the images + 1 second. (DateTimeOriginal seems to be the shutter time and ModifyDate is the time the image was saved). To make things worse, there also seems to be some metadata problems in JPGs created by these cameras whch prevent exiftool from simply copying the relevant information into the right tag (technical note: exiftool gives an error about "bad format for EXIFIFD entry"). For more information see here: http://owl.phy.queensu.ca/~phil/exiftool/faq.html#Q20. -->
+
+<!-- Currently, there is no camtrapR solution to fix this automatically, but here is a command line way to fix this. Please contace me if such a function in camtrapR would be relevant for you so I can add it. -->
+
+<!-- The general workflow and exiftool commands are these. Adapt the file path to your directory structure (the "C:\Path\to\your\images" part). -->
+
+<!-- **WARNING 1:** Make a backup of your data before doing this to prevent data loss! -->
+
+<!-- **WARNING 2:** Only run this on directories that contain faulty images taken by Maginon cameras! Data loss may occur if these lines are run on healthy images! Also be aware of subfolders from  -->
+
+<!-- 1. Fix the metadata problems -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool -all= -tagsfromfile @ -all:all -unsafe -icc_profile "C:\Path\to\your\images" -->
+<!-- ``` -->
+
+<!-- 2. Create a DateTimeOriginal tag from the ModifyDate tag -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool "-EXIF:DateTimeOriginal<EXIF:IFD0:ModifyDate" "C:\Path\to\your\images" -->
+<!-- ``` -->
+
+<!-- 3. If satisfied with the results, you can delete the original data which exiftool saved as ".JPG_original" files with the following line. Alternatively, delete them manually. -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool -delete_original "C:\Path\to\your\images" -->
+<!-- ``` -->
+
+<!-- If you wish to run these command recursively, i.e. on all images contained in all subfolders of the specified directory, it can be achieved using the "-r" argument. The resulting commands are these: -->
+
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool -all= -tagsfromfile @ -all:all -unsafe -icc_profile -r "C:\Path\to\your\images" -->
+<!-- exiftool "-EXIF:DateTimeOriginal<EXIF:IFD0:ModifyDate" -r "C:\Path\to\your\images" -->
+<!-- exiftool -delete_original -r "C:\Path\to\your\images" -->
+<!-- ``` -->
 
 ## Renaming images
 

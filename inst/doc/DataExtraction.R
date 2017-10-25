@@ -3,7 +3,7 @@ library(camtrapR)
 
 ## ------------------------------------------------------------------------
 # find the directory with sample images contained in the package
-wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
+wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR", lib.loc = .libPaths())
 
 ## ------------------------------------------------------------------------
 length(list.files(wd_images_ID, pattern = "JPG", recursive = TRUE))

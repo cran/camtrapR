@@ -143,6 +143,12 @@ recordTableIndividual <- function(inDir,
     } else {
 
       message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
+      
+      # check presence / consistency of DateTimeOriginal column, go to next station or remove records if necessary
+      metadata.tmp <- checkDateTimeOriginal (intable    = metadata.tmp,
+                                             dirs_short = dirs_short,
+                                             i          = i)
+      if(is.null(metadata.tmp)) next          
 
       # now split HierarchicalSubject tags and add as columns to table
       metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
@@ -267,10 +273,16 @@ recordTableIndividual <- function(inDir,
    # warning if additionalMetadataTags were not found
   if(hasArg(additionalMetadataTags)){
     whichadditionalMetadataTagsFound <- which(gsub(additionalMetadataTags, pattern = ":", replacement = ".") %in% colnames(record.table3))   # replace : in additionalMetadataTags (if specifying tag groups) with . as found in column names
-    if(length(whichadditionalMetadataTagsFound) < length(additionalMetadataTags)){
-      warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
+  if(length(whichadditionalMetadataTagsFound) < length(additionalMetadataTags)){
+      if(length(whichadditionalMetadataTagsFound) == 0) {  # if none of the additionalMetadataTags was found
+        warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags, collapse = ", ")), call. = FALSE)
+        } else {                                                            # if only some of the additionalMetadataTags was found
+        warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
+      }
     }
   }
+  
+
   
    # remove "independent" column
   cols_to_remove <- which(colnames(record.table3) %in% c("independent"))

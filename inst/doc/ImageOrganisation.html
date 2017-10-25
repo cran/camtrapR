@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
 
-<meta name="date" content="2017-03-21" />
+<meta name="date" content="2017-10-25" />
 
 <title>Organising raw camera trap images in camtrapR</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Organising raw camera trap images in camtrapR</h1>
 <h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2017-03-21</em></h4>
+<h4 class="date"><em>2017-10-25</em></h4>
 
 
 <div id="TOC">
@@ -181,7 +181,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check if the system can find ExifTool</span>
 <span class="kw">Sys.which</span>(<span class="st">&quot;exiftool&quot;</span>)</code></pre></div>
 <pre><code>##                    exiftool 
-## &quot;C:\\windows\\exiftool.exe&quot;</code></pre>
+## &quot;C:\\Windows\\exiftool.exe&quot;</code></pre>
 <p>If exiftool.exe cannot be placed in a PATH directory (e.g. due to limited user privileges), users can place exiftool.exe in any directory and then add that directory to PATH temporarily for use in the running R session using the function <code>exiftoolPath</code>. This is necessary if the directory containing exiftool.exe is not in PATH by default.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># this is a dummy example assuming the directory structure: C:/Path/To/Exiftool/exiftool.exe</span>
 exiftool_dir &lt;-<span class="st"> &quot;C:/Path/To/Exiftool&quot;</span>        
@@ -314,10 +314,10 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 1 StationA
 ## 2 StationB
 ## 3 StationC
-##                                                                                 directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/createStationFoldersTest/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/createStationFoldersTest/StationB
-## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/createStationFoldersTest/StationC
+##                                                                                directory
+## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createStationFoldersTest/StationA
+## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createStationFoldersTest/StationB
+## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -349,12 +349,12 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
                                  <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
                                  <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
 )</code></pre></div>
-<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpIN6UnE/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\JRGENN~1\AppData\Local\Temp\RtmpIN6UnE/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/raw_images/StationB</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre></div>
-<pre><code>##                                                                   directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationB
+<pre><code>##                                                                  directory
+## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationA
+## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -369,17 +369,44 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
 )
 
 timeshift_undo</code></pre></div>
-<pre><code>##                                                                   directory
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images/StationB
+<pre><code>##                                                                  directory
+## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationA
+## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
+<!--  ## Date/Time problems with Reconyx Hyperfire and Maginon cameras -->
 </div>
 <div id="datetime-problems-with-reconyx-hyperfire-cameras" class="section level2">
 <h2>Date/Time problems with Reconyx Hyperfire cameras</h2>
-<p>Some Reconyx Hyperfire cameras don’t store date and time in the standard Exif format. Consequently, camtrapR cannot read the DateTimeOriginal tag from these images. This can be fixed easily by using the camtrapR function <code>fixDateTimeOriginal</code> or by following the instructions given by Mathias Tobler in the CameraBase documentation (page 7):</p>
+<!--  ### Date/Time problems with Reconyx Hyperfire cameras -->
+<p>Some Reconyx Hyperfire cameras (e.g. Hyperfire HC500) don’t store date and time in the standard Exif format. Consequently, camtrapR cannot read the DateTimeOriginal tag from these images. This can be fixed easily by using the camtrapR function <code>fixDateTimeOriginal</code> or by following the instructions given by Mathias Tobler in the CameraBase documentation (page 7):</p>
 <p><a href="http://www.atrium-biodiversity.org/tools/camerabase/files/CameraBaseDoc1.7.pdf" class="uri">http://www.atrium-biodiversity.org/tools/camerabase/files/CameraBaseDoc1.7.pdf</a></p>
+<!-- ### Date/Time problems with Maginon cameras -->
+<!-- Camera trap model Maginon WK1 (and possibly also other models my this manufacturer) also don't store date and time in the standard Exif format, but in a different way compared to Reconyx HC500, hence the `fixDateTimeOriginal` doesn't work on these (currently).  -->
+<!-- Maginon cameras don't create the DateTimeOriginal tag of the Exif metadata that camtrapR reads out. The best alternative available is the Exif Modify Date, which corresponds to the date and time in the images + 1 second. (DateTimeOriginal seems to be the shutter time and ModifyDate is the time the image was saved). To make things worse, there also seems to be some metadata problems in JPGs created by these cameras whch prevent exiftool from simply copying the relevant information into the right tag (technical note: exiftool gives an error about "bad format for EXIFIFD entry"). For more information see here: http://owl.phy.queensu.ca/~phil/exiftool/faq.html#Q20. -->
+<!-- Currently, there is no camtrapR solution to fix this automatically, but here is a command line way to fix this. Please contace me if such a function in camtrapR would be relevant for you so I can add it. -->
+<!-- The general workflow and exiftool commands are these. Adapt the file path to your directory structure (the "C:\Path\to\your\images" part). -->
+<!-- **WARNING 1:** Make a backup of your data before doing this to prevent data loss! -->
+<!-- **WARNING 2:** Only run this on directories that contain faulty images taken by Maginon cameras! Data loss may occur if these lines are run on healthy images! Also be aware of subfolders from  -->
+<!-- 1. Fix the metadata problems -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool -all= -tagsfromfile @ -all:all -unsafe -icc_profile "C:\Path\to\your\images" -->
+<!-- ``` -->
+<!-- 2. Create a DateTimeOriginal tag from the ModifyDate tag -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool "-EXIF:DateTimeOriginal<EXIF:IFD0:ModifyDate" "C:\Path\to\your\images" -->
+<!-- ``` -->
+<!-- 3. If satisfied with the results, you can delete the original data which exiftool saved as ".JPG_original" files with the following line. Alternatively, delete them manually. -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool -delete_original "C:\Path\to\your\images" -->
+<!-- ``` -->
+<!-- If you wish to run these command recursively, i.e. on all images contained in all subfolders of the specified directory, it can be achieved using the "-r" argument. The resulting commands are these: -->
+<!-- ```{r eval = FALSE} -->
+<!-- exiftool -all= -tagsfromfile @ -all:all -unsafe -icc_profile -r "C:\Path\to\your\images" -->
+<!-- exiftool "-EXIF:DateTimeOriginal<EXIF:IFD0:ModifyDate" -r "C:\Path\to\your\images" -->
+<!-- exiftool -delete_original -r "C:\Path\to\your\images" -->
+<!-- ``` -->
 </div>
 <div id="renaming-images" class="section level2">
 <h2>Renaming images</h2>
@@ -406,13 +433,13 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 <pre><code>## StationB : 3 images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
 <span class="kw">head</span>(renaming.table2)</code></pre></div>
-<pre><code>##                                                                                                        Directory
-## 1 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Jürgen Niedballa/AppData/Local/Temp/RtmpALFAnw/Rinst1f4c27a8b63/camtrapR/pictures/raw_images/StationB
+<pre><code>##                                                                                              Directory
+## 1 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -420,13 +447,13 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 ## 4 IMG0001.JPG StationB     NA 2009-04-05 00:11:00         TRUE
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
-##                                                                              outDir
-## 1 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationA
-## 2 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationA
-## 3 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationA
-## 4 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationB
-## 5 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationB
-## 6 C:\\Users\\JRGENN~1\\AppData\\Local\\Temp\\RtmpIN6UnE/raw_images_renamed/StationB
+##                                                                             outDir
+## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationA
+## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationA
+## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationA
+## 4 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationB
+## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationB
+## 6 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationB
 ##                            filename_new fileExistsAlready CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
@@ -507,48 +534,51 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
 <pre><code>##    14 directories scanned    68 image files updated</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># you can check the outcome with function exifTagNames (you'll find field &quot;Copyright&quot; in line 20)</span>
 <span class="kw">exifTagNames</span>(wd_images_ID_copy, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 9.69&quot;                                                                      
-##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding&quot;                                                
-##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                     
-##  [4] &quot;[File]          Directory                       : C:/Users/JRGENN~1/AppData/Local/Temp/RtmpIN6UnE/sample_images/StationA/PBE&quot;
-##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                     
-##  [6] &quot;[File]          File Modification Date/Time     : 2017:03:21 10:47:19+01:00&quot;                                                 
-##  [7] &quot;[File]          File Access Date/Time           : 2017:03:21 10:47:19+01:00&quot;                                                 
-##  [8] &quot;[File]          File Creation Date/Time         : 2017:03:21 10:47:19+01:00&quot;                                                 
-##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                 
-## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                      
-## [11] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                                
-## [12] &quot;[File]          Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                 
-## [13] &quot;[File]          Image Width                     : 100&quot;                                                                       
-## [14] &quot;[File]          Image Height                    : 75&quot;                                                                        
-## [15] &quot;[File]          Encoding Process                : Baseline DCT, Huffman coding&quot;                                              
-## [16] &quot;[File]          Bits Per Sample                 : 8&quot;                                                                         
-## [17] &quot;[File]          Color Components                : 3&quot;                                                                         
-## [18] &quot;[File]          Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                          
-## [19] &quot;[EXIF]          Make                            : G4&quot;                                                                        
-## [20] &quot;[EXIF]          Camera Model Name               : CUDDEBACK&quot;                                                                 
-## [21] &quot;[EXIF]          X Resolution                    : 72&quot;                                                                        
-## [22] &quot;[EXIF]          Y Resolution                    : 72&quot;                                                                        
-## [23] &quot;[EXIF]          Resolution Unit                 : inches&quot;                                                                    
-## [24] &quot;[EXIF]          Modify Date                     : 2009:04:21 00:40:00&quot;                                                       
-## [25] &quot;[EXIF]          Y Cb Cr Positioning             : Co-sited&quot;                                                                  
-## [26] &quot;[EXIF]          Copyright                       : Your Name (Your Organisation)&quot;                                             
-## [27] &quot;[EXIF]          Exif Version                    : 0200&quot;                                                                      
-## [28] &quot;[EXIF]          Date/Time Original              : 2009:04:21 00:40:00&quot;                                                       
-## [29] &quot;[EXIF]          Create Date                     : 2009:04:21 00:40:00&quot;                                                       
-## [30] &quot;[EXIF]          Components Configuration        : Y, Cb, Cr, -&quot;                                                              
-## [31] &quot;[EXIF]          Shutter Speed Value             : 1&quot;                                                                         
-## [32] &quot;[EXIF]          User Comment                    : 1 ATTEMPT G1H&quot;                                                             
-## [33] &quot;[EXIF]          Flashpix Version                : 0100&quot;                                                                      
-## [34] &quot;[EXIF]          Color Space                     : sRGB&quot;                                                                      
-## [35] &quot;[EXIF]          Exif Image Width                : 100&quot;                                                                       
-## [36] &quot;[EXIF]          Exif Image Height               : 75&quot;                                                                        
-## [37] &quot;[EXIF]          Compression                     : JPEG (old-style)&quot;                                                          
-## [38] &quot;[EXIF]          Thumbnail Offset                : 450&quot;                                                                       
-## [39] &quot;[EXIF]          Thumbnail Length                : 25353&quot;                                                                     
-## [40] &quot;[Composite]     Image Size                      : 100x75&quot;                                                                    
-## [41] &quot;[Composite]     Shutter Speed                   : 1&quot;                                                                         
-## [42] &quot;[Composite]     Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;</code></pre>
+<pre><code>## Extracted metadata of: C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 10.62&quot;                                                                    
+##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding for UserComment&quot;                               
+##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                    
+##  [4] &quot;[File]          Directory                       : C:/Users/JRGEN~1/AppData/Local/Temp/RtmpOuKnnX/sample_images/StationA/PBE&quot;
+##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                    
+##  [6] &quot;[File]          File Modification Date/Time     : 2017:10:25 19:10:05+08:00&quot;                                                
+##  [7] &quot;[File]          File Access Date/Time           : 2017:10:25 19:10:05+08:00&quot;                                                
+##  [8] &quot;[File]          File Creation Date/Time         : 2017:10:25 19:10:03+08:00&quot;                                                
+##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                
+## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                     
+## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                      
+## [12] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                               
+## [13] &quot;[File]          Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                
+## [14] &quot;[File]          Image Width                     : 100&quot;                                                                      
+## [15] &quot;[File]          Image Height                    : 75&quot;                                                                       
+## [16] &quot;[File]          Encoding Process                : Baseline DCT, Huffman coding&quot;                                             
+## [17] &quot;[File]          Bits Per Sample                 : 8&quot;                                                                        
+## [18] &quot;[File]          Color Components                : 3&quot;                                                                        
+## [19] &quot;[File]          Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                         
+## [20] &quot;[EXIF]          Make                            : G4&quot;                                                                       
+## [21] &quot;[EXIF]          Camera Model Name               : CUDDEBACK&quot;                                                                
+## [22] &quot;[EXIF]          X Resolution                    : 72&quot;                                                                       
+## [23] &quot;[EXIF]          Y Resolution                    : 72&quot;                                                                       
+## [24] &quot;[EXIF]          Resolution Unit                 : inches&quot;                                                                   
+## [25] &quot;[EXIF]          Modify Date                     : 2009:04:21 00:40:00&quot;                                                      
+## [26] &quot;[EXIF]          Y Cb Cr Positioning             : Co-sited&quot;                                                                 
+## [27] &quot;[EXIF]          Copyright                       : Your Name (Your Organisation)&quot;                                            
+## [28] &quot;[EXIF]          Exif Version                    : 0200&quot;                                                                     
+## [29] &quot;[EXIF]          Date/Time Original              : 2009:04:21 00:40:00&quot;                                                      
+## [30] &quot;[EXIF]          Create Date                     : 2009:04:21 00:40:00&quot;                                                      
+## [31] &quot;[EXIF]          Components Configuration        : Y, Cb, Cr, -&quot;                                                             
+## [32] &quot;[EXIF]          Shutter Speed Value             : 1&quot;                                                                        
+## [33] &quot;[EXIF]          User Comment                    : 1 ATTEMPT G1H&quot;                                                            
+## [34] &quot;[EXIF]          Flashpix Version                : 0100&quot;                                                                     
+## [35] &quot;[EXIF]          Color Space                     : sRGB&quot;                                                                     
+## [36] &quot;[EXIF]          Exif Image Width                : 100&quot;                                                                      
+## [37] &quot;[EXIF]          Exif Image Height               : 75&quot;                                                                       
+## [38] &quot;[EXIF]          Compression                     : JPEG (old-style)&quot;                                                         
+## [39] &quot;[EXIF]          Thumbnail Offset                : 450&quot;                                                                      
+## [40] &quot;[EXIF]          Thumbnail Length                : 25353&quot;                                                                    
+## [41] &quot;[EXIF]          Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;                      
+## [42] &quot;[Composite]     Image Size                      : 100x75&quot;                                                                   
+## [43] &quot;[Composite]     Megapixels                      : 0.007&quot;                                                                    
+## [44] &quot;[Composite]     Shutter Speed                   : 1&quot;</code></pre>
 <p>The copyright tag will henceforth be visible in digiKam and other image management software.</p>
 <p>Now that the raw images are organised, the next step is species identification covered in the next vignette.</p>
 </div>
@@ -561,7 +591,7 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

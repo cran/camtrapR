@@ -91,7 +91,7 @@ detectionHistory(recordTable,
 
 }
 \details{
-The function computes a species detection matrix, either as a detection-by-date or a detection-by-occasion matrix. \code{day1} defines if each stations detection history will begin on that station's setup day (\code{day1 = "station"}) or if all station's detection histories have a common origin (the day the first station was set up if \code{day1 = "survey"} or a fixed date if, e.g. \code{day1 = "2015-12-31"}). If \code{day1} is a date, \code{\link[base]{as.Date}} must be able to understand it. The most suitable format is "%Y-%m-%d", e.g. "2015-12-31".
+The function computes a species detection matrix, either as a detection-by-date or a detection-by-occasion matrix. \code{day1} defines if each stations detection history will begin on that station's setup day (\code{day1 = "station"}) or if all station's detection histories have a common origin (the day the first station was set up if \code{day1 = "survey"} or a fixed date if, e.g. \code{day1 = "2015-12-31"}). If \code{day1} is a date, \code{\link[base]{as.Date}} must be able to understand it. The most suitable format is "\%Y-\%m-\%d", e.g. "2015-12-31".
 
 \code{includeEffort} controls whether an additional effort matrix is computed or not. This also affects the detection matrices. If \code{includeEffort = FALSE}, all occasions in which a station was not set up or malfunctioning (NA or 0 in \code{camOp}) will result in NAs in the detection history. If \code{includeEffort = TRUE}, the record history will only contain 0 and 1, and no NAs. The effort matrix can then be included in occupancy models as a (continuous) observation covariate to estimate the effect of effort on detection probability.
 

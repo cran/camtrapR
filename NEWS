@@ -1,3 +1,21 @@
+Changes in camtrapR 0.99.9
+==========================
+
+bugfixes
+------------
+o camera operation: fixed bug with empty entries in cameraCol when cameraCol is defined (reported by Partha Sarathi Ghose)
+o recordTable / recordTableIndividual: verbose warnings and better handling of situations in which date/time is unreadable (empty Exif:DateTimeOriginal metadata tag)
+
+new features
+------------
+  o detectionHistory / activity plot functions: if date/time is unreadable function returns row IDs to facilitate checks
+  o activityDensity: warning instead of error if bandwidth estimation fails and argumetn allSpecies = TRUE (arises with single records, or a few records at similar time of day)
+
+other changes
+------------
+o exifTagNames: returns name of image from which metadata were extracted as a message
+
+
 Changes in camtrapR 0.99.8
 ==========================
 

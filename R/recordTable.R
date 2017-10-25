@@ -103,6 +103,7 @@ recordTable <- function(inDir,
 
   stopifnot(class(writecsv) == "logical")
 
+#  if(!hasArg(inDir)){stop("inDir must be defined", call. = FALSE)}
   if(class(inDir) != "character"){stop("inDir must be of class 'character'", call. = FALSE)}
   if(length(inDir) != 1){stop("inDir may only consist of 1 element only", call. = FALSE)}
   if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
@@ -129,7 +130,6 @@ recordTable <- function(inDir,
     # execute exiftool
     metadata.tmp <- runExiftool(command.tmp = command.tmp[i], colnames.tmp = colnames.tmp)
 
-
     if(class(metadata.tmp) == "NULL"){            # omit station if no images found
 
       length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
@@ -139,6 +139,12 @@ recordTable <- function(inDir,
 
       message(paste(dirs_short[i], ":", nrow(metadata.tmp), "images"))
 
+      # check presence / consistency of DateTimeOriginal column, go to next station or remove records if necessary
+      metadata.tmp <- checkDateTimeOriginal (intable    = metadata.tmp,
+                                             dirs_short = dirs_short,
+                                             i          = i)
+      if(is.null(metadata.tmp)) next          
+      
       # now split HierarchicalSubject tags and add as columns to table
       metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
                                             metadata.tagname           = metadata.tagname,
@@ -158,7 +164,6 @@ recordTable <- function(inDir,
 
       # if no tagged images in current station, go to next one
       if(class(metadata.tmp) != "data.frame")       next
-
 
       # remove empty metadata columns (if HierarchicalSubject is all empty or if additionalMetadataTags were not found)
       empty_cols <- which(apply(metadata.tmp, MARGIN = 2, FUN = function(X){all(X == "-")}))
@@ -180,7 +185,7 @@ recordTable <- function(inDir,
       }
 
       if(nrow(metadata.tmp) >= 1){   # if anything left after excluding species, do
-
+    
         # convert character vector extracted from images to time object and format for outfilename
         metadata.tmp$DateTimeOriginal <- as.POSIXct(strptime(x = metadata.tmp$DateTimeOriginal, format = "%Y:%m:%d %H:%M:%S", tz = timeZone))
 
@@ -227,7 +232,7 @@ recordTable <- function(inDir,
   }      # end      for(i in 1:length(dirs)){   # loop through station directories
 
   if(nrow(record.table) == 0){
-    stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty. Maybe you excluded too many species?"), call. = FALSE)
+    stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty. Did you exclude too many species? Or were date/time information not readable?"), call. = FALSE)
   }
 
   # rearrange table, add date and time as separate columns. add additional column names as needed.
@@ -269,7 +274,11 @@ recordTable <- function(inDir,
   if(hasArg(additionalMetadataTags)){
     whichadditionalMetadataTagsFound <- which(gsub(additionalMetadataTags, pattern = ":", replacement = ".") %in% colnames(record.table3))   # replace : in additionalMetadataTags (if specifying tag groups) with . as found in column names
     if(length(whichadditionalMetadataTagsFound) < length(additionalMetadataTags)){
-      warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
+      if(length(whichadditionalMetadataTagsFound) == 0) {  # if none of the additionalMetadataTags was found
+        warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags, collapse = ", ")), call. = FALSE)
+        } else {                                                            # if only some of the additionalMetadataTags was found
+        warning(paste("metadata tag(s)  not found in image metadata:  ", paste(additionalMetadataTags[-whichadditionalMetadataTagsFound], collapse = ", ")), call. = FALSE)
+      }
     }
   }
 

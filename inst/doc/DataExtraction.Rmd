@@ -35,7 +35,7 @@ First we define the directory containing our renamed, identified images
 
 ```{r}
 # find the directory with sample images contained in the package
-wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
+wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR", lib.loc = .libPaths())
 ```
 
 and see how many JPG images we have (this is not necessary, but informative here).

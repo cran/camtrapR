@@ -252,7 +252,24 @@ addStationCameraID <- function(intable,
   return(intable)
 }
 
+# check if date/time information is present and was readable
 
+checkDateTimeOriginal <- function (intable, dirs_short, i){
+     # if all date/time information is missing, go to next station
+    if(all(intable$DateTimeOriginal == "-")){
+      warning(paste(dirs_short[i], ": no readable date/time information. Skipping"), call. = FALSE,  immediate. = TRUE)
+      intable <- NULL
+    } else {
+    
+    # if date/time information is missing for some records only
+     if(any(intable$DateTimeOriginal == "-")){
+      which_no_time <- which(intable$DateTimeOriginal == "-")
+      warning(paste(dirs_short[i], ": omitting", length(which_no_time), "images because of missing/unreadable date/time information."), call. = FALSE,  immediate. = TRUE)
+     intable <-  intable[-which_no_time,]    # removing rows with missing date/time information
+    }
+    }
+    return(intable)
+    }
   # remove duplicate records of same species taken in same second at the same station (by the same camera, if relevant)
   # Note to self: this may also be done outside the station loop, after the final record table is assembled. Saves a few executions of this function.
 
@@ -289,7 +306,7 @@ assessTemporalIndependence <- function(intable,
 # check if all Exif DateTimeOriginal tags were read correctly
   if(any(is.na(intable$DateTimeOriginal))){
     which.tmp <- which(is.na(intable$DateTimeOriginal))
-    if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), "Consider checking for corrupted Exif metadata.")
+    if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), " Consider checking for corrupted Exif metadata.")
     warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them. Consider checking for corrupted Exif metadata. \n",
       paste(file.path(intable[which.tmp, "Directory"],
                       intable[which.tmp, "FileName"]), collapse = "\n")), call. = FALSE, immediate. = TRUE)
@@ -707,7 +724,9 @@ calculateTrappingEffort <- function(cam.op,
 
 # scale effort, if required
   if(isTRUE(scaleEffort2)){
-    if(occasionLength2 == 1) stop("cannot scale effort if occasionLength is 1")
+    if(occasionLength2 == 1) stop("cannot scale effort if occasionLength is 1", call. = FALSE)
+    if(length(table(effort)) == 1) stop(paste("all values of effort are identical (", names(table(effort)), "). Cannot scale effort", sep = ""), call. = FALSE)
+    
     scale.eff.tmp <- scale(as.vector(effort))                       # scale effort (as a vector, not matrix)
     scale.eff.tmp.attr <- data.frame(effort.scaled.center = NA,     # prepare empty data frame
                                      effort.scaled.scale = NA)
@@ -803,7 +822,7 @@ makeSurveyZip <- function(output,
   ######
   # make detection maps
 
-  if(!is.na(Xcol) & !is.na(Ycol)){
+  if(hasArg(Xcol) & hasArg(Ycol)){
     detectionMaps(CTtable       = CTtable,
                   recordTable   = recordTable,
                   Xcol          = Xcol,
@@ -844,7 +863,7 @@ makeSurveyZip <- function(output,
 
   sink(file = scriptfile, append = TRUE)
   cat("###  plot species detections  ### \n\n")
-  if(!is.na(Xcol) & !is.na(Ycol)){
+  if(hasArg(Xcol) & hasArg(Ycol)){
     cat(paste("Xcol <- '", Xcol, "'\n", sep = ""))
     cat(paste("Ycol <- '", Ycol, "'\n\n", sep = ""))
   } else {
@@ -946,7 +965,7 @@ makeSurveyZip <- function(output,
 
   cat("legend to the data structure in the zip file:\n\n")
   cat(".../activity/              plots of activity density estimations for each species created with activityDensity\n")
-  if(!is.na(Xcol) & !is.na(Ycol)){cat(".../detectionMaps/         maps of observed species richness and numbers of species records\n")}
+  if(hasArg(Xcol) & hasArg(Ycol)){cat(".../detectionMaps/         maps of observed species richness and numbers of species records\n")}
   cat(".../scripts/               a prepared R script for occupancy analyses\n")
   cat(".../surveyReport/          the tables created by surveyReport summarising the survey\n")
   cat(".../CTtable.csv            table of camera trap station IDs, operation times and coordinates\n")
