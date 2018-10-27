@@ -10,11 +10,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
+<meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2017-10-25" />
+<meta name="date" content="2018-10-24" />
 
-<title>Organising raw camera trap images in camtrapR</title>
+<title></title>
 
 
 
@@ -68,9 +68,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Organising raw camera trap images in camtrapR</h1>
-<h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2017-10-25</em></h4>
+<h1 class="title toc-ignore"><ol style="list-style-type: decimal">
+<li>Organising raw camera trap images in camtrapR</li>
+</ol></h1>
+<h4 class="author"><em>Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</em></h4>
+<h4 class="date"><em>2018-10-24</em></h4>
 
 
 <div id="TOC">
@@ -181,7 +183,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check if the system can find ExifTool</span>
 <span class="kw">Sys.which</span>(<span class="st">&quot;exiftool&quot;</span>)</code></pre></div>
 <pre><code>##                    exiftool 
-## &quot;C:\\Windows\\exiftool.exe&quot;</code></pre>
+## &quot;C:\\WINDOWS\\exiftool.exe&quot;</code></pre>
 <p>If exiftool.exe cannot be placed in a PATH directory (e.g. due to limited user privileges), users can place exiftool.exe in any directory and then add that directory to PATH temporarily for use in the running R session using the function <code>exiftoolPath</code>. This is necessary if the directory containing exiftool.exe is not in PATH by default.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># this is a dummy example assuming the directory structure: C:/Path/To/Exiftool/exiftool.exe</span>
 exiftool_dir &lt;-<span class="st"> &quot;C:/Path/To/Exiftool&quot;</span>        
@@ -306,7 +308,7 @@ wd_createStationDir &lt;-<span class="st"> </span><span class="kw">file.path</sp
 
 <span class="co"># create station directories in  wd_createStationDir</span>
 StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStationFolders</span> (<span class="dt">inDir       =</span> wd_createStationDir,
-                                              <span class="dt">stations    =</span> <span class="kw">as.character</span>(camtraps$Station), 
+                                              <span class="dt">stations    =</span> <span class="kw">as.character</span>(camtraps<span class="op">$</span>Station), 
                                               <span class="dt">createinDir =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## created 3 directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">StationFolderCreate1</code></pre></div>
@@ -315,9 +317,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createStationFoldersTest/StationA
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createStationFoldersTest/StationB
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createStationFoldersTest/StationC
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createStationFoldersTest/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createStationFoldersTest/StationB
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -349,12 +351,12 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
                                  <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
                                  <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
 )</code></pre></div>
-<pre><code>## C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\Rtmpu4y6cr/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\Rtmpu4y6cr/raw_images/StationB</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre></div>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationA
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -370,8 +372,8 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
 
 timeshift_undo</code></pre></div>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationA
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -420,8 +422,8 @@ timeshift_undo</code></pre></div>
 <p>Station ID and camera ID are derived from the raw image directory structure created earlier with <code>createStationFolders</code> Date and time are taken from image Exif metadata (read using ExifTool). (X) is a numeric identifier that is assigned to all images taken at the same station (and camera, if applicable) within one minute. This is to avoid identical image names if images were taken in the same second (or in the same minute, if cameras record time in hours and minutes only).</p>
 <p>Again, please be aware that temporary directories are used in the example. Set <code>outDir</code> to a permanent directory. In addition, images are not actually copied (argument <code>copyImages = FALSE</code>), but copying and renaming is mererly simulated in out example). So, in real world data, set <code>copyImages = TRUE</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># raw image location</span>
-wd_images_raw &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/raw_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)      
-  <span class="co"># destination for renamed images to be copied to</span>
+wd_images_raw &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/raw_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)   
+ <span class="co"># destination for renamed images to be copied to</span>
 wd_images_raw_renamed &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;raw_images_renamed&quot;</span>)       
 
 renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span>(<span class="dt">inDir               =</span> wd_images_raw,
@@ -433,13 +435,13 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 <pre><code>## StationB : 3 images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
 <span class="kw">head</span>(renaming.table2)</code></pre></div>
-<pre><code>##                                                                                              Directory
-## 1 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/raw_images/StationB
+<pre><code>##                                                                                                Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -448,12 +450,12 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                             outDir
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationA
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationA
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationA
-## 4 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationB
-## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationB
-## 6 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/raw_images_renamed/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images_renamed/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images_renamed/StationA
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images_renamed/StationA
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images_renamed/StationB
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images_renamed/StationB
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/raw_images_renamed/StationB
 ##                            filename_new fileExistsAlready CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
@@ -534,15 +536,15 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
 <pre><code>##    14 directories scanned    68 image files updated</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># you can check the outcome with function exifTagNames (you'll find field &quot;Copyright&quot; in line 20)</span>
 <span class="kw">exifTagNames</span>(wd_images_ID_copy, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Extracted metadata of: C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
-<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 10.62&quot;                                                                    
+<pre><code>## Extracted metadata of: C:\Users\Juergen\AppData\Local\Temp\Rtmpu4y6cr/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 11.10&quot;                                                                    
 ##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding for UserComment&quot;                               
 ##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                    
-##  [4] &quot;[File]          Directory                       : C:/Users/JRGEN~1/AppData/Local/Temp/RtmpOuKnnX/sample_images/StationA/PBE&quot;
+##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/Rtmpu4y6cr/sample_images/StationA/PBE&quot;
 ##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                    
-##  [6] &quot;[File]          File Modification Date/Time     : 2017:10:25 19:10:05+08:00&quot;                                                
-##  [7] &quot;[File]          File Access Date/Time           : 2017:10:25 19:10:05+08:00&quot;                                                
-##  [8] &quot;[File]          File Creation Date/Time         : 2017:10:25 19:10:03+08:00&quot;                                                
+##  [6] &quot;[File]          File Modification Date/Time     : 2018:10:24 13:22:16+08:00&quot;                                                
+##  [7] &quot;[File]          File Access Date/Time           : 2018:10:24 13:22:16+08:00&quot;                                                
+##  [8] &quot;[File]          File Creation Date/Time         : 2018:10:24 13:22:14+08:00&quot;                                                
 ##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                
 ## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                     
 ## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                      

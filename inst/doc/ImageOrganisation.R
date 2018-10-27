@@ -67,8 +67,8 @@ timeshift_undo
 
 ## ------------------------------------------------------------------------
  # raw image location
-wd_images_raw <- system.file("pictures/raw_images", package = "camtrapR")      
-  # destination for renamed images to be copied to
+wd_images_raw <- system.file("pictures/raw_images", package = "camtrapR")   
+ # destination for renamed images to be copied to
 wd_images_raw_renamed <- file.path(tempdir(), "raw_images_renamed")       
 
 renaming.table2 <- imageRename(inDir               = wd_images_raw,

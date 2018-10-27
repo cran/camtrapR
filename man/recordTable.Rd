@@ -22,7 +22,8 @@ recordTable(inDir,
   metadataHierarchyDelimitor = "|",
   metadataSpeciesTag,
   additionalMetadataTags,
-  removeDuplicateRecords = TRUE
+  removeDuplicateRecords = TRUE,
+  returnFileNamesMissingTags = FALSE
 )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -71,6 +72,9 @@ recordTable(inDir,
 }
   \item{removeDuplicateRecords}{
   logical. If there are several records of the same species at the same station (also same camera if cameraID is defined) at exactly the same time, show only one?
+}
+  \item{returnFileNamesMissingTags}{
+  logical. If species are assigned with metadata and images are not tagged, return a few file names of these images as a message?
 }
 }
 \details{
@@ -126,7 +130,7 @@ wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
 if (Sys.which("exiftool") != ""){        # only run these examples if ExifTool is available
 
 
-rec.db1 <- recordTable(inDir                  = wd_images_ID,
+rec_table1 <- recordTable(inDir               = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 60,
                        deltaTimeComparedTo    = "lastRecord",
@@ -135,7 +139,7 @@ rec.db1 <- recordTable(inDir                  = wd_images_ID,
 )
 # note argument additionalMetadataTags: it contains tag names as returned by function exifTagNames
 
-rec.db2 <- recordTable(inDir                  = wd_images_ID,
+rec_table2 <- recordTable(inDir               = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 60,
                        deltaTimeComparedTo    = "lastRecord",
@@ -147,16 +151,16 @@ rec.db2 <- recordTable(inDir                  = wd_images_ID,
 # note the warning that the last tag in "additionalMetadataTags" was not found
 
 
-any(rec.db1$Species == "NO_ID")
-any(rec.db2$Species == "NO_ID")
+any(rec_table1$Species == "NO_ID")
+any(rec_table2$Species == "NO_ID")
 
 
 #############
 # here's how the removeDuplicateRecords argument works
 
-\donttest{   # this is because otherwise the test would run too long to pass CRAN tests
+\dontrun{   # this is because otherwise the test would run too long to pass CRAN tests
 
-rec.db3a <- recordTable(inDir                 = wd_images_ID,
+rec_table3a <- recordTable(inDir              = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 0,
                        exclude                = "NO_ID",
@@ -164,7 +168,7 @@ rec.db3a <- recordTable(inDir                 = wd_images_ID,
                        removeDuplicateRecords = FALSE
 )
 
-rec.db3b <- recordTable(inDir                 = wd_images_ID,
+rec_table3b <- recordTable(inDir              = wd_images_ID,
                        IDfrom                 = "directory",
                        minDeltaTime           = 0,
                        exclude                = "NO_ID",
@@ -173,17 +177,17 @@ rec.db3b <- recordTable(inDir                 = wd_images_ID,
 )
 
 
-anyDuplicated(rec.db3a[, c("Station", "Species", "DateTimeOriginal")])   # got duplicates
-anyDuplicated(rec.db3b[, c("Station", "Species", "DateTimeOriginal")])   # no duplicates
+anyDuplicated(rec_tablea[, c("Station", "Species", "DateTimeOriginal")])   # got duplicates
+anyDuplicated(rec_table3b[, c("Station", "Species", "DateTimeOriginal")])   # no duplicates
 
 # after removing duplicates, both are identical:
-whichAreDuplicated <- which(duplicated(rec.db3a[, c("Station", "Species", "DateTimeOriginal")]))
-all(rec.db3a[-whichAreDuplicated,] == rec.db3b)
+whichAreDuplicated <- which(duplicated(rec_table3a[, c("Station", "Species", "DateTimeOriginal")]))
+all(rec_table3a[-whichAreDuplicated,] == rec_table3b)
 
 }
 
 } else {                                # show function output if ExifTool is not available
-message("ExifTool is not available. Cannot test function")
+message("ExifTool is not available. Cannot test function. Loading recordTableSample instead")
 data(recordTableSample)
 }
 

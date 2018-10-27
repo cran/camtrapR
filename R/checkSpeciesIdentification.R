@@ -120,6 +120,16 @@ checkSpeciesIdentification <- function(inDir,
                                        multiple_tag_separator = multiple_tag_separator
       )
 
+      # if images in station contain no metadata species tags, skip that station
+      if(class(metadata.tmp) != "data.frame"){
+        if(metadata.tmp == "found no species tag") {
+          warning(paste(dirs_short[i], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'. Skipping", sep = ""), call. = FALSE, immediate. = TRUE)
+        } else {
+          warning(paste(dirs_short[i], ":   error in species tag extraction. Skipping. Please report", sep = ""), call. = FALSE, immediate. = TRUE)
+        }
+        next
+      }
+
       # exclude species if using metadata tags (if using IDfrom = "directory", they were removed above already)
       if(IDfrom == "metadata"){
         if(hasArg(excludeSpecies)){

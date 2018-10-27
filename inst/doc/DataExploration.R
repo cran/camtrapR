@@ -156,11 +156,27 @@ activityOverlap (recordTable = recordTableSample,
                  speciesB    = speciesB_for_activity,
                  writePNG    = FALSE,
                  plotR       = TRUE,
-                 linecol     = c("red", "blue"),     # line colour of speciesA / speciesB
-                 linewidth   = c(3,3),               # line width of speciesA / speciesB
                  add.rug     = TRUE
 )
 
+
+## ------------------------------------------------------------------------
+activityOverlap (recordTable = recordTableSample,
+                 speciesA    = speciesA_for_activity,
+                 speciesB    = speciesB_for_activity,
+                 writePNG    = FALSE,
+                 plotR       = TRUE,
+                 createDir   = FALSE,
+                 pngMaxPix   = 1000,
+                 linecol     = c("black", "blue"),
+                 linewidth   = c(5,3),
+                 linetype    = c(1, 2),
+                 olapcol     = "darkgrey",
+                 add.rug     = TRUE,
+                 extend      = "lightgrey",
+                 ylim        = c(0, 0.25),
+                 main        = paste("Activity overlap: ", speciesA_for_activity, "-", speciesB_for_activity)
+)
 
 ## ------------------------------------------------------------------------
 reportTest <- surveyReport (recordTable          = recordTableSample,

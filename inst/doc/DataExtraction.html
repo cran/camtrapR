@@ -10,11 +10,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
+<meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2017-10-25" />
+<meta name="date" content="2018-10-24" />
 
-<title>Extracting Data from Camera Trapping Images</title>
+<title></title>
 
 
 
@@ -68,9 +68,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Extracting Data from Camera Trapping Images</h1>
-<h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2017-10-25</em></h4>
+<h1 class="title toc-ignore"><ol start="3" style="list-style-type: decimal">
+<li>Extracting Data from Camera Trapping Images</li>
+</ol></h1>
+<h4 class="author"><em>Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</em></h4>
+<h4 class="date"><em>2018-10-24</em></h4>
 
 
 <div id="TOC">
@@ -142,13 +144,13 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                     Directory
-## 1 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
+##                                                                                                       Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName
 ## 1 StationA__2009-04-21__00-40-00(1).JPG
 ## 2 StationA__2009-04-22__20-19-00(1).JPG
@@ -267,7 +269,7 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 <h3>Ignoring species</h3>
 <p>Argument <code>exclude</code> can be used to ignore certain species. This is useful for omitting images in directories like “team” or “unidentified”. Here is an example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># see what species  we recorded</span>
-<span class="kw">table</span>(rec.db.species60$Species)</code></pre></div>
+<span class="kw">table</span>(rec.db.species60<span class="op">$</span>Species)</code></pre></div>
 <pre><code>## 
 ##   EGY   MNE NO_ID   PBE   TRA   VTA 
 ##     6     2     1    18     8     5</code></pre>
@@ -284,7 +286,7 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <pre><code>## StationC : 37 images</code></pre>
 <pre><code>## StationC: removed 6 duplicate records</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note that &quot;NO_ID&quot; is gone now</span>
-<span class="kw">table</span>(rec.db.species60.exclude$Species)</code></pre></div>
+<span class="kw">table</span>(rec.db.species60.exclude<span class="op">$</span>Species)</code></pre></div>
 <pre><code>## 
 ## EGY MNE PBE TRA VTA 
 ##   6   2  18   8   5</code></pre>
@@ -294,7 +296,7 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <p><code>recordTable</code> and <code>recordTableIndividual</code> can both extract additional metadata from images (apart from date and time). For example, some camera models record ambient temperature or moon phase, which may be of interest. Metadata tags are stored in the images at the time they are taken and can be accessed and extracted if their tag names are known. Some tag names are standardised (e.g. “DateTimeOriginal”) while others are manufacturer-specific. Therefore, function <code>exifTagNames</code> returns all Exif metadata it finds in a sample image. Users can then choose which to include in <code>recordTable</code> and <code>recordTableIndividual</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
 <span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>## Extracted metadata of: C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+<pre><code>## Extracted metadata of: C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##  [1] &quot;Composite:ImageSize&quot;          &quot;Composite:Megapixels&quot;        
 ##  [3] &quot;Composite:ShutterSpeed&quot;       &quot;EXIF:ColorSpace&quot;             
 ##  [5] &quot;EXIF:ComponentsConfiguration&quot; &quot;EXIF:Compression&quot;            
@@ -319,49 +321,49 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## [43] &quot;File:YCbCrSubSampling&quot;        &quot;SourceFile&quot;</code></pre>
 <p>If one has no idea what kind of data are behind these tag names, <code>returnMetadata</code> can be set to TRUE to return the actual metadata instead of the tag names only.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Extracted metadata of: C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
-<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 10.62&quot;                                                                                                      
-##  [2] &quot;[ExifTool]      Warning                         : FileName encoding not specified&quot;                                                                            
-##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                      
-##  [4] &quot;[File]          Directory                       : C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE&quot;
-##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                                                      
-##  [6] &quot;[File]          File Modification Date/Time     : 2017:10:25 19:09:11+08:00&quot;                                                                                  
-##  [7] &quot;[File]          File Access Date/Time           : 2017:10:25 19:09:11+08:00&quot;                                                                                  
-##  [8] &quot;[File]          File Creation Date/Time         : 2017:10:25 19:09:11+08:00&quot;                                                                                  
-##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                                                  
-## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                                                       
-## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                                                        
-## [12] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                                                                 
-## [13] &quot;[File]          Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                                                  
-## [14] &quot;[File]          Image Width                     : 100&quot;                                                                                                        
-## [15] &quot;[File]          Image Height                    : 75&quot;                                                                                                         
-## [16] &quot;[File]          Encoding Process                : Baseline DCT, Huffman coding&quot;                                                                               
-## [17] &quot;[File]          Bits Per Sample                 : 8&quot;                                                                                                          
-## [18] &quot;[File]          Color Components                : 3&quot;                                                                                                          
-## [19] &quot;[File]          Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                                                           
-## [20] &quot;[EXIF]          Make                            : G4&quot;                                                                                                         
-## [21] &quot;[EXIF]          Camera Model Name               : CUDDEBACK&quot;                                                                                                  
-## [22] &quot;[EXIF]          X Resolution                    : 72&quot;                                                                                                         
-## [23] &quot;[EXIF]          Y Resolution                    : 72&quot;                                                                                                         
-## [24] &quot;[EXIF]          Modify Date                     : 2009:04:21 00:40:00&quot;                                                                                        
-## [25] &quot;[EXIF]          Resolution Unit                 : inches&quot;                                                                                                     
-## [26] &quot;[EXIF]          Y Cb Cr Positioning             : Co-sited&quot;                                                                                                   
-## [27] &quot;[EXIF]          Exif Version                    : 0200&quot;                                                                                                       
-## [28] &quot;[EXIF]          Components Configuration        : Y, Cb, Cr, -&quot;                                                                                               
-## [29] &quot;[EXIF]          Flashpix Version                : 0100&quot;                                                                                                       
-## [30] &quot;[EXIF]          Color Space                     : sRGB&quot;                                                                                                       
-## [31] &quot;[EXIF]          Exif Image Width                : 100&quot;                                                                                                        
-## [32] &quot;[EXIF]          Exif Image Height               : 75&quot;                                                                                                         
-## [33] &quot;[EXIF]          Date/Time Original              : 2009:04:21 00:40:00&quot;                                                                                        
-## [34] &quot;[EXIF]          Create Date                     : 2009:04:21 00:40:00&quot;                                                                                        
-## [35] &quot;[EXIF]          User Comment                    : 1 ATTEMPT G1H&quot;                                                                                              
-## [36] &quot;[EXIF]          Shutter Speed Value             : 1&quot;                                                                                                          
-## [37] &quot;[EXIF]          Compression                     : JPEG (old-style)&quot;                                                                                           
-## [38] &quot;[EXIF]          Thumbnail Offset                : 408&quot;                                                                                                        
-## [39] &quot;[EXIF]          Thumbnail Length                : 25353&quot;                                                                                                      
-## [40] &quot;[EXIF]          Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;                                                        
-## [41] &quot;[Composite]     Image Size                      : 100x75&quot;                                                                                                     
-## [42] &quot;[Composite]     Megapixels                      : 0.007&quot;                                                                                                      
+<pre><code>## Extracted metadata of: C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+<pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 11.10&quot;                                                                                                        
+##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding for UserComment&quot;                                                                   
+##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                        
+##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE&quot;
+##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                                                        
+##  [6] &quot;[File]          File Modification Date/Time     : 2018:10:24 13:21:07+08:00&quot;                                                                                    
+##  [7] &quot;[File]          File Access Date/Time           : 2018:10:24 13:21:07+08:00&quot;                                                                                    
+##  [8] &quot;[File]          File Creation Date/Time         : 2018:10:24 13:21:07+08:00&quot;                                                                                    
+##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                                                    
+## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                                                         
+## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                                                          
+## [12] &quot;[File]          MIME Type                       : image/jpeg&quot;                                                                                                   
+## [13] &quot;[File]          Exif Byte Order                 : Little-endian (Intel, II)&quot;                                                                                    
+## [14] &quot;[File]          Image Width                     : 100&quot;                                                                                                          
+## [15] &quot;[File]          Image Height                    : 75&quot;                                                                                                           
+## [16] &quot;[File]          Encoding Process                : Baseline DCT, Huffman coding&quot;                                                                                 
+## [17] &quot;[File]          Bits Per Sample                 : 8&quot;                                                                                                            
+## [18] &quot;[File]          Color Components                : 3&quot;                                                                                                            
+## [19] &quot;[File]          Y Cb Cr Sub Sampling            : YCbCr4:2:2 (2 1)&quot;                                                                                             
+## [20] &quot;[EXIF]          Make                            : G4&quot;                                                                                                           
+## [21] &quot;[EXIF]          Camera Model Name               : CUDDEBACK&quot;                                                                                                    
+## [22] &quot;[EXIF]          X Resolution                    : 72&quot;                                                                                                           
+## [23] &quot;[EXIF]          Y Resolution                    : 72&quot;                                                                                                           
+## [24] &quot;[EXIF]          Modify Date                     : 2009:04:21 00:40:00&quot;                                                                                          
+## [25] &quot;[EXIF]          Resolution Unit                 : inches&quot;                                                                                                       
+## [26] &quot;[EXIF]          Y Cb Cr Positioning             : Co-sited&quot;                                                                                                     
+## [27] &quot;[EXIF]          Exif Version                    : 0200&quot;                                                                                                         
+## [28] &quot;[EXIF]          Components Configuration        : Y, Cb, Cr, -&quot;                                                                                                 
+## [29] &quot;[EXIF]          Flashpix Version                : 0100&quot;                                                                                                         
+## [30] &quot;[EXIF]          Color Space                     : sRGB&quot;                                                                                                         
+## [31] &quot;[EXIF]          Exif Image Width                : 100&quot;                                                                                                          
+## [32] &quot;[EXIF]          Exif Image Height               : 75&quot;                                                                                                           
+## [33] &quot;[EXIF]          Date/Time Original              : 2009:04:21 00:40:00&quot;                                                                                          
+## [34] &quot;[EXIF]          Create Date                     : 2009:04:21 00:40:00&quot;                                                                                          
+## [35] &quot;[EXIF]          User Comment                    : 1 ATTEMPT G1H&quot;                                                                                                
+## [36] &quot;[EXIF]          Shutter Speed Value             : 1&quot;                                                                                                            
+## [37] &quot;[EXIF]          Compression                     : JPEG (old-style)&quot;                                                                                             
+## [38] &quot;[EXIF]          Thumbnail Offset                : 408&quot;                                                                                                          
+## [39] &quot;[EXIF]          Thumbnail Length                : 25353&quot;                                                                                                        
+## [40] &quot;[EXIF]          Thumbnail Image                 : (Binary data 25353 bytes, use -b option to extract)&quot;                                                          
+## [41] &quot;[Composite]     Image Size                      : 100x75&quot;                                                                                                       
+## [42] &quot;[Composite]     Megapixels                      : 0.007&quot;                                                                                                        
 ## [43] &quot;[Composite]     Shutter Speed                   : 1&quot;</code></pre>
 <p>Note that when <code>returnMetadata = TRUE</code> the tag names contain spaces whereas they don’t when <code>returnMetadata = FALSE</code>. When supplying tagnames to the <code>recordTable</code> functions, use the tag names without spaces (as returned when <code>returnMetadata = FALSE</code>).</p>
 <p>Please also note that <code>exifTagNames</code> by default returns the metadata tag group along with the tag names (since version 0.99.6), which is helpful to unambiguously identify and extract specific metadata tags as shown in the next step.</p>
@@ -390,13 +392,13 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                     Directory
-## 1 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/PBE
+##                                                                                                       Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName EXIF.Model EXIF.Make
 ## 1 StationA__2009-04-21__00-40-00(1).JPG  CUDDEBACK        G4
 ## 2 StationA__2009-04-22__20-19-00(1).JPG  CUDDEBACK        G4
@@ -422,7 +424,7 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
                                      <span class="dt">metadataIDTag          =</span> <span class="st">&quot;individual&quot;</span>,  <span class="co"># the name of the metadata tag containing individual IDs</span>
                                      <span class="dt">timeZone               =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>
  )</code></pre></div>
-<pre><code>## C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
+<pre><code>## C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat : 26 images</code></pre>
 <pre><code>## StationA, StationB, StationC: removed 3 duplicate records</code></pre>
 <div id="extracting-custom-image-metadata" class="section level3">
 <h3>Extracting custom image metadata</h3>
@@ -442,13 +444,13 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 ## 4           13680             228              3.8             0.2
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
-##                                                                                                          Directory
-## 1 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 2 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 3 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 4 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 5 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 6 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images_tagged/LeopardCat
+##                                                                                                            Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images_tagged/LeopardCat
 ##                                FileName metadata_Species
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat
@@ -482,19 +484,19 @@ camop_problem &lt;-<span class="st"> </span><span class="kw">cameraOperation</sp
 )
 
 <span class="co"># as a reminder, these are the dates in our station information table</span>
-camtraps[,-<span class="kw">which</span>(<span class="kw">colnames</span>(camtraps) %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;utm_y&quot;</span>, <span class="st">&quot;utm_x&quot;</span>))]</code></pre></div>
+camtraps[,<span class="op">-</span><span class="kw">which</span>(<span class="kw">colnames</span>(camtraps) <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;utm_y&quot;</span>, <span class="st">&quot;utm_x&quot;</span>))]</code></pre></div>
 <pre><code>##    Station Setup_date Retrieval_date Problem1_from Problem1_to
 ## 1 StationA 02/04/2009     14/05/2009                          
 ## 2 StationB 03/04/2009     16/05/2009                          
 ## 3 StationC 04/04/2009     17/05/2009    12/05/2009  17/05/2009</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># now let's have a look at the first few columns of the camera operation matrix</span>
-camop_problem[, <span class="dv">1</span>:<span class="dv">5</span>]</code></pre></div>
+camop_problem[, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</code></pre></div>
 <pre><code>##          2009-04-02 2009-04-03 2009-04-04 2009-04-05 2009-04-06
 ## StationA          1          1          1          1          1
 ## StationB         NA          1          1          1          1
 ## StationC         NA         NA          1          1          1</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and the last few</span>
-camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6</span>):<span class="kw">ncol</span>(camop_problem)]</code></pre></div>
+camop_problem[, (<span class="kw">ncol</span>(camop_problem)<span class="op">-</span><span class="dv">6</span>)<span class="op">:</span><span class="kw">ncol</span>(camop_problem)]</code></pre></div>
 <pre><code>##          2009-05-11 2009-05-12 2009-05-13 2009-05-14 2009-05-15 2009-05-16
 ## StationA          1          1          1          1         NA         NA
 ## StationB          1          1          1          1          1          1
@@ -505,11 +507,11 @@ camop_problem[, (<span class="kw">ncol</span>(camop_problem)-<span class="dv">6<
 ## StationC          0</code></pre>
 <p>If stations were not set up, values are NA. If they were set up but malfunctioning, it is 0. Operational stations get value 1.</p>
 <p>Here is a little function for plotting the camera operation matrix. Imagine there is a typo in one of your date fields and the setup or retrieval year is wrong. You will easily be able to spot it this way.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camopPlot &lt;-<span class="st"> </span>function(camOp){
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camopPlot &lt;-<span class="st"> </span><span class="cf">function</span>(camOp){
   
   which.tmp &lt;-<span class="st"> </span><span class="kw">grep</span>(<span class="kw">as.Date</span>(<span class="kw">colnames</span>(camOp)), <span class="dt">pattern =</span> <span class="st">&quot;01$&quot;</span>)
   label.tmp &lt;-<span class="st"> </span><span class="kw">format</span>(<span class="kw">as.Date</span>(<span class="kw">colnames</span>(camOp))[which.tmp], <span class="st">&quot;%Y-%m&quot;</span>)
-  at.tmp &lt;-<span class="st"> </span>which.tmp /<span class="st"> </span><span class="kw">ncol</span>(camOp)
+  at.tmp &lt;-<span class="st"> </span>which.tmp <span class="op">/</span><span class="st"> </span><span class="kw">ncol</span>(camOp)
   
   <span class="kw">image</span>(<span class="kw">t</span>(<span class="kw">as.matrix</span>(camOp)), <span class="dt">xaxt =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">yaxt =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;grey70&quot;</span>))
   <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> at.tmp, <span class="dt">labels =</span> label.tmp)
@@ -629,7 +631,7 @@ DetHist3[[<span class="dv">2</span>]]  <span class="co"># effort (scaled)</span>
 <pre><code>##   effort.scaled.center effort.scaled.scale
 ## 1             6.238095            1.921061</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># backtransform scaled effort like this if needed</span>
-(DetHist3[[<span class="dv">2</span>]] *<span class="st"> </span>DetHist3[[<span class="dv">3</span>]]$effort.scaled.scale) +<span class="st"> </span>DetHist3[[<span class="dv">3</span>]]$effort.scaled.center</code></pre></div>
+(DetHist3[[<span class="dv">2</span>]] <span class="op">*</span><span class="st"> </span>DetHist3[[<span class="dv">3</span>]]<span class="op">$</span>effort.scaled.scale) <span class="op">+</span><span class="st"> </span>DetHist3[[<span class="dv">3</span>]]<span class="op">$</span>effort.scaled.center</code></pre></div>
 <pre><code>##          o1 o2 o3 o4 o5 o6 o7
 ## StationA  7  7  7  7  7  7  1
 ## StationB  7  7  7  7  7  7  2
@@ -751,12 +753,12 @@ sdh &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory</span
 <span class="co"># (because of CRAN package policies. You can have spaces in your directory names)</span>
 
   <span class="kw">summary</span>(sdh)</code></pre></div>
-<pre><code>## Object class      capthist 
-## Detector type     proximity 
-## Detector number   3 
-## Average spacing   2575.831 m 
-## x-range           523000 526000 m 
-## y-range           604000 607050 m 
+<pre><code>## Object class       capthist 
+## Detector type      proximity 
+## Detector number    3 
+## Average spacing    2575.831 m 
+## x-range            523000 526000 m 
+## y-range            604000 607050 m 
 ## 
 ##  Usage range by occasion
 ##      1  2  3  4 5

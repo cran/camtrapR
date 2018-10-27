@@ -22,7 +22,8 @@ recordTableIndividual(inDir,
   metadataHierarchyDelimitor = "|",
   metadataIDTag,
   additionalMetadataTags,
-  removeDuplicateRecords = TRUE
+  removeDuplicateRecords = TRUE,
+  returnFileNamesMissingTags = FALSE
 )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -72,6 +73,9 @@ recordTableIndividual(inDir,
   \item{removeDuplicateRecords}{
   logical. If there are several records of the same individual at the same station (also same camera if cameraID is defined) at exactly the same time, show only one?
 }
+  \item{returnFileNamesMissingTags}{
+  logical. If species are assigned with metadata and images are not tagged, return a few file names of these images as a message?
+}
 }
 \details{
 The function can handle a number of different ways of storing images. In every case, images need to be stored in a species directory first (e.g. using function \code{\link{getSpeciesImages}}). Station subdirectories are optional. Camera subdirectories are not allowed. This directory structure can be created easily with function \code{\link{getSpeciesImages}}.
@@ -114,7 +118,7 @@ Juergen Niedballa
 
  if (Sys.which("exiftool") != ""){        # only run these examples if ExifTool is available
 
- rec.db.pbe <- recordTableIndividual(inDir                     = wd_images_ID,
+ rec_table_pbe <- recordTableIndividual(inDir                  = wd_images_ID,
                                         minDeltaTime           = 60,
                                         deltaTimeComparedTo    = "lastRecord",
                                         hasStationFolders      = FALSE,

@@ -10,11 +10,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Juergen Niedballa (niedballa@izw-berlin.de)" />
+<meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2017-10-25" />
+<meta name="date" content="2018-10-24" />
 
-<title>Identifying species and individuals in camtrapR</title>
+<title></title>
 
 
 
@@ -68,9 +68,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Identifying species and individuals in camtrapR</h1>
-<h4 class="author"><em>Juergen Niedballa (<a href="mailto:niedballa@izw-berlin.de">niedballa@izw-berlin.de</a>)</em></h4>
-<h4 class="date"><em>2017-10-25</em></h4>
+<h1 class="title toc-ignore"><ol start="2" style="list-style-type: decimal">
+<li>Identifying species and individuals in camtrapR</li>
+</ol></h1>
+<h4 class="author"><em>Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</em></h4>
+<h4 class="date"><em>2018-10-24</em></h4>
 
 
 <div id="TOC">
@@ -284,8 +286,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>If multiple matches are found, a menu allows users to choose their species of interest (if argument <code>ask = TRUE</code>). By default, only accepted species names are returned (controlled by argument <code>accepted</code>). Invalid names will return no matches but NA.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find data for 2 species with correctly spelled names</span>
 checkNames1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="kw">c</span>(<span class="st">&quot;Bearded Pig&quot;</span>, <span class="st">&quot;Malayan Civet&quot;</span>),
-                                  <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)
-checkNames1</code></pre></div>
+                                  <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)</code></pre></div>
+<pre><code>## 
+## Retrieving data for taxon 'Bearded Pig'</code></pre>
+<pre><code>## 
+## Retrieving data for taxon 'Malayan Civet'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">checkNames1</code></pre></div>
 <pre><code>##      tsn     user_name     scientificName              commonName
 ## 1 625012   Bearded Pig       Sus barbatus bearded pig/Bearded Pig
 ## 2 622004 Malayan Civet Viverra tangalunga           Malayan Civet
@@ -300,8 +306,10 @@ checkNames1</code></pre></div>
 ## 2        valid</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and with scientific names (note that this is for a subspecies)</span>
 checkNames2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Viverra tangalunga tangalunga&quot;</span>,
-                                  <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>)
-checkNames2</code></pre></div>
+                                  <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>)</code></pre></div>
+<pre><code>## 
+## Retrieving data for taxon 'Viverra tangalunga tangalunga'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">checkNames2</code></pre></div>
 <pre><code>##      tsn                     user_name                scientificName
 ## 1 726578 Viverra tangalunga tangalunga Viverra tangalunga tangalunga
 ##   commonName authorship   rankname
@@ -313,8 +321,10 @@ checkNames2</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis</span>
 checkNames3 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Felis bengalensis&quot;</span>,
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>,
-                                  <span class="dt">accepted     =</span> <span class="ot">FALSE</span>)
-checkNames3</code></pre></div>
+                                  <span class="dt">accepted     =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## 
+## Retrieving data for taxon 'Felis bengalensis'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">checkNames3</code></pre></div>
 <pre><code>##      tsn         user_name    scientificName  commonName authorship
 ## 1 183793 Felis bengalensis Felis bengalensis leopard cat Kerr, 1792
 ##   rankname
@@ -345,7 +355,7 @@ wd_createSpeciesFoldersTest &lt;-<span class="st"> </span><span class="kw">file.
 <span class="co"># (normally, you'd create species directories in the station directories that </span>
 <span class="co"># already contain renamed, unsorted images). Again, this is for demonstation only.</span>
 StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStationFolders</span> (<span class="dt">inDir       =</span> wd_createSpeciesFoldersTest,
-                                              <span class="dt">stations    =</span> <span class="kw">as.character</span>(camtraps$Station), 
+                                              <span class="dt">stations    =</span> <span class="kw">as.character</span>(camtraps<span class="op">$</span>Station), 
                                               <span class="dt">createinDir =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## created 3 directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">StationFolderCreate1</code></pre></div>
@@ -354,9 +364,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationA
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationB
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationC
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationB
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -372,12 +382,12 @@ SpeciesFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createSpecie
 <pre><code>## created 6 directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpeciesFolderCreate1</code></pre></div>
 <pre><code>##                                                                                            directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationC/Bay Cat
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -393,12 +403,12 @@ SpecFolderCreate2 &lt;-<span class="st"> </span><span class="kw">createSpeciesFo
 <pre><code>## deleted 6 empty directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpecFolderCreate2</code></pre></div>
 <pre><code>##                                                                                            directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/createSpeciesFoldersTest/StationC/Bay Cat
 ##   still.exists
 ## 1        FALSE
 ## 2        FALSE
@@ -454,9 +464,9 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 ##     station
 ## 7  StationC
 ## 29 StationC
-##                                                                                                      Directory
-## 7  C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationC/EGY
-## 29 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationC/TRA
+##                                                                                                        Directory
+## 7  C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationC/EGY
+## 29 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationC/TRA
 ##                                 FileName species    DateTimeOriginal
 ## 7  StationC__2009-04-27__00-17-00(1).JPG     EGY 2009-04-27 00:17:00
 ## 29 StationC__2009-04-27__00-19-00(1).JPG     TRA 2009-04-27 00:19:00
@@ -510,15 +520,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\Juergen\AppData\Local\Temp\Rtmpu4y6cr/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_append)</code></pre></div>
 <pre><code>##                                                                         directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 4 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 6 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
 ##                            filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1).JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1).JPG     PBE
@@ -538,15 +548,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                                            <span class="dt">removeNames         =</span> <span class="ot">TRUE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\Juergen\AppData\Local\Temp\Rtmpu4y6cr/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_remove)</code></pre></div>
 <pre><code>##                                                                         directory
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 4 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
-## 6 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sample_images/StationA/PBE
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sample_images/StationA/PBE
 ##                                 filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1)__PBE.JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1)__PBE.JPG     PBE
@@ -581,7 +591,7 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
                                   <span class="dt">outDir                  =</span> wd_images_species_copy,
                                   <span class="dt">createStationSubfolders =</span> <span class="ot">FALSE</span>
   )</code></pre></div>
-<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images   to   C:\Users\JRGEN~1\AppData\Local\Temp\RtmpOuKnnX/sampleSpeciesImages/VTA</code></pre>
+<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images   to   C:\Users\Juergen\AppData\Local\Temp\Rtmpu4y6cr/sampleSpeciesImages/VTA</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">specImagecopy</code></pre></div>
 <pre><code>##   species
 ## 1     VTA
@@ -589,12 +599,12 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 3     VTA
 ## 4     VTA
 ## 5     VTA
-##                                                                                                 DirectoryOrig
-## 1 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/VTA
-## 2 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationA/VTA
-## 3 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationB/VTA
-## 4 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationB/VTA
-## 5 C:/Users/Jürgen/AppData/Local/Temp/RtmpqkIbK4/Rinst267c53ddcc0/camtrapR/pictures/sample_images/StationC/VTA
+##                                                                                                   DirectoryOrig
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/VTA
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationA/VTA
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationB/VTA
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationB/VTA
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaOjygj/Rinst1e542fcf3e1b/camtrapR/pictures/sample_images/StationC/VTA
 ##                            FilenameOrig
 ## 1 StationA__2009-04-10__05-07-00(1).JPG
 ## 2 StationA__2009-05-06__19-06-00(1).JPG
@@ -602,11 +612,11 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 4 StationB__2009-04-27__05-07-00(1).JPG
 ## 5 StationC__2009-04-24__02-57-00(1).JPG
 ##                                                                  DirectoryCopy
-## 1 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sampleSpeciesImages/VTA
-## 2 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sampleSpeciesImages/VTA
-## 3 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sampleSpeciesImages/VTA
-## 4 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sampleSpeciesImages/VTA
-## 5 C:\\Users\\JRGEN~1\\AppData\\Local\\Temp\\RtmpOuKnnX/sampleSpeciesImages/VTA
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sampleSpeciesImages/VTA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sampleSpeciesImages/VTA
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sampleSpeciesImages/VTA
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sampleSpeciesImages/VTA
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpu4y6cr/sampleSpeciesImages/VTA
 ##                            FilenameCopy copy_ok
 ## 1 StationA__2009-04-10__05-07-00(1).JPG    TRUE
 ## 2 StationA__2009-05-06__19-06-00(1).JPG    TRUE
