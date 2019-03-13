@@ -2,8 +2,8 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 1.0
-Date: 2018-10-21
+Version: 1.1
+Date: 2019-02-24
 Authors@R: c(
         person("Juergen", "Niedballa", email = "camtrapr@gmail.com", role = c("aut", "cre")),
         person("Alexandre", "Courtiol", role = "aut"),
@@ -21,10 +21,14 @@ Suggests: unmarked, knitr, rmarkdown, raster
 VignetteBuilder: knitr
 SystemRequirements: ExifTool
         (http://www.sno.phy.queensu.ca/~phil/exiftool/)
-Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photographs, computes record databases and detection/non-detection matrices for occupancy and spatial capture-recapture analyses with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station) and can visualise activity data.
+Description: Management of and data extraction from camera trap photographs in wildlife studies. The package provides a workflow for storing and sorting camera trap photos, tabulates records of species and individuals, and creates detection/non-detection matrices for occupancy and spatial capture-recapture analyses with great flexibility. In addition, it provides simple mapping functions (number of species, number of independent species detections by station including GIS export) and can visualise species activity data.
+URL: https://github.com/jniedballa/camtrapR,
+        https://groups.google.com/forum/#!forum/camtrapr
+BugReports: https://groups.google.com/forum/#!forum/camtrapr
+Encoding: UTF-8
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2018-10-24 05:22:44 UTC; Juergen
+Packaged: 2019-03-12 07:35:17 UTC; Juergen
 Author: Juergen Niedballa [aut, cre],
   Alexandre Courtiol [aut],
   Rahel Sollmann [aut],
@@ -36,4 +40,4 @@ Author: Juergen Niedballa [aut, cre],
   Andreas Wilting [ctb, ths]
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2018-10-27 07:00:08 UTC
+Date/Publication: 2019-03-13 13:53:37 UTC

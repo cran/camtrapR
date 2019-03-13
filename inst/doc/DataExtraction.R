@@ -230,7 +230,8 @@ sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSamp
   )
   
 # missing space in species = "LeopardCat" was introduced by recordTableIndividual 
-# (because of CRAN package policies. You can have spaces in your directory names)
+# (because of CRAN package policies). 
+# In your own data you can have spaces in your directory names.
 
   summary(sdh)
   plot(sdh, tracks = TRUE)

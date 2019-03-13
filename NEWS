@@ -1,3 +1,23 @@
+Changes in camtrapR 1.1
+==========================
+
+bugfixes
+------------
+  o appendSpeciesNames / checkSpeciesIdentification / getSpeciesImages: fixed error 'argument "returnFileNamesMissingTags" is missing, with no default'
+  o recordTableIndividual: fixed multiple individuals from same image being removed (except for one) when removeDuplicates = TRUE
+
+new features
+------------
+  o detectionHistory can return counts of records per occasion (new argument "output")
+  o activityOverlap can return different overlap estimators (new argument "overlapEstimator")
+  o detectionHistory / spatialDetectionHistory: improved error messages when records fall outside camera trap operation range
+
+other changes
+------------
+  o added citation (see: citation("camtrapR"))
+  o added URLs to description
+
+
 Changes in camtrapR 1.0
 ==========================
 
