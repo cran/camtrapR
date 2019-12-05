@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2019-03-12" />
+<meta name="date" content="2019-12-05" />
 
 <title></title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -83,6 +83,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
+
+
+
 </head>
 
 <body>
@@ -93,8 +96,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1 class="title toc-ignore"><ol style="list-style-type: decimal">
 <li>Organising raw camera trap images in camtrapR</li>
 </ol></h1>
-<h4 class="author"><em>Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</em></h4>
-<h4 class="date"><em>2019-03-12</em></h4>
+<h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</h4>
+<h4 class="date">2019-12-05</h4>
 
 
 <div id="TOC">
@@ -224,14 +227,10 @@ exiftool_dir &lt;-<span class="st"> &quot;C:/Path/To/Exiftool&quot;</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is a sample camera trap station table</span>
 <span class="kw">data</span>(<span class="st">&quot;camtraps&quot;</span>)
 camtraps</code></pre></div>
-<pre><code>##    Station  utm_y  utm_x Setup_date Retrieval_date Problem1_from
-## 1 StationA 604000 526000 02/04/2009     14/05/2009              
-## 2 StationB 606000 523000 03/04/2009     16/05/2009              
-## 3 StationC 607050 525000 04/04/2009     17/05/2009    12/05/2009
-##   Problem1_to
-## 1            
-## 2            
-## 3  17/05/2009</code></pre>
+<pre><code>##    Station  utm_y  utm_x Setup_date Retrieval_date Problem1_from Problem1_to
+## 1 StationA 604000 526000 02/04/2009     14/05/2009                          
+## 2 StationB 606000 523000 03/04/2009     16/05/2009                          
+## 3 StationC 607050 525000 04/04/2009     17/05/2009    12/05/2009  17/05/2009</code></pre>
 <p>Note that the sample data contain only one camera per station. Thus, there is no need to differentiate between station and camera IDs. If there was more than one camera per station, an additional column for camera IDs would be needed. Consequently, there would be one row for each camera and thus several rows per station.</p>
 <div id="station-camera-ids" class="section level2">
 <h2>Station / Camera IDs</h2>
@@ -243,15 +242,21 @@ camtraps</code></pre></div>
 </div>
 <div id="date-format" class="section level2">
 <h2>Date format</h2>
-<p>All dates in this table (setup, retrieval and problem columns) should be of data type &quot;character&quot; and can be formatted in any way that function <code>as.Date</code> can interpret. <strong>camtrapR</strong> by default assumes the standard format &quot;YYYY-MM-DD&quot;, e.g. &quot;2015-12-31&quot;, and we recommend to use that format (it is also best for sorting by date). In any case, date format must be consistent between the date columns.</p>
-<p>Two functions (<code>cameraOperation</code>, <code>surveyReport</code>) utilize these date information and therefore contain arguments to specify the date format (<code>dateFormat</code> and <code>CTDateFormat</code>, respectively). Internally, these arguments are passed to function <code>as.Date</code> as argument <code>format</code> and are needed to interpret the character string (e.g. &quot;2015-12-31&quot;) provided in the table as a date. Details on how to set it correctly can be found in the Details section of the help files of functions <code>as.Date</code> and <code>strptime</code> or <a href="http://www.r-bloggers.com/date-formats-in-r/">here</a>.</p>
-<p>Here are a few examples for December 1st 2015 (&quot;generic&quot; is the abstract representation of your date string (Y = year, M = month, D = day), &quot;example&quot; is a formatted example and &quot;dateFormat argument&quot; is what you’d specify in <code>dateFormat</code> and <code>CTDateFormat</code>):</p>
+<p>All dates in this table (setup, retrieval and problem columns) should be of data type &quot;character&quot; and can be formatted in any way that function <code>as.Date</code> can interpret. Since version 1.2, camtrapR also supports the more flexible and convenient naming conventions of package <code>lubridate</code>, which makes it easier to specify dates correctly.</p>
+<p><strong>camtrapR</strong> by default assumes the standard format &quot;YYYY-MM-DD&quot;, e.g. &quot;2015-12-31&quot;, and we recommend to use that format (it is also best for sorting by date). In any case, the date format must be consistent between the various date columns.</p>
+<p>Two functions (<code>cameraOperation</code>, <code>surveyReport</code>) utilize these date information and therefore contain arguments to specify the date format (<code>dateFormat</code> and <code>CTDateFormat</code>, respectively). These arguments are used to interpret the character string in the table (e.g. &quot;2015-12-31&quot;) as a date.</p>
+<p>If these arguments contain the character “%” (characteristic of the format argument to <code>strptime</code>), they are passed to function <code>as.Date</code> as argument <code>format</code>. If they don’t contain character “%”, they are interpreted as <code>orders</code> arguments to the function <code>parse_date_time</code> in the <code>lubridate</code> package.</p>
+<p>Details on how to set it correctly can be found in the Details section of the help files of functions <code>as.Date</code> and <code>strptime</code> or <code>parse_date_time</code>.</p>
+<p><a href="http://www.r-bloggers.com/date-formats-in-r/">Here is some information about date format in base R</a>.</p>
+<p><a href="https://lubridate.tidyverse.org/">Here is some information about date format in lubridate</a>.</p>
+<p>Here are a few examples for December 1st 2015 (&quot;generic&quot; is the abstract representation of your date string (Y = year, M = month, D = day), &quot;example&quot; is a formatted example and &quot;dateFormat argument&quot; is what you’d specify in <code>dateFormat</code> and <code>CTDateFormat</code> in either the base R or <code>lubridate</code> naming convention):</p>
 <table>
 <thead>
 <tr class="header">
 <th>generic</th>
 <th>example</th>
-<th>dateFormat argument</th>
+<th>dateFormat argument (base)</th>
+<th>dateFormat argument (lubridate)</th>
 </tr>
 </thead>
 <tbody>
@@ -259,36 +264,43 @@ camtraps</code></pre></div>
 <td>&quot;YYYY-MM-DD&quot;</td>
 <td>&quot;2015-12-01&quot;</td>
 <td>&quot;%Y-%m-%d&quot;</td>
+<td>&quot;ymd&quot;</td>
 </tr>
 <tr class="even">
 <td>&quot;YYYY/MM/DD&quot;</td>
 <td>&quot;2015/12/01&quot;</td>
 <td>&quot;%Y/%m/%d&quot;</td>
+<td>&quot;ymd&quot;</td>
 </tr>
 <tr class="odd">
 <td>&quot;YYYY/MM/DD&quot;</td>
 <td>&quot;2015/12/1&quot;</td>
 <td>&quot;%Y/%m/%d&quot;</td>
+<td>&quot;ymd&quot;</td>
 </tr>
 <tr class="even">
 <td>&quot;MM/DD/YY&quot;</td>
 <td>&quot;12/01/15&quot;</td>
 <td>&quot;%m/%d/%y&quot;</td>
+<td>&quot;mdy&quot;</td>
 </tr>
 <tr class="odd">
 <td>&quot;YYYYMMDD&quot;</td>
 <td>&quot;20151201&quot;</td>
 <td>&quot;%Y%m%d&quot;</td>
+<td>&quot;ymd&quot;</td>
 </tr>
 <tr class="even">
 <td>&quot;DD.MM.YY&quot;</td>
 <td>&quot;1.12.15&quot;</td>
 <td>&quot;%d.%m.%y&quot;</td>
+<td>&quot;dmy&quot;</td>
 </tr>
 <tr class="odd">
 <td>&quot;DD-MMM-YY&quot;</td>
 <td>&quot;01-Dec-15&quot;</td>
 <td>&quot;%d-%b-%y&quot;</td>
+<td>&quot;dmy&quot;</td>
 </tr>
 </tbody>
 </table>
@@ -338,9 +350,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/createStationFoldersTest/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/createStationFoldersTest/StationB
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/createStationFoldersTest/StationC
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/createStationFoldersTest/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/createStationFoldersTest/StationB
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -372,12 +384,12 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
                                  <span class="dt">timeShiftColumn      =</span> <span class="st">&quot;timeshift&quot;</span>,
                                  <span class="dt">timeShiftSignColumn  =</span> <span class="st">&quot;sign&quot;</span>
 )</code></pre></div>
-<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpMX9a3q/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpMX9a3q/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\Rtmp6j6TLZ/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\Rtmp6j6TLZ/raw_images/StationB</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeshift_run</code></pre></div>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -393,8 +405,8 @@ timeshift_run &lt;-<span class="st"> </span><span class="kw">timeShiftImages</sp
 
 timeshift_undo</code></pre></div>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -452,17 +464,17 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
                                <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                                <span class="dt">copyImages          =</span> <span class="ot">FALSE</span>
   )</code></pre></div>
-<pre><code>## StationA : 3 images</code></pre>
-<pre><code>## StationB : 3 images</code></pre>
+<pre><code>## StationA:    3 images      |==========          |   50%</code></pre>
+<pre><code>## StationB:    3 images      |====================|  100%</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># here is the information for a few images </span>
 <span class="kw">head</span>(renaming.table2)</code></pre></div>
 <pre><code>##                                                                                               Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpY9JdCN/Rinst8cc6a072f3b/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpY9JdCN/Rinst8cc6a072f3b/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpY9JdCN/Rinst8cc6a072f3b/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpY9JdCN/Rinst8cc6a072f3b/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpY9JdCN/Rinst8cc6a072f3b/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpY9JdCN/Rinst8cc6a072f3b/camtrapR/pictures/raw_images/StationB
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -471,12 +483,12 @@ renaming.table2 &lt;-<span class="st"> </span><span class="kw">imageRename</span
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                             outDir
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images_renamed/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images_renamed/StationA
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images_renamed/StationA
-## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images_renamed/StationB
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images_renamed/StationB
-## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpMX9a3q/raw_images_renamed/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images_renamed/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images_renamed/StationA
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images_renamed/StationA
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images_renamed/StationB
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images_renamed/StationB
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp6j6TLZ/raw_images_renamed/StationB
 ##                            filename_new fileExistsAlready CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
@@ -555,17 +567,18 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
                 <span class="dt">copyrightTag =</span> copyrightTagToAdd, 
                 <span class="dt">askFirst     =</span> <span class="ot">FALSE</span>)                  <span class="co"># askFirst = FALSE prevents function from asking user to confirm action (which doesn't work in vignettes)</span></code></pre></div>
 <pre><code>##    14 directories scanned    68 image files updated</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># you can check the outcome with function exifTagNames (you'll find field &quot;Copyright&quot; in line 20)</span>
-<span class="kw">exifTagNames</span>(wd_images_ID_copy, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Extracted metadata of: C:\Users\Juergen\AppData\Local\Temp\RtmpMX9a3q/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+<p>When we check the outcome with function exifTagNames, we find field “Copyright” in line 27.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(wd_images_ID_copy, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Metadata values of:
+## C:\Users\Juergen\AppData\Local\Temp\Rtmp6j6TLZ/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 11.10&quot;                                                                    
 ##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding for UserComment&quot;                               
 ##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                    
-##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/RtmpMX9a3q/sample_images/StationA/PBE&quot;
+##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/Rtmp6j6TLZ/sample_images/StationA/PBE&quot;
 ##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                    
-##  [6] &quot;[File]          File Modification Date/Time     : 2019:03:12 15:34:49+08:00&quot;                                                
-##  [7] &quot;[File]          File Access Date/Time           : 2019:03:12 15:34:49+08:00&quot;                                                
-##  [8] &quot;[File]          File Creation Date/Time         : 2019:03:12 15:34:47+08:00&quot;                                                
+##  [6] &quot;[File]          File Modification Date/Time     : 2019:12:05 19:40:21+08:00&quot;                                                
+##  [7] &quot;[File]          File Access Date/Time           : 2019:12:05 19:40:21+08:00&quot;                                                
+##  [8] &quot;[File]          File Creation Date/Time         : 2019:12:05 19:40:19+08:00&quot;                                                
 ##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                
 ## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                     
 ## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                      
@@ -607,6 +620,9 @@ copyrightTagToAdd &lt;-<span class="st"> &quot;Your Name (Your Organisation)&quo
 </div>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

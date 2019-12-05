@@ -1,7 +1,7 @@
-## ----results = "hide"----------------------------------------------------
+## ----results = "hide"---------------------------------------------------------
 library(camtrapR)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 # load sample camera trap station table
 data(camtraps)
@@ -9,7 +9,7 @@ data(camtraps)
 # load sample record table
 data(recordTableSample)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 Mapstest1 <- detectionMaps(CTtable     = camtraps,
                           recordTable  = recordTableSample,
                           Xcol         = "utm_x",
@@ -22,7 +22,7 @@ Mapstest1 <- detectionMaps(CTtable     = camtraps,
                           addLegend    = TRUE
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
  # subset to 1 species
 recordTableSample_PBE <- recordTableSample[recordTableSample$Species == "PBE",]
  
@@ -39,12 +39,12 @@ recordTableSample_PBE <- recordTableSample[recordTableSample$Species == "PBE",]
                            addLegend     = TRUE
 )
 
-## ----message=FALSE-------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 # writing shapefiles requires packages rgdal and sp
  library(rgdal)
  library(sp)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
  # define shapefile name
  shapefileName       <- "recordShapefileTest"
  shapefileProjection <- "+proj=utm +zone=50 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
@@ -78,7 +78,7 @@ shapefileTest@data
 all(shapefileTest@data == Mapstest3)
  
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 detections_spdf <- SpatialPointsDataFrame(coords      = Mapstest3[,c("utm_x", "utm_y")],
                                           data        = Mapstest3,
                                           proj4string = CRS(shapefileProjection))
@@ -114,26 +114,26 @@ if("raster" %in% installed.packages()){
 
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # we first pick a species for our activity trials
 species4activity <- "PBE"    # = Prionailurus bengalensis, Leopard Cat
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 activityDensity(recordTable = recordTableSample,
                 species     = species4activity)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 activityHistogram (recordTable = recordTableSample,
                    species     = species4activity)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 activityRadial(recordTable  = recordTableSample,
                species      = species4activity,
                lwd          = 3       # adjust line with of the plot
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 activityRadial(recordTable       = recordTableSample,
                species           = species4activity,
                allSpecies        = FALSE,
@@ -145,7 +145,7 @@ activityRadial(recordTable       = recordTableSample,
                rp.type           = "p"      # plot type = polygon
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # define species of interest
 speciesA_for_activity <- "VTA"    # = Viverra tangalunga, Malay Civet
 speciesB_for_activity <- "PBE"    # = Prionailurus bengalensis, Leopard Cat
@@ -160,7 +160,7 @@ activityOverlap (recordTable = recordTableSample,
 )
 
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 activityOverlap (recordTable = recordTableSample,
                  speciesA    = speciesA_for_activity,
                  speciesB    = speciesB_for_activity,
@@ -178,7 +178,7 @@ activityOverlap (recordTable = recordTableSample,
                  main        = paste("Activity overlap: ", speciesA_for_activity, "-", speciesB_for_activity)
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 reportTest <- surveyReport (recordTable          = recordTableSample,
                             CTtable              = camtraps,
                             speciesCol           = "Species",
@@ -190,10 +190,10 @@ reportTest <- surveyReport (recordTable          = recordTableSample,
                             recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
                             CTHasProblems        = TRUE)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 str(reportTest)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # here's the output of surveyReport
 
 reportTest[[1]]    # camera trap operation times and image date ranges

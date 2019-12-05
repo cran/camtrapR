@@ -1,8 +1,8 @@
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(camtrapR)
 data(camtraps)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 # find data for 2 species with correctly spelled names
 checkNames1 <- checkSpeciesNames (speciesNames = c("Bearded Pig", "Malayan Civet"),
@@ -27,7 +27,7 @@ checkNames3
  # 1              # making a choice from the menu
  # checkNames4
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 # this dummy directory will be used as inDir (containing station directories with species subdirectories)
 wd_createSpeciesFoldersTest <- file.path(tempdir(), "createSpeciesFoldersTest")
@@ -61,7 +61,7 @@ SpecFolderCreate2 <- createSpeciesFolders (inDir               = wd_createSpecie
 
 SpecFolderCreate2
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
 
 # run check with 120 seconds (2 minutes) maximum time differnce
@@ -71,7 +71,7 @@ check.folders <- checkSpeciesIdentification(inDir               = wd_images_ID,
                                             maxDeltaTime        = 120)
 check.folders
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # check only station A and B (will give no results)
 checkSpeciesIdentification(inDir               = wd_images_ID,
                            IDfrom              = "directory",
@@ -87,7 +87,7 @@ checkSpeciesIdentification(inDir               = wd_images_ID,
                            maxDeltaTime        = 120,
                            excludeSpecies      = "TRA")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 # copy sample images to another location (so we don't mess around in the package directory)
 wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
@@ -111,7 +111,7 @@ species_names_remove <- appendSpeciesNames(inDir               = wd_images_speci
 head(species_names_remove)
 
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # again, we use a temporary directory for demonstration. Change this in your own code!
 wd_images_species_copy <- file.path(tempdir(), "sampleSpeciesImages")
 
@@ -126,7 +126,7 @@ specImagecopy <- getSpeciesImages(species                 = species_to_copy,
 
 specImagecopy
 
-## ----eval = FALSE--------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # all images in one directory, no station subdirectories
 #  # column "station" in outtable will be uninformative
 #  ID_check1 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID",
