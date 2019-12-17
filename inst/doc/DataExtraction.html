@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2019-12-05" />
+<meta name="date" content="2019-12-17" />
 
 <title></title>
 
@@ -97,7 +97,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Extracting Data from Camera Trapping Images, creating occupancy &amp; secr input</li>
 </ol></h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2019-12-05</h4>
+<h4 class="date">2019-12-17</h4>
 
 
 <div id="TOC">
@@ -133,12 +133,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(camtrapR)
 <span class="kw">library</span>(secr)</code></pre></div>
-<pre><code>## This is secr 4.0.2. For overview type ?secr</code></pre>
-<pre><code>## 
-## Attaching package: 'secr'</code></pre>
-<pre><code>## The following objects are masked from 'package:raster':
-## 
-##     flip, rotate, shift, trim</code></pre>
 <div id="tabulating-species-and-individual-records-the-recordtable-functions" class="section level1">
 <h1>Tabulating species and individual records: the recordTable functions</h1>
 <p>There are 2 function to tabulate species records after identification of species from images:</p>
@@ -179,12 +173,12 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                      Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG        1
@@ -327,7 +321,7 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
 <span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>## Metadata of:
-## C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##  [1] &quot;Composite:ImageSize&quot;          &quot;Composite:Megapixels&quot;        
 ##  [3] &quot;Composite:ShutterSpeed&quot;       &quot;EXIF:ColorSpace&quot;             
 ##  [5] &quot;EXIF:ComponentsConfiguration&quot; &quot;EXIF:Compression&quot;            
@@ -353,15 +347,15 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <p>If one has no idea what kind of data are behind these tag names, <code>returnMetadata</code> can be set to TRUE to return the actual metadata instead of the tag names only.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Metadata values of:
-## C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 11.10&quot;                                                                                                       
 ##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding for UserComment&quot;                                                                  
 ##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                       
-##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE&quot;
+##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE&quot;
 ##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                                                       
-##  [6] &quot;[File]          File Modification Date/Time     : 2019:12:05 19:39:13+08:00&quot;                                                                                   
-##  [7] &quot;[File]          File Access Date/Time           : 2019:12:05 19:39:13+08:00&quot;                                                                                   
-##  [8] &quot;[File]          File Creation Date/Time         : 2019:12:05 19:39:13+08:00&quot;                                                                                   
+##  [6] &quot;[File]          File Modification Date/Time     : 2019:12:17 18:49:26+08:00&quot;                                                                                   
+##  [7] &quot;[File]          File Access Date/Time           : 2019:12:17 18:49:26+08:00&quot;                                                                                   
+##  [8] &quot;[File]          File Creation Date/Time         : 2019:12:17 18:49:26+08:00&quot;                                                                                   
 ##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                                                   
 ## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                                                        
 ## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                                                         
@@ -423,13 +417,13 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                      Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images/StationA/PBE
-##                                FileName EXIF:Model EXIF:Make n_images
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images/StationA/PBE
+##                                FileName EXIF.Model EXIF.Make n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG  CUDDEBACK        G4        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG  CUDDEBACK        G4        1
 ## 3 StationA__2009-04-22__20-21-00(1).JPG  CUDDEBACK        G4        1
@@ -474,12 +468,12 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
 ##                                                                                                           Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpmuPXtQ/Rinste70651d6008/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpaIdvNV/Rinst12b0b23448d/camtrapR/pictures/sample_images_tagged/LeopardCat
 ##                                FileName metadata_Species metadata_individual
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat                   1
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat                   2
@@ -819,44 +813,15 @@ sdh &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory</span
 <p>camtrapR prepares detection histories that can be used as input for argument <code>y</code> in function <code>unmarkedMultFrame</code>. <code>unmarkedMultFrame</code> creates the input for function <code>colext</code> which fits multi-season occupancy models.</p>
 <p>For multi-season occupancy, we need a session column in the camera trap table. Records will be assigned to session automatically based on their dates.</p>
 <p>First we simulate data for 2 seasons by duplicating the existing sample data and adjusting the dates (add 1 year)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># simulate records from multiple seasons</span>
-recordTableSample_season2 &lt;-<span class="st"> </span>recordTableSample
-recordTableSample_season2<span class="op">$</span>DateTimeOriginal &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;2009&quot;</span>, <span class="st">&quot;2010&quot;</span>, recordTableSample_season2<span class="op">$</span>DateTimeOriginal)  <span class="co"># substitute 2009 with 2010)</span>
-recordTableSample_season &lt;-<span class="st"> </span><span class="kw">rbind</span>(recordTableSample, recordTableSample_season2) <span class="co"># combine with season 1</span>
-<span class="kw">rm</span>(recordTableSample_season2)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load multi-season data</span>
+<span class="kw">data</span>(camtrapsMultiSeason)
+<span class="kw">data</span>(recordTableSampleMultiSeason)
 
-<span class="co"># also, for clarity, lets remove all unnecessary columns</span>
-recordTableSample_season &lt;-<span class="st"> </span>recordTableSample_season[, <span class="kw">c</span>(<span class="st">&quot;Station&quot;</span>, <span class="st">&quot;Species&quot;</span>, <span class="st">&quot;DateTimeOriginal&quot;</span>)]
-
-
-<span class="co"># Now we simulate a camera trap table with 2 seasons by adding 1 year to all dates (substitute 2009 with 2010)</span>
-<span class="co"># and converting back to character format</span>
-camtraps_season2 &lt;-<span class="st"> </span>camtraps
-
-camtraps_season2[, <span class="st">&quot;Setup_date&quot;</span>]     &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;2009&quot;</span>, <span class="st">&quot;2010&quot;</span>, camtraps_season2[, <span class="st">&quot;Setup_date&quot;</span>])
-camtraps_season2[, <span class="st">&quot;Retrieval_date&quot;</span>] &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;2009&quot;</span>, <span class="st">&quot;2010&quot;</span>, camtraps_season2[, <span class="st">&quot;Retrieval_date&quot;</span>])
-camtraps_season2[, <span class="st">&quot;Problem1_from&quot;</span>]  &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;2009&quot;</span>, <span class="st">&quot;2010&quot;</span>, camtraps_season2[, <span class="st">&quot;Problem1_from&quot;</span>])
-camtraps_season2[, <span class="st">&quot;Problem1_to&quot;</span>]    &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;2009&quot;</span>, <span class="st">&quot;2010&quot;</span>, camtraps_season2[, <span class="st">&quot;Problem1_to&quot;</span>])
-
-<span class="co"># add an extra station with different dates </span>
-camtraps_season2 &lt;-<span class="st"> </span><span class="kw">rbind</span>(camtraps_season2, <span class="ot">NA</span>)
-camtraps_season2<span class="op">$</span>Station[<span class="dv">4</span>] &lt;-<span class="st"> &quot;StationD&quot;</span>
-camtraps_season2<span class="op">$</span>utm_y[<span class="dv">4</span>]  &lt;-<span class="st"> </span><span class="dv">607050</span>
-camtraps_season2<span class="op">$</span>utm_x[<span class="dv">4</span>]  &lt;-<span class="st"> </span><span class="dv">525000</span>
-camtraps_season2<span class="op">$</span>Setup_date[<span class="dv">4</span>]  &lt;-<span class="st"> &quot;04/04/2010&quot;</span>
-camtraps_season2<span class="op">$</span>Retrieval_date[<span class="dv">4</span>]  &lt;-<span class="st"> &quot;17/06/2010&quot;</span>
-camtraps_season2<span class="op">$</span>Problem1_from[<span class="dv">4</span>] &lt;-<span class="st"> &quot;20/05/2010&quot;</span>
-camtraps_season2<span class="op">$</span>Problem1_to[<span class="dv">4</span>] &lt;-<span class="st"> &quot;30/05/2010&quot;</span>
-
-<span class="co"># add session column</span>
-camtraps<span class="op">$</span>session &lt;-<span class="st"> </span><span class="dv">2009</span>
-camtraps_season2<span class="op">$</span>session &lt;-<span class="st"> </span><span class="dv">2010</span>
-
-<span class="co"># combine the tables for 2 seasons</span>
-camtraps_season &lt;-<span class="st"> </span><span class="kw">rbind</span>(camtraps, camtraps_season2)
+<span class="co"># also, for clarity, lets remove all unnecessary columns from the record table</span>
+recordTableSampleMultiSeason &lt;-<span class="st"> </span>recordTableSampleMultiSeason[, <span class="kw">c</span>(<span class="st">&quot;Station&quot;</span>, <span class="st">&quot;Species&quot;</span>, <span class="st">&quot;DateTimeOriginal&quot;</span>)]
 
 <span class="co"># create camera operation matrix</span>
-camop_session &lt;-<span class="st"> </span><span class="kw">cameraOperation</span>(<span class="dt">CTtable         =</span> camtraps_season,
+camop_season &lt;-<span class="st"> </span><span class="kw">cameraOperation</span>(<span class="dt">CTtable         =</span> camtrapsMultiSeason,
                                     <span class="dt">stationCol   =</span> <span class="st">&quot;Station&quot;</span>,
                                     <span class="dt">setupCol     =</span> <span class="st">&quot;Setup_date&quot;</span>,
                                     <span class="dt">sessionCol   =</span> <span class="st">&quot;session&quot;</span>,
@@ -867,11 +832,11 @@ camop_session &lt;-<span class="st"> </span><span class="kw">cameraOperation</sp
 
 <span class="co"># plot camera operation matrix</span>
 <span class="kw">par</span>(<span class="dt">oma =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">7</span>,<span class="dv">0</span>,<span class="dv">0</span>))
-<span class="kw">camopPlot</span>(camop_session)</code></pre></div>
+<span class="kw">camopPlot</span>(camop_season)</code></pre></div>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAHgCAMAAAB6sCJ3AAAAaVBMVEUAAAAAADoAAGYAOpAAZrY6AAA6ADo6AGY6Ojo6kNtkAQ5mAABmADpmZjpmkJBmtrZmtv99ARKQOgCQ2/+2ZgC225C2/7a2///MzMzbkDrb/7bb///y8eT/tmb/trb/25D//7b//9v///+KJqw0AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAQS0lEQVR4nO2di3bjxhEFmc0qiSw/1jI3GyamJfH/PzLEowcAOQBn+gLEEKo6x16qBXUvOWUApJK5uxOAwG7tvwA8NggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEggEEtsUaAcqyS/1kuu4GvFn9R+5WnCLsUN/j/FT/4s/WwZVBIpQ7uojUGEgUCgjkAcECmUE8oBAoYxAHhAolBHIAwKFMgJ5QKBQRiAPCBTKCOQBgUIZgTwgUCgjkAcECmUE8oBAoYxAHhAolBHIAwKFMgJ5QKBQXlOg95fdbvflx/nR8VuvfP7i/eVb5Ph98z9Fin1r2K49cPf3//Wr/YfGx+u59FxP3e3+9kdTfPvnj4tK2rMqd/W3KdCxVmF/XqSBL3F5KvaVEKe3p6832rUHXlZ7D42P1/NXh9254fH84Nh86/2lkbqrJD6rcld/mwLtaxE+Xr/mCTS2ql27vkD9avfQeHuqZh2+/Ph4fbaDj81ZqldJfVblrv4mBepW8u2pvtrs68tT/cV/a4mOzeXl/eW3l/rC1XoxUCDSri9Qrxr/sYqzkcGk89DnYyVQV0l+VuWu/iYFOi+VrWh90qn+Yz+017O6UF1y3l+q81N1nTn/Y170TjDRdsNL2NfIwyH7Lz/e/lGd1Y6NLo1A/Urasyp39bcpUH2yqReodubnP5r/7E2g5hpyPju8vzw33zEv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" /><!-- --></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make multi-season detection history</span>
-DetHist_multi &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(<span class="dt">recordTable   =</span> recordTableSample_season,
-                            <span class="dt">camOp                =</span> camop_session,
+DetHist_multi &lt;-<span class="st"> </span><span class="kw">detectionHistory</span>(<span class="dt">recordTable   =</span> recordTableSampleMultiSeason,
+                            <span class="dt">camOp                =</span> camop_season,
                             <span class="dt">stationCol           =</span> <span class="st">&quot;Station&quot;</span>,
                             <span class="dt">speciesCol           =</span> <span class="st">&quot;Species&quot;</span>,
                             <span class="dt">species              =</span> <span class="st">&quot;VTA&quot;</span>,
@@ -900,9 +865,9 @@ DetHist_multi</code></pre></div>
 ## StationD NA NA NA NA NA NA NA NA 10 10 10 10  6  3 10  5</code></pre>
 <p>Note that the function makes sure that all seasons have identical number of occasions, and that all stations are represented, even if they were not sampled in all seasons.</p>
 <p>From here, the resulting object can be used in unmarked.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">year_matrix &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">unique</span>(<span class="kw">as.character</span>(camtraps_season<span class="op">$</span>session)),
-               <span class="dt">ncol =</span> <span class="kw">length</span>(<span class="kw">unique</span>(<span class="kw">as.character</span>(camtraps_season<span class="op">$</span>session))),
-               <span class="dt">nrow =</span> <span class="kw">length</span>(<span class="kw">unique</span>(camtraps_season<span class="op">$</span>Station)),
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">year_matrix &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">unique</span>(<span class="kw">as.character</span>(camtrapsMultiSeason<span class="op">$</span>session)),
+               <span class="dt">ncol =</span> <span class="kw">length</span>(<span class="kw">unique</span>(<span class="kw">as.character</span>(camtrapsMultiSeason<span class="op">$</span>session))),
+               <span class="dt">nrow =</span> <span class="kw">length</span>(<span class="kw">unique</span>(camtrapsMultiSeason<span class="op">$</span>Station)),
                <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
 
 <span class="co"># this is a made up example table with station covariates for demonstration</span>
@@ -957,8 +922,8 @@ colext_example &lt;-<span class="st"> </span>unmarked<span class="op">::</span><
 <div id="multi-season-spatial-capture-recapture" class="section level2">
 <h2>Multi-season spatial capture-recapture</h2>
 <p>For secr, session IDs must be a gapless sequence of numbers beginning with 1. So 2009 becomes season 1 and 2010 season 2</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camtraps_season<span class="op">$</span>session[camtraps_season<span class="op">$</span>session <span class="op">==</span><span class="st"> </span><span class="dv">2009</span>] &lt;-<span class="st"> </span><span class="dv">1</span>
-camtraps_season<span class="op">$</span>session[camtraps_season<span class="op">$</span>session <span class="op">==</span><span class="st"> </span><span class="dv">2010</span>] &lt;-<span class="st"> </span><span class="dv">2</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">camtrapsMultiSeason<span class="op">$</span>session[camtrapsMultiSeason<span class="op">$</span>session <span class="op">==</span><span class="st"> </span><span class="dv">2009</span>] &lt;-<span class="st"> </span><span class="dv">1</span>
+camtrapsMultiSeason<span class="op">$</span>session[camtrapsMultiSeason<span class="op">$</span>session <span class="op">==</span><span class="st"> </span><span class="dv">2010</span>] &lt;-<span class="st"> </span><span class="dv">2</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># we also want a few records in season 2</span>
 recordTableIndividualSample_season2 &lt;-<span class="st"> </span>recordTableIndividualSample[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]
 recordTableIndividualSample_season2<span class="op">$</span>DateTimeOriginal &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;2009&quot;</span>, <span class="st">&quot;2010&quot;</span>, recordTableIndividualSample_season2<span class="op">$</span>DateTimeOriginal)
@@ -969,7 +934,7 @@ recordTableIndividualSample_season &lt;-<span class="st"> </span><span class="kw
 <span class="co"># for clarity, lets remove all unnecessary columns</span>
 recordTableIndividualSample_season &lt;-<span class="st"> </span>recordTableIndividualSample_season[, <span class="kw">c</span>(<span class="st">&quot;Station&quot;</span>, <span class="st">&quot;Species&quot;</span>, <span class="st">&quot;Individual&quot;</span>, <span class="st">&quot;DateTimeOriginal&quot;</span>)]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create camera operation matrix (with problems/malfunction), same as above for multi-season occupancy</span>
-camop_session &lt;-<span class="st"> </span><span class="kw">cameraOperation</span>(<span class="dt">CTtable         =</span> camtraps_season,
+camop_season &lt;-<span class="st"> </span><span class="kw">cameraOperation</span>(<span class="dt">CTtable         =</span> camtrapsMultiSeason,
                                     <span class="dt">stationCol   =</span> <span class="st">&quot;Station&quot;</span>,
                                     <span class="dt">setupCol     =</span> <span class="st">&quot;Setup_date&quot;</span>,
                                     <span class="dt">sessionCol   =</span> <span class="st">&quot;session&quot;</span>,
@@ -979,36 +944,330 @@ camop_session &lt;-<span class="st"> </span><span class="kw">cameraOperation</sp
 )
 
 
-
+<span class="co"># create capthist object</span>
 sdh_multi &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory</span>(<span class="dt">recordTableIndividual =</span> recordTableIndividualSample_season,
-                               <span class="dt">species               =</span> <span class="st">&quot;LeopardCat&quot;</span>,
-                               <span class="dt">output                =</span> <span class="st">&quot;binary&quot;</span>,
-                               <span class="dt">camOp                 =</span> camop_session,
-                               <span class="dt">CTtable               =</span> camtraps_season,
-                               <span class="dt">stationCol            =</span> <span class="st">&quot;Station&quot;</span>,
-                               <span class="dt">speciesCol            =</span> <span class="st">&quot;Species&quot;</span>,
-                               <span class="dt">sessionCol            =</span> <span class="st">&quot;session&quot;</span>,
-                               <span class="dt">Xcol                  =</span> <span class="st">&quot;utm_x&quot;</span>,
-                               <span class="dt">Ycol                  =</span> <span class="st">&quot;utm_y&quot;</span>,
-                               <span class="dt">individualCol         =</span> <span class="st">&quot;Individual&quot;</span>,
-                               <span class="dt">recordDateTimeCol     =</span> <span class="st">&quot;DateTimeOriginal&quot;</span>,
-                               <span class="dt">recordDateTimeFormat  =</span> <span class="st">&quot;%Y-%m-%d %H:%M:%S&quot;</span>,
-                               <span class="dt">occasionLength        =</span> <span class="dv">10</span>,
-                               <span class="dt">day1                  =</span> <span class="st">&quot;survey&quot;</span>,
-                               <span class="dt">includeEffort         =</span> <span class="ot">TRUE</span>,
-                               <span class="dt">timeZone              =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>,
-                               <span class="dt">stationCovariateCols  =</span> <span class="st">&quot;utm_y&quot;</span>,     <span class="co"># made up, a potential site covariate from camtraps_season</span>
+                               <span class="dt">species                 =</span> <span class="st">&quot;LeopardCat&quot;</span>,
+                               <span class="dt">output                  =</span> <span class="st">&quot;binary&quot;</span>,
+                               <span class="dt">camOp                   =</span> camop_season,
+                               <span class="dt">CTtable                 =</span> camtrapsMultiSeason,
+                               <span class="dt">stationCol              =</span> <span class="st">&quot;Station&quot;</span>,
+                               <span class="dt">speciesCol              =</span> <span class="st">&quot;Species&quot;</span>,
+                               <span class="dt">sessionCol              =</span> <span class="st">&quot;session&quot;</span>,
+                               <span class="dt">Xcol                    =</span> <span class="st">&quot;utm_x&quot;</span>,
+                               <span class="dt">Ycol                    =</span> <span class="st">&quot;utm_y&quot;</span>,
+                               <span class="dt">individualCol           =</span> <span class="st">&quot;Individual&quot;</span>,
+                               <span class="dt">recordDateTimeCol       =</span> <span class="st">&quot;DateTimeOriginal&quot;</span>,
+                               <span class="dt">recordDateTimeFormat    =</span> <span class="st">&quot;%Y-%m-%d %H:%M:%S&quot;</span>,
+                               <span class="dt">occasionLength          =</span> <span class="dv">10</span>,
+                               <span class="dt">day1                    =</span> <span class="st">&quot;survey&quot;</span>,
+                               <span class="dt">includeEffort           =</span> <span class="ot">TRUE</span>,
+                               <span class="dt">timeZone                =</span> <span class="st">&quot;Asia/Kuala_Lumpur&quot;</span>,
+                               <span class="dt">stationCovariateCols    =</span> <span class="st">&quot;utm_y&quot;</span>,       <span class="co"># made up, a potential site covariate from camtrapsMultiSeason</span>
                                <span class="dt">individualCovariateCols =</span> <span class="st">&quot;Individual&quot;</span>   <span class="co"># made up, a potential individual covariate from recordTable</span>
   )
 
 
-  <span class="co"># summary(sdh_multi)</span>
-  <span class="co"># par(mfrow = c(1,2))</span>
-  <span class="co"># plot(sdh_multi)</span>
-  <span class="co"># </span>
-  <span class="co"># secr.fit.example &lt;- secr.fit(capthist = sdh2,</span>
-  <span class="co">#                              start = c(-1, -2, 10))   # with starting values, since its only very little data</span>
-  <span class="co"># summary(secr.fit.example)</span></code></pre></div>
+  <span class="kw">summary</span>(sdh_multi)</code></pre></div>
+<pre><code>## $`1`
+## Object class       capthist 
+## Detector type      proximity 
+## Detector number    3 
+## Average spacing    2575.831 m 
+## x-range            523000 526000 m 
+## y-range            604000 607050 m 
+## 
+##  Usage range by occasion
+##      1  2  3  4 5
+## min  8 10 10 10 0
+## max 10 10 10 10 5
+## 
+## Counts by occasion 
+##                   1 2 3 4 5 Total
+## n                 2 2 3 2 1    10
+## u                 2 0 1 0 0     3
+## f                 0 1 0 2 0     3
+## M(t+1)            2 2 3 3 3     3
+## losses            0 0 0 0 0     0
+## detections        3 4 4 3 1    15
+## detectors visited 2 3 3 2 1    11
+## detectors used    3 3 3 3 2    14
+## 
+## Individual covariates
+##  Individual
+##  1:1       
+##  2:1       
+##  3:1       
+## 
+## 
+## $`2`
+## Object class       capthist 
+## Detector type      proximity 
+## Detector number    4 
+## Average spacing    2496.591 m 
+## x-range            523000 526000 m 
+## y-range            604000 607050 m 
+## 
+##  Usage range by occasion
+##     1  2  3  4  5 6 7  8 9
+## min 3 10 10 10  5 0 0  0 0
+## max 5 10 10 10 10 3 6 10 2
+## 
+## Counts by occasion 
+##                   1 2 3 4 5 6 7 8 9 Total
+## n                 1 2 2 0 1 0 0 0 0     6
+## u                 1 1 0 0 0 0 0 0 0     2
+## f                 0 0 2 0 0 0 0 0 0     2
+## M(t+1)            1 2 2 2 2 2 2 2 2     2
+## losses            0 0 0 0 0 0 0 0 0     0
+## detections        1 2 2 0 1 0 0 0 0     6
+## detectors visited 1 1 2 0 1 0 0 0 0     5
+## detectors used    4 4 4 4 4 1 1 1 1    24
+## 
+## Individual covariates
+##  Individual
+##  1:1       
+##  2:1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+  <span class="kw">plot</span>(sdh_multi)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>##  1  2 
+## 15  6</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  secr.fit.example &lt;-<span class="st"> </span><span class="kw">secr.fit</span>(<span class="dt">capthist =</span> sdh_multi,
+                               <span class="dt">start =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>, <span class="dv">10</span>))   <span class="co"># with starting values, since its only very little data</span></code></pre></div>
+<pre><code>## Checking data</code></pre>
+<pre><code>## Warning in verify.capthist(capthist, report = 1): Levels of factor covariate(s)
+## differ between sessions</code></pre>
+<pre><code>## Warning in secr.fit(capthist = sdh_multi, start = c(-1, -2, 10)): using default
+## buffer width 100 m</code></pre>
+<pre><code>## Preparing detection design matrices 
+## Preparing density design matrix 
+## Maximizing likelihood... 
+## Eval     Loglik        D       g0    sigma 
+##    1    -68.006  -1.0000  -2.0000  10.0000 
+##    2    -68.006  -1.0000  -2.0000  10.0000 
+##    3    -68.006  -1.0000  -2.0000  10.0000 
+##    4    -68.007  -1.0000  -2.0000  10.0000 
+##    5    -68.006  -1.0000  -2.0000  10.0000 
+##    6   -177.597  -1.2380 -11.9961   9.8556 
+##    7    -60.221  -1.1025  -6.3057   9.9378 
+##    8    -60.221  -1.1025  -6.3057   9.9378 
+##    9    -60.221  -1.1025  -6.3057   9.9378 
+##   10    -60.221  -1.1025  -6.3057   9.9378 
+##   11    -44.394  -0.9599  -5.3955   9.9509 
+##   12    -44.394  -0.9599  -5.3955   9.9509 
+##   13    -44.394  -0.9599  -5.3955   9.9509 
+##   14    -44.394  -0.9599  -5.3955   9.9509 
+##   15   -181.343  -0.6604  -1.0333  10.0125 
+##   16    -34.619  -0.9106  -4.6783   9.9610 
+##   17    -34.619  -0.9106  -4.6783   9.9610 
+##   18    -34.619  -0.9106  -4.6783   9.9610 
+##   19    -34.619  -0.9106  -4.6783   9.9610 
+##   20    -53.270  -1.0700  -2.2481   9.9949 
+##   21    -27.899  -0.9588  -3.9438   9.9713 
+##   22    -27.899  -0.9588  -3.9438   9.9713 
+##   23    -27.899  -0.9588  -3.9438   9.9713 
+##   24    -27.899  -0.9588  -3.9438   9.9713 
+##   25    -27.921  -1.1197  -3.2071   9.9816 
+##   26    -26.629  -1.0388  -3.5773   9.9764 
+##   27    -26.629  -1.0388  -3.5773   9.9764 
+##   28    -26.629  -1.0388  -3.5773   9.9764 
+##   29    -26.629  -1.0388  -3.5773   9.9764 
+##   30    -26.565  -1.1014  -3.5472   9.9769 
+##   31    -26.565  -1.1014  -3.5472   9.9769 
+##   32    -26.565  -1.1014  -3.5472   9.9769 
+##   33    -26.565  -1.1014  -3.5472   9.9769 
+##   34    -26.498  -1.2274  -3.5489   9.9771 
+##   35    -26.498  -1.2274  -3.5489   9.9771 
+##   36    -26.498  -1.2274  -3.5489   9.9771 
+##   37    -26.498  -1.2274  -3.5489   9.9772 
+##   38    -26.493  -1.2601  -3.5597   9.9771 
+##   39    -26.493  -1.2601  -3.5597   9.9771 
+##   40    -26.493  -1.2601  -3.5597   9.9771 
+##   41    -26.493  -1.2601  -3.5597   9.9771 
+##   42    -26.493  -1.2627  -3.5611   9.9772 
+##   43    -26.493  -1.2627  -3.5611   9.9772 
+##   44    -26.493  -1.2627  -3.5611   9.9772 
+##   45    -26.493  -1.2627  -3.5611   9.9772 
+##   46    -26.493  -1.2627  -3.5612   9.9773 
+##   47    -26.493  -1.2627  -3.5612   9.9773 
+##   48    -26.493  -1.2627  -3.5611   9.9773 
+##   49    -26.493  -1.2627  -3.5612   9.9773 
+##   50    -26.493  -1.2627  -3.5613   9.9777 
+##   51    -26.493  -1.2627  -3.5613   9.9777 
+##   52    -26.493  -1.2627  -3.5613   9.9777 
+##   53    -26.493  -1.2627  -3.5613   9.9777 
+##   54    -26.493  -1.2627  -3.5615   9.9789 
+##   55    -26.493  -1.2627  -3.5615   9.9789 
+##   56    -26.493  -1.2627  -3.5615   9.9789 
+##   57    -26.493  -1.2627  -3.5615   9.9789 
+##   58    -26.493  -1.2626  -3.5618   9.9825 
+##   59    -26.493  -1.2626  -3.5618   9.9825 
+##   60    -26.493  -1.2626  -3.5618   9.9825 
+##   61    -26.493  -1.2626  -3.5618   9.9825 
+##   62    -26.493  -1.2626  -3.5624   9.9921 
+##   63    -26.493  -1.2626  -3.5624   9.9921 
+##   64    -26.493  -1.2626  -3.5623   9.9921 
+##   65    -26.493  -1.2626  -3.5624   9.9921 
+##   66    -26.493  -1.2625  -3.5633  10.0171 
+##   67    -26.493  -1.2625  -3.5633  10.0171 
+##   68    -26.493  -1.2625  -3.5633  10.0171 
+##   69    -26.493  -1.2625  -3.5633  10.0171 
+##   70    -26.493  -1.2624  -3.5649  10.0747 
+##   71    -26.493  -1.2624  -3.5649  10.0747 
+##   72    -26.493  -1.2624  -3.5649  10.0747 
+##   73    -26.493  -1.2624  -3.5649  10.0747 
+##   74    -26.493  -1.2623  -3.5668  10.1837 
+##   75    -26.493  -1.2623  -3.5668  10.1837 
+##   76    -26.493  -1.2623  -3.5668  10.1837 
+##   77    -26.493  -1.2623  -3.5668  10.1837 
+##   78    -26.493  -1.2623  -3.5684  10.3526 
+##   79    -26.493  -1.2623  -3.5684  10.3526 
+##   80    -26.493  -1.2623  -3.5684  10.3526 
+##   81    -26.493  -1.2623  -3.5684  10.3526 
+##   82    -26.493  -1.2624  -3.5686  10.5921 
+##   83    -26.493  -1.2624  -3.5686  10.5921 
+##   84    -26.493  -1.2624  -3.5686  10.5921 
+##   85    -26.493  -1.2624  -3.5686  10.5922 
+##   86    -26.492  -1.2627  -3.5677  10.8538 
+##   87    -26.492  -1.2627  -3.5677  10.8538 
+##   88    -26.492  -1.2627  -3.5677  10.8538 
+##   89    -26.492  -1.2627  -3.5677  10.8538 
+##   90    -26.492  -1.2628  -3.5675  11.1298 
+##   91    -26.492  -1.2628  -3.5675  11.1298 
+##   92    -26.492  -1.2628  -3.5675  11.1298 
+##   93    -26.492  -1.2628  -3.5675  11.1299 
+##   94    -26.492  -1.2628  -3.5678  11.4680 
+##   95    -26.492  -1.2628  -3.5678  11.4680 
+##   96    -26.492  -1.2628  -3.5678  11.4680 
+##   97    -26.492  -1.2628  -3.5678  11.4680 
+##   98    -26.492  -1.2627  -3.5680  11.8106 
+##   99    -26.492  -1.2627  -3.5680  11.8106 
+##  100    -26.492  -1.2627  -3.5680  11.8106 
+##  101    -26.492  -1.2627  -3.5680  11.8106 
+##  102    -26.492  -1.2627  -3.5680  12.1482 
+##  103    -26.492  -1.2627  -3.5680  12.1482 
+##  104    -26.492  -1.2627  -3.5680  12.1482 
+##  105    -26.492  -1.2627  -3.5680  12.1482 
+##  106    -26.492  -1.2627  -3.5680  12.4896 
+##  107    -26.492  -1.2627  -3.5680  12.4896 
+##  108    -26.492  -1.2627  -3.5680  12.4896 
+##  109    -26.492  -1.2627  -3.5680  12.4896 
+##  110    -26.492  -1.2627  -3.5680  12.8330 
+##  111    -26.492  -1.2627  -3.5680  12.8330 
+##  112    -26.492  -1.2627  -3.5680  12.8330 
+##  113    -26.492  -1.2627  -3.5680  12.8330 
+##  114    -26.492  -1.2627  -3.5680  13.1786 
+##  115    -26.492  -1.2627  -3.5680  13.1786 
+##  116    -26.492  -1.2627  -3.5680  13.1786 
+##  117    -26.492  -1.2627  -3.5680  13.1786 
+##  118    -26.492  -1.2627  -3.5680  13.5249 
+##  119    -26.492  -1.2627  -3.5680  13.5249 
+##  120    -26.492  -1.2627  -3.5680  13.5249 
+##  121    -26.492  -1.2627  -3.5680  13.5249 
+##  122    -26.492  -1.2627  -3.5680  13.8711 
+##  123    -26.492  -1.2627  -3.5680  13.8711 
+##  124    -26.492  -1.2627  -3.5680  13.8711 
+##  125    -26.492  -1.2627  -3.5680  13.8711 
+##  126    -26.492  -1.2627  -3.5680  14.2173 
+##  127    -26.492  -1.2627  -3.5680  14.2173 
+##  128    -26.492  -1.2627  -3.5680  14.2173 
+##  129    -26.492  -1.2627  -3.5680  14.2173 
+##  130    -26.492  -1.2627  -3.5680  14.5647 
+##  131    -26.492  -1.2627  -3.5680  14.5647 
+##  132    -26.492  -1.2627  -3.5680  14.5647 
+##  133    -26.492  -1.2627  -3.5680  14.5647 
+##  134    -26.492  -1.2627  -3.5680  14.9091 
+##  135    -26.492  -1.2627  -3.5680  14.9091 
+##  136    -26.492  -1.2627  -3.5680  14.9091 
+##  137    -26.492  -1.2627  -3.5680  14.9092 
+##  138    -26.492  -1.2626  -3.5680  14.9091 
+##  139    -26.492  -1.2627  -3.5679  14.9091 
+##  140    -26.492  -1.2627  -3.5680  14.9106 
+##  141    -26.492  -1.2625  -3.5680  14.9091 
+##  142    -26.492  -1.2626  -3.5679  14.9091 
+##  143    -26.492  -1.2626  -3.5680  14.9106 
+##  144    -26.492  -1.2627  -3.5678  14.9091 
+##  145    -26.492  -1.2627  -3.5679  14.9106 
+##  146    -26.492  -1.2627  -3.5680  14.9121 
+## Completed in 0.27 seconds at 18:50:17 17 Dez 2019</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">summary</span>(secr.fit.example)</code></pre></div>
+<pre><code>## $versiontime
+## [1] &quot;4.0.2, run 18:50:17 17 Dez 2019, elapsed 0.27 s&quot;
+## 
+## $capthist
+##             1 2
+## Occasions   1 1
+## Detections 15 6
+## Animals     3 2
+## Detectors   3 4
+## Moves       5 2
+## 
+## $trapsummary
+## $trapsummary$`1`
+## Object class       traps 
+## Detector type      count 
+## Detector number    3 
+## Average spacing    2575.831 m 
+## x-range            523000 526000 m 
+## y-range            604000 607050 m 
+## 
+##  Usage range by occasion
+##      1
+## min 38
+## max 44
+## 
+## $trapsummary$`2`
+## Object class       traps 
+## Detector type      count 
+## Detector number    4 
+## Average spacing    2496.591 m 
+## x-range            523000 526000 m 
+## y-range            604000 607050 m 
+## 
+##  Usage range by occasion
+##      1
+## min 38
+## max 64
+## 
+## 
+## $detector
+##       1       2 
+## &quot;count&quot; &quot;count&quot; 
+## 
+## $countmodel
+## [1] &quot;Binomial, size from usage&quot;
+## 
+## $mask
+##   Cells Spacing Area
+## 1    36      50    9
+## 2    36      50    9
+## 
+## $modeldetails
+##     CL fixed distribution hcov
+##  FALSE  none      poisson     
+## 
+## $AICtable
+##             model   detectfn npar    logLik    AIC   AICc
+##  D~1 g0~1 sigma~1 halfnormal    3 -26.49229 58.985 82.985
+## 
+## $coef
+##            beta      SE.beta       lcl        ucl
+## D     -1.262731 4.474589e-01 -2.139734 -0.3857277
+## g0    -3.567963 2.286831e-01 -4.016173 -3.1197519
+## sigma 14.909146 1.621684e-07 14.909146 14.9091468
+## 
+## $predicted
+## $predicted$`session = 1`
+##        link     estimate SE.estimate          lcl          ucl
+## D       log 2.828804e-01 0.133185571 1.176861e-01 6.799557e-01
+## g0    logit 2.743913e-02 0.006102689 1.770276e-02 4.229982e-02
+## sigma   log 2.985108e+06 0.483193594 2.985107e+06 2.985109e+06
+## 
+## $predicted$`session = 2`
+##        link     estimate SE.estimate          lcl          ucl
+## D       log 2.828804e-01 0.133185571 1.176861e-01 6.799557e-01
+## g0    logit 2.743913e-02 0.006102689 1.770276e-02 4.229982e-02
+## sigma   log 2.985108e+06 0.483193594 2.985107e+06 2.985109e+06</code></pre>
 </div>
 </div>
 

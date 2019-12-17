@@ -1,4 +1,4 @@
-## ----results = "hide"---------------------------------------------------------
+## ----message = FALSE, results = "hide"----------------------------------------
 library(camtrapR)
 library(secr)
 
@@ -245,45 +245,15 @@ sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSamp
 
 
 ## -----------------------------------------------------------------------------
+# load multi-season data
+data(camtrapsMultiSeason)
+data(recordTableSampleMultiSeason)
 
-# simulate records from multiple seasons
-recordTableSample_season2 <- recordTableSample
-recordTableSample_season2$DateTimeOriginal <- gsub("2009", "2010", recordTableSample_season2$DateTimeOriginal)  # substitute 2009 with 2010)
-recordTableSample_season <- rbind(recordTableSample, recordTableSample_season2) # combine with season 1
-rm(recordTableSample_season2)
-
-# also, for clarity, lets remove all unnecessary columns
-recordTableSample_season <- recordTableSample_season[, c("Station", "Species", "DateTimeOriginal")]
-
-
-# Now we simulate a camera trap table with 2 seasons by adding 1 year to all dates (substitute 2009 with 2010)
-# and converting back to character format
-camtraps_season2 <- camtraps
-
-camtraps_season2[, "Setup_date"]     <- gsub("2009", "2010", camtraps_season2[, "Setup_date"])
-camtraps_season2[, "Retrieval_date"] <- gsub("2009", "2010", camtraps_season2[, "Retrieval_date"])
-camtraps_season2[, "Problem1_from"]  <- gsub("2009", "2010", camtraps_season2[, "Problem1_from"])
-camtraps_season2[, "Problem1_to"]    <- gsub("2009", "2010", camtraps_season2[, "Problem1_to"])
-
-# add an extra station with different dates 
-camtraps_season2 <- rbind(camtraps_season2, NA)
-camtraps_season2$Station[4] <- "StationD"
-camtraps_season2$utm_y[4]  <- 607050
-camtraps_season2$utm_x[4]  <- 525000
-camtraps_season2$Setup_date[4]  <- "04/04/2010"
-camtraps_season2$Retrieval_date[4]  <- "17/06/2010"
-camtraps_season2$Problem1_from[4] <- "20/05/2010"
-camtraps_season2$Problem1_to[4] <- "30/05/2010"
-
-# add session column
-camtraps$session <- 2009
-camtraps_season2$session <- 2010
-
-# combine the tables for 2 seasons
-camtraps_season <- rbind(camtraps, camtraps_season2)
+# also, for clarity, lets remove all unnecessary columns from the record table
+recordTableSampleMultiSeason <- recordTableSampleMultiSeason[, c("Station", "Species", "DateTimeOriginal")]
 
 # create camera operation matrix
-camop_session <- cameraOperation(CTtable         = camtraps_season,
+camop_season <- cameraOperation(CTtable         = camtrapsMultiSeason,
                                     stationCol   = "Station",
                                     setupCol     = "Setup_date",
                                     sessionCol   = "session",
@@ -294,12 +264,12 @@ camop_session <- cameraOperation(CTtable         = camtraps_season,
 
 # plot camera operation matrix
 par(oma = c(0,7,0,0))
-camopPlot(camop_session)
+camopPlot(camop_season)
 
 
 # make multi-season detection history
-DetHist_multi <- detectionHistory(recordTable   = recordTableSample_season,
-                            camOp                = camop_session,
+DetHist_multi <- detectionHistory(recordTable   = recordTableSampleMultiSeason,
+                            camOp                = camop_season,
                             stationCol           = "Station",
                             speciesCol           = "Species",
                             species              = "VTA",
@@ -316,9 +286,9 @@ DetHist_multi
 
 ## -----------------------------------------------------------------------------
 
-year_matrix <- matrix(unique(as.character(camtraps_season$session)),
-               ncol = length(unique(as.character(camtraps_season$session))),
-               nrow = length(unique(camtraps_season$Station)),
+year_matrix <- matrix(unique(as.character(camtrapsMultiSeason$session)),
+               ncol = length(unique(as.character(camtrapsMultiSeason$session))),
+               nrow = length(unique(camtrapsMultiSeason$Station)),
                byrow = TRUE)
 
 # this is a made up example table with station covariates for demonstration
@@ -343,8 +313,8 @@ colext_example <- unmarked::colext(psiformula = ~ treecover,    # First-year occ
 summary(colext_example)
 
 ## -----------------------------------------------------------------------------
-camtraps_season$session[camtraps_season$session == 2009] <- 1
-camtraps_season$session[camtraps_season$session == 2010] <- 2
+camtrapsMultiSeason$session[camtrapsMultiSeason$session == 2009] <- 1
+camtrapsMultiSeason$session[camtrapsMultiSeason$session == 2010] <- 2
 
 ## -----------------------------------------------------------------------------
 
@@ -362,7 +332,7 @@ recordTableIndividualSample_season <- recordTableIndividualSample_season[, c("St
 ## -----------------------------------------------------------------------------
 
 # create camera operation matrix (with problems/malfunction), same as above for multi-season occupancy
-camop_session <- cameraOperation(CTtable         = camtraps_season,
+camop_season <- cameraOperation(CTtable         = camtrapsMultiSeason,
                                     stationCol   = "Station",
                                     setupCol     = "Setup_date",
                                     sessionCol   = "session",
@@ -372,35 +342,35 @@ camop_session <- cameraOperation(CTtable         = camtraps_season,
 )
 
 
-
+# create capthist object
 sdh_multi <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSample_season,
-                               species               = "LeopardCat",
-                               output                = "binary",
-                               camOp                 = camop_session,
-                               CTtable               = camtraps_season,
-                               stationCol            = "Station",
-                               speciesCol            = "Species",
-                               sessionCol            = "session",
-                               Xcol                  = "utm_x",
-                               Ycol                  = "utm_y",
-                               individualCol         = "Individual",
-                               recordDateTimeCol     = "DateTimeOriginal",
-                               recordDateTimeFormat  = "%Y-%m-%d %H:%M:%S",
-                               occasionLength        = 10,
-                               day1                  = "survey",
-                               includeEffort         = TRUE,
-                               timeZone              = "Asia/Kuala_Lumpur",
-                               stationCovariateCols  = "utm_y",     # made up, a potential site covariate from camtraps_season
+                               species                 = "LeopardCat",
+                               output                  = "binary",
+                               camOp                   = camop_season,
+                               CTtable                 = camtrapsMultiSeason,
+                               stationCol              = "Station",
+                               speciesCol              = "Species",
+                               sessionCol              = "session",
+                               Xcol                    = "utm_x",
+                               Ycol                    = "utm_y",
+                               individualCol           = "Individual",
+                               recordDateTimeCol       = "DateTimeOriginal",
+                               recordDateTimeFormat    = "%Y-%m-%d %H:%M:%S",
+                               occasionLength          = 10,
+                               day1                    = "survey",
+                               includeEffort           = TRUE,
+                               timeZone                = "Asia/Kuala_Lumpur",
+                               stationCovariateCols    = "utm_y",       # made up, a potential site covariate from camtrapsMultiSeason
                                individualCovariateCols = "Individual"   # made up, a potential individual covariate from recordTable
   )
 
 
-  # summary(sdh_multi)
-  # par(mfrow = c(1,2))
-  # plot(sdh_multi)
-  # 
-  # secr.fit.example <- secr.fit(capthist = sdh2,
-  #                              start = c(-1, -2, 10))   # with starting values, since its only very little data
-  # summary(secr.fit.example)
+  summary(sdh_multi)
+  par(mfrow = c(1,2))
+  plot(sdh_multi)
+
+  secr.fit.example <- secr.fit(capthist = sdh_multi,
+                               start = c(-1, -2, 10))   # with starting values, since its only very little data
+  summary(secr.fit.example)
 
 
