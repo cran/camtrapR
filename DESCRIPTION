@@ -2,8 +2,8 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 1.2.1
-Date: 2019-12-16
+Version: 1.2.2
+Date: 2020-01-07
 Authors@R: c(
         person("Juergen", "Niedballa", email = "camtrapr@gmail.com", role = c("aut", "cre")),
         person("Alexandre", "Courtiol", role = "aut"),
@@ -17,8 +17,8 @@ Authors@R: c(
         )
 Depends: R (>= 3.1.0)
 Imports: methods, sp, overlap, secr, data.table
-Suggests: unmarked, knitr, rmarkdown, raster, tibble, rgdal, lubridate,
-        taxize, ritis
+Suggests: knitr, lubridate, raster, rgdal, ritis, rmarkdown, taxize,
+        testthat, tibble, unmarked
 VignetteBuilder: knitr
 SystemRequirements: ExifTool
         (http://www.sno.phy.queensu.ca/~phil/exiftool/)
@@ -29,7 +29,7 @@ BugReports: https://groups.google.com/forum/#!forum/camtrapr
 Encoding: UTF-8
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2019-12-17 10:51:01 UTC; Juergen
+Packaged: 2020-01-07 06:53:57 UTC; Juergen
 Author: Juergen Niedballa [aut, cre],
   Alexandre Courtiol [aut],
   Rahel Sollmann [aut],
@@ -41,4 +41,4 @@ Author: Juergen Niedballa [aut, cre],
   Andreas Wilting [ctb, ths]
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-12-17 17:10:11 UTC
+Date/Publication: 2020-01-07 08:40:02 UTC
