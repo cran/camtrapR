@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2020-01-07" />
+<meta name="date" content="2020-01-10" />
 
 <title></title>
 
@@ -97,7 +97,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Extracting Data from Camera Trapping Images, creating occupancy &amp; secr input</li>
 </ol></h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2020-01-07</h4>
+<h4 class="date">2020-01-10</h4>
 
 
 <div id="TOC">
@@ -173,12 +173,12 @@ wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                      Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG        1
@@ -321,7 +321,7 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wd_images_ID &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;pictures/sample_images&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;camtrapR&quot;</span>)
 <span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>## Metadata of:
-## C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##  [1] &quot;Composite:ImageSize&quot;          &quot;Composite:Megapixels&quot;        
 ##  [3] &quot;Composite:ShutterSpeed&quot;       &quot;EXIF:ColorSpace&quot;             
 ##  [5] &quot;EXIF:ComponentsConfiguration&quot; &quot;EXIF:Compression&quot;            
@@ -347,15 +347,15 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 <p>If one has no idea what kind of data are behind these tag names, <code>returnMetadata</code> can be set to TRUE to return the actual metadata instead of the tag names only.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exifTagNames</span>(<span class="dt">inDir =</span> wd_images_ID, <span class="dt">returnMetadata =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Metadata values of:
-## C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##  [1] &quot;[ExifTool]      ExifTool Version Number         : 11.80&quot;                                                                                                       
 ##  [2] &quot;[ExifTool]      Warning                         : Invalid EXIF text encoding for UserComment&quot;                                                                  
 ##  [3] &quot;[File]          File Name                       : StationA__2009-04-21__00-40-00(1).JPG&quot;                                                                       
-##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE&quot;
+##  [4] &quot;[File]          Directory                       : C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE&quot;
 ##  [5] &quot;[File]          File Size                       : 27 kB&quot;                                                                                                       
-##  [6] &quot;[File]          File Modification Date/Time     : 2020:01:07 14:48:07+08:00&quot;                                                                                   
-##  [7] &quot;[File]          File Access Date/Time           : 2020:01:07 14:48:07+08:00&quot;                                                                                   
-##  [8] &quot;[File]          File Creation Date/Time         : 2020:01:07 14:48:07+08:00&quot;                                                                                   
+##  [6] &quot;[File]          File Modification Date/Time     : 2020:01:10 19:07:53+08:00&quot;                                                                                   
+##  [7] &quot;[File]          File Access Date/Time           : 2020:01:10 19:07:53+08:00&quot;                                                                                   
+##  [8] &quot;[File]          File Creation Date/Time         : 2020:01:10 19:07:53+08:00&quot;                                                                                   
 ##  [9] &quot;[File]          File Permissions                : rw-rw-rw-&quot;                                                                                                   
 ## [10] &quot;[File]          File Type                       : JPEG&quot;                                                                                                        
 ## [11] &quot;[File]          File Type Extension             : jpg&quot;                                                                                                         
@@ -417,12 +417,12 @@ rec.db.species60.exclude &lt;-<span class="st"> </span><span class="kw">recordTa
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                      Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/PBE
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/PBE
 ##                                FileName EXIF.Model EXIF.Make n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG  CUDDEBACK        G4        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG  CUDDEBACK        G4        1
@@ -468,12 +468,12 @@ wd_images_individual_ID &lt;-<span class="st"> </span><span class="kw">system.fi
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
 ##                                                                                                           Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images_tagged/LeopardCat
-## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images_tagged/LeopardCat
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images_tagged/LeopardCat
 ##                                FileName metadata_Species metadata_individual
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat                   1
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat                   2
@@ -1189,10 +1189,10 @@ sdh_multi &lt;-<span class="st"> </span><span class="kw">spatialDetectionHistory
 ##  144    -26.492  -1.2627  -3.5678  14.9091 
 ##  145    -26.492  -1.2627  -3.5679  14.9106 
 ##  146    -26.492  -1.2627  -3.5680  14.9121 
-## Completed in 0.66 seconds at 14:49:58 07 Jan 2020</code></pre>
+## Completed in 0.7 seconds at 19:09:40 10 Jan 2020</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">summary</span>(secr.fit.example)</code></pre></div>
 <pre><code>## $versiontime
-## [1] &quot;4.0.2, run 14:49:57 07 Jan 2020, elapsed 0.66 s&quot;
+## [1] &quot;4.0.2, run 19:09:39 10 Jan 2020, elapsed 0.7 s&quot;
 ## 
 ## $capthist
 ##             1 2

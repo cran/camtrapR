@@ -2,30 +2,63 @@
 library(camtrapR)
 data(camtraps)
 
-## -----------------------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
+#  
+#  # find data for 2 species with correctly spelled names
+#  checkNames1 <- checkSpeciesNames (speciesNames = c("Bearded Pig", "Malayan Civet"),
+#                                    searchtype   = "common")
+#  checkNames1
 
-# find data for 2 species with correctly spelled names
-checkNames1 <- checkSpeciesNames (speciesNames = c("Bearded Pig", "Malayan Civet"),
-                                  searchtype   = "common")
-checkNames1
+## ----echo = FALSE-------------------------------------------------------------
 
-# and with scientific names (note that this is for a subspecies)
-checkNames2 <- checkSpeciesNames (speciesNames = "Viverra tangalunga tangalunga",
-                                  searchtype   = "scientific")
-checkNames2
+structure(list(tsn = c(625012, 622004), user_name = structure(1:2, .Label = c("Bearded Pig", 
+"Malayan Civet"), class = "factor"), scientificName = c("Sus barbatus", 
+"Viverra tangalunga"), commonName = c("bearded pig/Bearded Pig", 
+"Malayan Civet"), authorship = c("Müller, 1838", "Gray, 1832"
+), rankname = c("Species", "Species"), itis_url = c("https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=625012", 
+"https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=622004"
+), taxon_status = c("valid", "valid")), row.names = c(NA, -2L
+), class = "data.frame")
 
-# an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis
-checkNames3 <- checkSpeciesNames (speciesNames = "Felis bengalensis",
-                                  searchtype   = "scientific",
-                                  accepted     = FALSE)
-checkNames3
+## ----eval = FALSE-------------------------------------------------------------
+#  # and with scientific names (note that this is for a subspecies)
+#  checkNames2 <- checkSpeciesNames (speciesNames = "Viverra tangalunga tangalunga",
+#                                    searchtype   = "scientific")
+#  checkNames2
 
-## an ambiguous name name: Chevrotain (Tragulus)
-## this does not work in vignettes, but should run on your machine
- # checkNames4 <- checkSpeciesNames (speciesNames = "Chevrotain",
- #                                   searchtype   = "common")
- # 1              # making a choice from the menu
- # checkNames4
+## ----echo = FALSE-------------------------------------------------------------
+structure(list(tsn = 726578, user_name = structure(1L, .Label = "Viverra tangalunga tangalunga", class = "factor"), 
+    scientificName = "Viverra tangalunga tangalunga", commonName = NA, 
+    authorship = "Gray, 1832", rankname = "Subspecies", itis_url = "https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=726578", 
+    taxon_status = "valid"), row.names = c(NA, -1L), class = "data.frame")
+
+## ----eval = FALSE-------------------------------------------------------------
+#  # an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis
+#  checkNames3 <- checkSpeciesNames (speciesNames = "Felis bengalensis",
+#                                    searchtype   = "scientific",
+#                                    accepted     = FALSE)
+#  checkNames3
+
+## ----echo = FALSE-------------------------------------------------------------
+structure(list(tsn = 183793, user_name = structure(1L, .Label = "Felis bengalensis", class = "factor"), 
+    scientificName = "Felis bengalensis", commonName = "leopard cat", 
+    authorship = "Kerr, 1792", rankname = "Species", itis_url = "https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=183793", 
+    taxonUsageRating = "invalid"), class = "data.frame", row.names = c(NA, 
+-1L))
+
+## ----eval = FALSE-------------------------------------------------------------
+#  # an ambiguous name name: Chevrotain (Tragulus)
+#  checkNames4 <- checkSpeciesNames (speciesNames = "Chevrotain",
+#                                    searchtype   = "common")
+#  1              # making a choice from the menu
+#  checkNames4
+
+## ----echo = FALSE-------------------------------------------------------------
+structure(list(tsn = 624919, user_name = structure(1L, .Label = "Chevrotain", class = "factor"), 
+    scientificName = "Tragulidae", commonName = "chevrotains", 
+    authorship = "Milne-Edwards, 1864", rankname = "Family", 
+    itis_url = "https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=624919", 
+    taxon_status = "valid"), row.names = c(NA, -1L), class = "data.frame")
 
 ## -----------------------------------------------------------------------------
 
@@ -129,23 +162,23 @@ specImagecopy
 ## ----eval = FALSE-------------------------------------------------------------
 #  # all images in one directory, no station subdirectories
 #  # column "station" in outtable will be uninformative
-#  ID_check1 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID",
-#                                          stationsToCheck             = "SpeciesA",         # no station subdirectories
-#                                          IDfrom                      = "metadata",
-#                                          hasCameraFolders            = FALSE,
+#  ID_check1 <- checkSpeciesIdentification(inDir    = "C:/Users/Peter/individualID",
+#                                          stationsToCheck   = "SpeciesA",         # no station subdirectories
+#                                          IDfrom            = "metadata",
+#                                          hasCameraFolders  = FALSE,
 #                                          metadataSpeciesTag          = "Example_Species_ID_Paul",
 #                                          metadataSpeciesTagToCompare = "Example_Species_ID_Peter",
-#                                          maxDeltaTime                = 60)
+#                                          maxDeltaTime        = 60)
 #  
 #  # check results with either of the following two:
 #  # ID_check1[[2]]
 #  # ID_check1$IDconflictCheck
 #  
 #  # all images in station subdirectories
-#  ID_check2 <- checkSpeciesIdentification(inDir                       = "C:/Users/Peter/individualID/SpeciesA",  # with station subdirectories
-#                                          IDfrom                      = "metadata",
-#                                          hasCameraFolders            = FALSE,
-#                                          metadataSpeciesTag          = "Example_Species_ID_Paul",
+#  ID_check2 <- checkSpeciesIdentification(inDir    = "C:/Users/Peter/individualID/SpeciesA",  # with station subdirectories
+#                                          IDfrom   = "metadata",
+#                                          hasCameraFolders    = FALSE,
+#                                          metadataSpeciesTag  = "Example_Species_ID_Paul",
 #                                          metadataSpeciesTagToCompare = "Example_Species_ID_Peter",
-#                                          maxDeltaTime                = 60)
+#                                          maxDeltaTime        = 60)
 

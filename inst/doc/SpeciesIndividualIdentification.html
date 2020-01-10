@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2020-01-07" />
+<meta name="date" content="2020-01-10" />
 
 <title></title>
 
@@ -97,7 +97,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Identifying species and individuals in camtrapR</li>
 </ol></h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2020-01-07</h4>
+<h4 class="date">2020-01-10</h4>
 
 
 <div id="TOC">
@@ -308,23 +308,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="checking-species-names-with-the-itis-taxonomic-database" class="section level2">
 <h2>Checking species names with the ITIS taxonomic database</h2>
 <p>Generally, you are free to use any species names you wish to - scientific names, common names, local names, abbreviations, codes, etc. But it may often be desirable to be consistent with species names, e.g. to ensure long-term usability of data or to facilitate data exchange between researchers. Therefore, users can check the species names they wish to use in species identification (common or scientific names) against the <a href="http://www.itis.gov">ITIS taxonomic database</a> using the function <code>checkSpeciesNames</code>. The function returns matching common and scientific names to the names provided by the user, taxon ranks and authors, the ITIS taxonomic serial number (TSN) and an ITIS taxon url. Internally, the function <code>checkSpeciesNames</code> makes use of the R package <code>taxize</code>.</p>
-<p>If multiple matches are found, a menu allows users to choose their species of interest (if argument <code>ask = TRUE</code>). By default, only accepted species names are returned (controlled by argument <code>accepted</code>). Invalid names will return no matches but NA.</p>
+<p>If multiple matches are found, a menu allows users to choose their species of interest (if argument <code>ask = TRUE</code>). By default, only accepted species names are returned (controlled by argument <code>accepted</code>). Invalid names will return NA.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># find data for 2 species with correctly spelled names</span>
 checkNames1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="kw">c</span>(<span class="st">&quot;Bearded Pig&quot;</span>, <span class="st">&quot;Malayan Civet&quot;</span>),
-                                  <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)</code></pre></div>
-<pre><code>## ==  2 queries  ===============</code></pre>
-<pre><code>## 
-## Retrieving data for taxon 'Bearded Pig'</code></pre>
-<pre><code>## v  Found:  Bearded Pig</code></pre>
-<pre><code>## 
-## Retrieving data for taxon 'Malayan Civet'</code></pre>
-<pre><code>## v  Found:  Malayan Civet
-## ==  Results  =================
-## 
-## * Total: 2 
-## * Found: 2 
-## * Not Found: 0</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">checkNames1</code></pre></div>
+                                  <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)
+checkNames1</code></pre></div>
 <pre><code>##      tsn     user_name     scientificName              commonName   authorship
 ## 1 625012   Bearded Pig       Sus barbatus bearded pig/Bearded Pig Müller, 1838
 ## 2 622004 Malayan Civet Viverra tangalunga           Malayan Civet   Gray, 1832
@@ -339,17 +327,8 @@ checkNames1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</sp
 ## 2        valid</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># and with scientific names (note that this is for a subspecies)</span>
 checkNames2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Viverra tangalunga tangalunga&quot;</span>,
-                                  <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>)</code></pre></div>
-<pre><code>## ==  1 queries  ===============</code></pre>
-<pre><code>## 
-## Retrieving data for taxon 'Viverra tangalunga tangalunga'</code></pre>
-<pre><code>## v  Found:  Viverra tangalunga tangalunga
-## ==  Results  =================
-## 
-## * Total: 1 
-## * Found: 1 
-## * Not Found: 0</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">checkNames2</code></pre></div>
+                                  <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>)
+checkNames2</code></pre></div>
 <pre><code>##      tsn                     user_name                scientificName commonName
 ## 1 726578 Viverra tangalunga tangalunga Viverra tangalunga tangalunga         NA
 ##   authorship   rankname
@@ -361,29 +340,25 @@ checkNames2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</sp
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an invalid name: the accepted name of the leopard cat is Prionailurus bengalensis</span>
 checkNames3 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Felis bengalensis&quot;</span>,
                                   <span class="dt">searchtype   =</span> <span class="st">&quot;scientific&quot;</span>,
-                                  <span class="dt">accepted     =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>## ==  1 queries  ===============</code></pre>
-<pre><code>## 
-## Retrieving data for taxon 'Felis bengalensis'</code></pre>
-<pre><code>## v  Found:  Felis bengalensis
-## ==  Results  =================
-## 
-## * Total: 1 
-## * Found: 1 
-## * Not Found: 0</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">checkNames3</code></pre></div>
+                                  <span class="dt">accepted     =</span> <span class="ot">FALSE</span>)
+checkNames3</code></pre></div>
 <pre><code>##      tsn         user_name    scientificName  commonName authorship rankname
 ## 1 183793 Felis bengalensis Felis bengalensis leopard cat Kerr, 1792  Species
 ##                                                                                itis_url
 ## 1 https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=183793
 ##   taxonUsageRating
 ## 1          invalid</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## an ambiguous name name: Chevrotain (Tragulus)
-## this does not work in vignettes, but should run on your machine
- <span class="co"># checkNames4 &lt;- checkSpeciesNames (speciesNames = &quot;Chevrotain&quot;,</span>
- <span class="co">#                                   searchtype   = &quot;common&quot;)</span>
- <span class="co"># 1              # making a choice from the menu</span>
- <span class="co"># checkNames4</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an ambiguous name name: Chevrotain (Tragulus)</span>
+checkNames4 &lt;-<span class="st"> </span><span class="kw">checkSpeciesNames</span> (<span class="dt">speciesNames =</span> <span class="st">&quot;Chevrotain&quot;</span>,
+                                  <span class="dt">searchtype   =</span> <span class="st">&quot;common&quot;</span>)
+<span class="dv">1</span>              <span class="co"># making a choice from the menu</span>
+checkNames4</code></pre></div>
+<pre><code>##      tsn  user_name scientificName  commonName          authorship rankname
+## 1 624919 Chevrotain     Tragulidae chevrotains Milne-Edwards, 1864   Family
+##                                                                                itis_url
+## 1 https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&amp;search_value=624919
+##   taxon_status
+## 1        valid</code></pre>
 </div>
 <div id="species-identification-via-drag-drop-of-images" class="section level2">
 <h2>Species identification via drag &amp; drop of images</h2>
@@ -409,9 +384,9 @@ StationFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createStatio
 ## 2 StationB
 ## 3 StationC
 ##                                                                                directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationB
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationC
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationB
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -427,12 +402,12 @@ SpeciesFolderCreate1 &lt;-<span class="st"> </span><span class="kw">createSpecie
 <pre><code>## created 6 directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpeciesFolderCreate1</code></pre></div>
 <pre><code>##                                                                                            directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationC/Bay Cat
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -448,12 +423,12 @@ SpecFolderCreate2 &lt;-<span class="st"> </span><span class="kw">createSpeciesFo
 <pre><code>## deleted 6 empty directories</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SpecFolderCreate2</code></pre></div>
 <pre><code>##                                                                                            directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationA/Sambar Deer
-## 2     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationA/Bay Cat
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationB/Sambar Deer
-## 4     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationB/Bay Cat
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationC/Sambar Deer
-## 6     C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/createSpeciesFoldersTest/StationC/Bay Cat
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationA/Sambar Deer
+## 2     C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationA/Bay Cat
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationB/Sambar Deer
+## 4     C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationB/Bay Cat
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationC/Sambar Deer
+## 6     C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/createSpeciesFoldersTest/StationC/Bay Cat
 ##   still.exists
 ## 1        FALSE
 ## 2        FALSE
@@ -510,8 +485,8 @@ check.folders &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentif
 ## 7  StationC
 ## 29 StationC
 ##                                                                                                       Directory
-## 7  C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationC/EGY
-## 29 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationC/TRA
+## 7  C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationC/EGY
+## 29 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationC/TRA
 ##                                 FileName species    DateTimeOriginal
 ## 7  StationC__2009-04-27__00-17-00(1).JPG     EGY 2009-04-27 00:17:00
 ## 29 StationC__2009-04-27__00-19-00(1).JPG     TRA 2009-04-27 00:19:00
@@ -565,15 +540,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">IDfrom              =</span> <span class="st">&quot;directory&quot;</span>,
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\Juergen\AppData\Local\Temp\Rtmp2VQhFi/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\Juergen\AppData\Local\Temp\RtmpYd7kdS/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_append)</code></pre></div>
 <pre><code>##                                                                         directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
 ##                            filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1).JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1).JPG     PBE
@@ -593,15 +568,15 @@ species_names_append &lt;-<span class="st"> </span><span class="kw">appendSpecie
                                            <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
                                            <span class="dt">removeNames         =</span> <span class="ot">TRUE</span>
 )</code></pre></div>
-<pre><code>## renamed 68 out of 68 images in C:\Users\Juergen\AppData\Local\Temp\Rtmp2VQhFi/sample_images</code></pre>
+<pre><code>## renamed 68 out of 68 images in C:\Users\Juergen\AppData\Local\Temp\RtmpYd7kdS/sample_images</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(species_names_remove)</code></pre></div>
 <pre><code>##                                                                         directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
-## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sample_images/StationA/PBE
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sample_images/StationA/PBE
 ##                                 filename_old species
 ## 1 StationA__2009-04-21__00-40-00(1)__PBE.JPG     PBE
 ## 2 StationA__2009-04-22__20-19-00(1)__PBE.JPG     PBE
@@ -636,7 +611,7 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
                                   <span class="dt">outDir                  =</span> wd_images_species_copy,
                                   <span class="dt">createStationSubfolders =</span> <span class="ot">FALSE</span>
   )</code></pre></div>
-<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images   to   C:\Users\Juergen\AppData\Local\Temp\Rtmp2VQhFi/sampleSpeciesImages/VTA</code></pre>
+<pre><code>## VTA  - copied 5 out of 5 images in C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images   to   C:\Users\Juergen\AppData\Local\Temp\RtmpYd7kdS/sampleSpeciesImages/VTA</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">specImagecopy</code></pre></div>
 <pre><code>##   species
 ## 1     VTA
@@ -645,11 +620,11 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 4     VTA
 ## 5     VTA
 ##                                                                                                  DirectoryOrig
-## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/VTA
-## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationA/VTA
-## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationB/VTA
-## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationB/VTA
-## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpSgxtcH/Rinst4224504e1ab/camtrapR/pictures/sample_images/StationC/VTA
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/VTA
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationA/VTA
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationB/VTA
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationB/VTA
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpuAohIW/Rinst3d8010e55e4/camtrapR/pictures/sample_images/StationC/VTA
 ##                            FilenameOrig
 ## 1 StationA__2009-04-10__05-07-00(1).JPG
 ## 2 StationA__2009-05-06__19-06-00(1).JPG
@@ -657,11 +632,11 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 ## 4 StationB__2009-04-27__05-07-00(1).JPG
 ## 5 StationC__2009-04-24__02-57-00(1).JPG
 ##                                                                  DirectoryCopy
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sampleSpeciesImages/VTA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sampleSpeciesImages/VTA
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sampleSpeciesImages/VTA
-## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sampleSpeciesImages/VTA
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmp2VQhFi/sampleSpeciesImages/VTA
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sampleSpeciesImages/VTA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sampleSpeciesImages/VTA
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sampleSpeciesImages/VTA
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sampleSpeciesImages/VTA
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpYd7kdS/sampleSpeciesImages/VTA
 ##                            FilenameCopy copy_ok
 ## 1 StationA__2009-04-10__05-07-00(1).JPG    TRUE
 ## 2 StationA__2009-05-06__19-06-00(1).JPG    TRUE
@@ -703,28 +678,28 @@ specImagecopy &lt;-<span class="st"> </span><span class="kw">getSpeciesImages</s
 <div id="double-observer-identification-of-individuals" class="section level3">
 <h3>Double observer identification of individuals</h3>
 <p>Despite its name, the function <code>checkSpeciesIdentification</code>can also be used to compare individual IDs assigned via metadata by multiple observers (with some limitations still). The idea is the same as with comparing double-observer species identifcation. In other words, the function treats individual IDs as if they were species IDs. Images of a species need to be stored in a species directory containing only images of that species (see function <code>getSpeciesImages</code>), preferably in station subdirectories. If images were not stored in station directories, the function will not be able to tell you which station the images were taken at (but you still have unique file names), do be careful when interpreting the first part of the output (the check for temporal independence).</p>
-<p>For lack of an example dataset in the package, here’s two theoretical code examples which assumes tagged images of only one species in this directory C:/Users/Peter/individualID/SpeciesA, either with or without station subdirectories</p>
+<p>For lack of an example dataset in the package, here’s two theoretical code examples which assumes tagged images of only one species in this directory “C:/Users/Peter/individualID/SpeciesA”“, either with or without station subdirectories</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># all images in one directory, no station subdirectories</span>
 <span class="co"># column &quot;station&quot; in outtable will be uninformative</span>
-ID_check1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir                       =</span> <span class="st">&quot;C:/Users/Peter/individualID&quot;</span>,
-                                        <span class="dt">stationsToCheck             =</span> <span class="st">&quot;SpeciesA&quot;</span>,         <span class="co"># no station subdirectories</span>
-                                        <span class="dt">IDfrom                      =</span> <span class="st">&quot;metadata&quot;</span>,
-                                        <span class="dt">hasCameraFolders            =</span> <span class="ot">FALSE</span>,
+ID_check1 &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir    =</span> <span class="st">&quot;C:/Users/Peter/individualID&quot;</span>,
+                                        <span class="dt">stationsToCheck   =</span> <span class="st">&quot;SpeciesA&quot;</span>,         <span class="co"># no station subdirectories</span>
+                                        <span class="dt">IDfrom            =</span> <span class="st">&quot;metadata&quot;</span>,
+                                        <span class="dt">hasCameraFolders  =</span> <span class="ot">FALSE</span>,
                                         <span class="dt">metadataSpeciesTag          =</span> <span class="st">&quot;Example_Species_ID_Paul&quot;</span>,
                                         <span class="dt">metadataSpeciesTagToCompare =</span> <span class="st">&quot;Example_Species_ID_Peter&quot;</span>,
-                                        <span class="dt">maxDeltaTime                =</span> <span class="dv">60</span>)
+                                        <span class="dt">maxDeltaTime        =</span> <span class="dv">60</span>)
 
 <span class="co"># check results with either of the following two:</span>
 <span class="co"># ID_check1[[2]]   </span>
 <span class="co"># ID_check1$IDconflictCheck   </span>
 
 <span class="co"># all images in station subdirectories</span>
-ID_check2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir                       =</span> <span class="st">&quot;C:/Users/Peter/individualID/SpeciesA&quot;</span>,  <span class="co"># with station subdirectories</span>
-                                        <span class="dt">IDfrom                      =</span> <span class="st">&quot;metadata&quot;</span>,
-                                        <span class="dt">hasCameraFolders            =</span> <span class="ot">FALSE</span>,
-                                        <span class="dt">metadataSpeciesTag          =</span> <span class="st">&quot;Example_Species_ID_Paul&quot;</span>,
+ID_check2 &lt;-<span class="st"> </span><span class="kw">checkSpeciesIdentification</span>(<span class="dt">inDir    =</span> <span class="st">&quot;C:/Users/Peter/individualID/SpeciesA&quot;</span>,  <span class="co"># with station subdirectories</span>
+                                        <span class="dt">IDfrom   =</span> <span class="st">&quot;metadata&quot;</span>,
+                                        <span class="dt">hasCameraFolders    =</span> <span class="ot">FALSE</span>,
+                                        <span class="dt">metadataSpeciesTag  =</span> <span class="st">&quot;Example_Species_ID_Paul&quot;</span>,
                                         <span class="dt">metadataSpeciesTagToCompare =</span> <span class="st">&quot;Example_Species_ID_Peter&quot;</span>,
-                                        <span class="dt">maxDeltaTime                =</span> <span class="dv">60</span>)</code></pre></div>
+                                        <span class="dt">maxDeltaTime        =</span> <span class="dv">60</span>)</code></pre></div>
 </div>
 </div>
 </div>
