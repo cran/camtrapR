@@ -15,7 +15,8 @@ recordTable <- function(inDir,
                         removeDuplicateRecords = TRUE,
                         returnFileNamesMissingTags = FALSE,
                         eventSummaryColumn,
-                        eventSummaryFunction
+                        eventSummaryFunction,
+                        video
 )
 {
 
@@ -108,8 +109,6 @@ recordTable <- function(inDir,
     }
   }
 
-
-  
   if(!is.logical(writecsv))  stop("writecsv must be logical (TRUE or FALSE)", call. = FALSE)
   if(!is.character(inDir))   stop("inDir must be of class 'character'", call. = FALSE)
   if(length(inDir) != 1)     stop("inDir may only consist of 1 element only", call. = FALSE)
@@ -119,23 +118,43 @@ recordTable <- function(inDir,
     if(!is.character(eventSummaryColumn))     stop("eventSummaryColumn must be of class 'character'", call. = FALSE)
     if(!is.character(eventSummaryFunction))   stop("eventSummaryFunction must be of class 'character'", call. = FALSE)
   }
-
+  
   # find image directories
   dirs       <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
   dirs_short <- list.dirs(inDir, full.names = FALSE, recursive = FALSE)
   
+  if(length(dirs) == 0) stop("inDir contains no station directories", call. = FALSE)
   max_nchar_station <- max(nchar(dirs_short))
-  record.table.list <- list()
-
-   # create command line
   
-  if(hasArg(additionalMetadataTags)){
-    command.tmp  <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -HierarchicalSubject', paste(" -",additionalMetadataTags,  collapse = "", sep = ""), ' -ext JPG "', dirs, '"', sep = "")
-    colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", "HierarchicalSubject", additionalMetadataTags)
+  
+  # process video argument (if present)
+  if(hasArg(video)){
+    video_out <- processVideoArgument(IDfrom = IDfrom,
+                                      video  = video)
+    digiKam_data <- video_out$digiKam_data
+    file_formats <- video_out$file_formats
+    # if(isFALSE("jpg" %in% file_formats)) file_formats <- c(file_formats, "jpg")
   } else {
-    command.tmp  <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal -HierarchicalSubject -ext JPG "',dirs, '"', sep = "")
-    colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal", "HierarchicalSubject")
+    file_formats <- "jpg"   # jpg, as the default, if video not requested
   }
+  
+  # empty list for metadata output
+  record.table.list <- list()
+  
+  # create command line calls
+  command.tmp  <- paste('exiftool -q -f -t -r -Directory -FileName -EXIF:DateTimeOriginal', 
+                        ifelse(hasArg(video), paste(" -", video$dateTimeTag, sep = ""), ""),    # if video requested, video date time tag
+                        ' -HierarchicalSubject',
+                        ifelse(hasArg(additionalMetadataTags), paste(" -",additionalMetadataTags,  collapse = "", sep = ""), ""),
+                        paste(" -ext", file_formats, collapse = " ", sep = " "),    # requested file extensions
+                        ' "', dirs, '"', sep = "")
+  
+  # construct column names for metadata table
+  colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal")
+  if(hasArg(video)) colnames.tmp <- c(colnames.tmp, video$dateTimeTag)
+  colnames.tmp <- c(colnames.tmp, "HierarchicalSubject")
+  if(hasArg(additionalMetadataTags)) colnames.tmp <- c(colnames.tmp, additionalMetadataTags)
+  
   
   for(i in 1:length(dirs)){   # loop through station directories
 
@@ -144,18 +163,36 @@ recordTable <- function(inDir,
 
     if(class(metadata.tmp) == "NULL"){            # omit station if no images found
 
-      length.tmp <- length(list.files(dirs[i], pattern = ".jpg$|JPG$", ignore.case = TRUE, recursive = TRUE))
+      length.tmp <- length(list.files(dirs[i], pattern = paste(".", file_formats, "$", collapse = "|", sep = ""), 
+                                      ignore.case = TRUE, recursive = TRUE))
       message(paste(formatC(dirs_short[i], width = max_nchar_station, flag = "-"),  ":  ",
-                    formatC(length.tmp, width = 5), " images      Skipping", sep = ""))
-      warning(paste(dirs_short[i],  ":  contains no images and was omitted"), call. = FALSE,  immediate. = FALSE)
+                    formatC(length.tmp, width = 5), " files      Skipping", sep = ""))
+      warning(paste(dirs_short[i],  ":  contains no files of interest and was omitted"), call. = FALSE,  immediate. = FALSE)
     } else {
 
+      # if video files extracted, add DateTimeOriginal and HierarchicalSubject
+      if(hasArg(video)){
+        metadata.tmp <- addVideoDateTimeOriginal(metadata.tmp = metadata.tmp, video = video)
+        
+        # add HierachicalSubject for video files
+        if(!is.null(digiKam_data)){
+          digiKamVideoMetadata <- digiKamVideoHierarchicalSubject(stationDir = dirs[i],
+                                                                    digiKamTablesList = digiKam_data,    # output of accessDigiKamDatabase
+                                                                    videoFormat = file_formats[!grepl(file_formats, pattern = "jpg")])
+          # add HierarchialSubject for video files (match by filename, must be unique)
+          metadata.tmp <- addVideoHierachicalSubject (metadata.tmp = metadata.tmp,
+                                                      video = video,
+                                                      digiKamVideoMetadata = digiKamVideoMetadata)
+        }
+      }
+      
       # check presence / consistency of DateTimeOriginal column, go to next station or remove records if necessary
       metadata.tmp <- checkDateTimeOriginal (intable    = metadata.tmp,
                                              dirs_short = dirs_short,
                                              i          = i)
       if(is.null(metadata.tmp)) next
 
+      
       # now split HierarchicalSubject tags and add as columns to table
       metadata.tmp <- addMetadataAsColumns (intable                    = metadata.tmp,
                                             metadata.tagname           = metadata.tagname,
@@ -163,17 +200,15 @@ recordTable <- function(inDir,
                                             multiple_tag_separator     = multiple_tag_separator)
 
       # add species names to metadata table (from folders or metadata, otherwise NA)
-
-      metadata.tmp <- assignSpeciesID (intable                = metadata.tmp,
-                                       IDfrom                 = IDfrom,
-                                       metadataSpeciesTag     = metadataSpeciesTag,
-                                       speciesCol             = speciesCol,
-                                       dirs_short             = dirs_short,
-                                       i_tmp                  = i,
-                                       multiple_tag_separator = multiple_tag_separator,
-                                       returnFileNamesMissingTags = returnFileNamesMissingTags
-      )
-
+      metadata.tmp <- assignSpeciesID(intable                = metadata.tmp,
+                                      IDfrom                 = IDfrom,
+                                      metadataSpeciesTag     = metadataSpeciesTag,
+                                      speciesCol             = speciesCol,
+                                      dirs_short             = dirs_short,
+                                      i_tmp                  = i,
+                                      multiple_tag_separator = multiple_tag_separator,
+                                      returnFileNamesMissingTags = returnFileNamesMissingTags)
+      
       # if images in station contain no metadata species tags, skip that station
       if(!is.data.frame(metadata.tmp)){
         if(metadata.tmp == "found no species tag") {
@@ -208,7 +243,7 @@ recordTable <- function(inDir,
         # convert character vector extracted from images to time object and format for outfilename
         metadata.tmp$DateTimeOriginal <- as.POSIXct(strptime(x = metadata.tmp$DateTimeOriginal, format = "%Y:%m:%d %H:%M:%S", tz = timeZone))
 
-        # sort by (camera), species and time
+        # sort by station, (camera), species and time
         if(camerasIndependent == TRUE) {
           metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,speciesCol], metadata.tmp[,cameraCol], metadata.tmp$DateTimeOriginal),]
         } else {
@@ -246,16 +281,6 @@ recordTable <- function(inDir,
         
         d1 <- do.call(assessTemporalIndependence, args = args.assessTemporalIndependence)
 
-
-      # # add potential new columns to global record.table
-      #   d2 <- addNewColumnsToGlobalTable (intable      = d1,
-      #                                     i            = i,
-      #                                     record.table = record.table)
-      # 
-      # 
-      # # append table of station i's images metadata to global record table
-      #   record.table <- rbind(d2[[2]], d2[[1]])
-        
         record.table.list[[i]] <- d1
 
         suppressWarnings(rm(d1))
@@ -265,13 +290,12 @@ recordTable <- function(inDir,
 
   
   # combine all data frames from list into one data frame
-  record.table <- as.data.frame(rbindlist(record.table.list, fill = TRUE, use.names = TRUE))
+  record.table <- as.data.frame(data.table::rbindlist(record.table.list, fill = TRUE, use.names = TRUE))
   
   if(nrow(record.table) == 0){
     stop(paste("something went wrong. I looked through all those", length(dirs)  ,"folders and now your table is empty. Did you exclude too many species? Or were date/time information not readable?"), call. = FALSE)
   }
 
-  
   # rearrange table, add date and time as separate columns. add additional column names as needed.
 
   record.table2  <-  data.frame(record.table[,c(stationCol, speciesCol, "DateTimeOriginal")],

@@ -14,23 +14,7 @@ imageRename <- function(inDir,
   stationCol <- "Station"
   cameraCol  <- "Camera"
   
-  # check call for consistency
-  stopifnot(is.logical(copyImages))
-  stopifnot(is.logical(writecsv))
-  stopifnot(is.logical(hasCameraFolders))
-  stopifnot(is.logical(createEmptyDirectories))
-  
-  if(isTRUE(hasCameraFolders)){
-    stopifnot(hasArg(keepCameraSubfolders))
-    stopifnot(is.logical(keepCameraSubfolders))
-  } else {
-    keepCameraSubfolders <- FALSE
-  }
-  if(hasArg(hasCameraFolders) & hasArg(keepCameraSubfolders)){
-    if(keepCameraSubfolders == TRUE & hasCameraFolders == FALSE){stop("If hasCameraFolders is FALSE, keepCameraSubfolders must be FALSE too", call. = FALSE)}
-  }
-  
-  
+  # check inDir / outDir
   stopifnot(length(inDir) == 1)
   if(!dir.exists(inDir)) stop("Could not find inDir:\n", inDir, call. = FALSE)
   
@@ -46,15 +30,12 @@ imageRename <- function(inDir,
   } else {
     if(isTRUE(grepl("/$", inDir))) stop("inDir may not end with /", call. = FALSE)
   }
-  if(Sys.which("exiftool") == "") stop("cannot find ExifTool", call. = FALSE)
-  if(isTRUE(writecsv) & hasArg(outDir) == FALSE) stop("writecsv is TRUE. Please specify outDir", call. = FALSE)
-  
-  
-  
   
   # list of subdirectories of inDir
-  dirs <- list.dirs(inDir, full.names = TRUE, recursive = FALSE)
-  dirs_short <- list.dirs(inDir, full.names = FALSE , recursive = FALSE)
+  dirs       <- list.dirs(inDir, full.names = TRUE,  recursive = FALSE)
+  dirs_short <- list.dirs(inDir, full.names = FALSE, recursive = FALSE)
+  
+  if(length(dirs) == 0) stop("inDir contains no station directories", call. = FALSE)
   
   # make sure none is empty
   list_n_files <- lapply(dirs, list.files, pattern = ".jpg$|.JPG$", recursive = TRUE)
@@ -63,14 +44,37 @@ imageRename <- function(inDir,
     warning("at least one station directory contains no JPEGs:  ", paste(dirs_short[which(lapply(list_n_files, length) == 0)], collapse = "; "), call. = FALSE, immediate. = TRUE)
   }
   
+  stopifnot(is.logical(createEmptyDirectories))
+  
   # remove dirs and dirs_short if they contain no images (and if user overrides default createEmptyDirectories = FALSE)
   if(isFALSE(createEmptyDirectories)){
     stations2remove  <- which(lapply(list_n_files, length) == 0)
     if(length(stations2remove) >= 1){
-      dirs          <- dirs[-stations2remove]
+      dirs        <- dirs      [-stations2remove]
       dirs_short  <- dirs_short[-stations2remove]
     }
   }
+  
+  if(isTRUE(writecsv) & hasArg(outDir) == FALSE) stop("writecsv is TRUE. Please specify outDir", call. = FALSE)
+  
+  if(Sys.which("exiftool") == "") stop("cannot find ExifTool", call. = FALSE)
+  
+  # check call for consistency
+  stopifnot(is.logical(copyImages))
+  stopifnot(is.logical(writecsv))
+  stopifnot(is.logical(hasCameraFolders))
+  
+  
+  if(isTRUE(hasCameraFolders)){
+    stopifnot(hasArg(keepCameraSubfolders))
+    stopifnot(is.logical(keepCameraSubfolders))
+  } else {
+    keepCameraSubfolders <- FALSE
+  }
+  if(hasArg(hasCameraFolders) & hasArg(keepCameraSubfolders)){
+    if(keepCameraSubfolders == TRUE & hasCameraFolders == FALSE){stop("If hasCameraFolders is FALSE, keepCameraSubfolders must be FALSE too", call. = FALSE)}
+  }
+  
   
   # function body
   
@@ -127,7 +131,7 @@ imageRename <- function(inDir,
                 call. = FALSE, immediate. = TRUE)
         metadata.tmp <- data.frame(metadata.tmp, DateReadable = NA)
         metadata.tmp$DateReadable[-na.date.rows] <- TRUE
-        metadata.tmp$DateReadable[na.date.rows]  <- FALSE
+        metadata.tmp$DateReadable[ na.date.rows] <- FALSE
       } else {
         metadata.tmp$DateReadable <- TRUE
       }
@@ -136,6 +140,13 @@ imageRename <- function(inDir,
       # rearrange column order
       metadata.tmp <- metadata.tmp[,c("Directory",  "FileName", stationCol, cameraCol,
                                       "DateTimeOriginal", "DateTimeOriginal2", "DateReadable")]
+      
+      # # sort images by Station, (Camera), Time and filename
+      # metadata.tmp <- metadata.tmp[order(metadata.tmp$Directory, 
+      #                                    metadata.tmp$Station,
+      #                                    metadata.tmp$Camera,
+      #                                    metadata.tmp$DateTimeOriginal,
+      #                                    metadata.tmp$FileName),]
       
       # find images taken within 1 minute of one another (to append number)
       metadata.tmp$DateTimeOriginal2$sec <- 0
@@ -195,7 +206,7 @@ imageRename <- function(inDir,
   }
   
   # error if no date/time tag is readable
-  if(!any(copy.info.table$DateReadable)) stop("could not read DateTimeOriginal tag of any image. Check if the DateTimeOriginal tag is present in metadata with exifTagNames(..., returnMetadata = TRUE). If not, fixDateTimeOriginal() might help.",
+  if(!any(copy.info.table$DateReadable)) stop("could not read DateTimeOriginal tag of any image. Check if the DateTimeOriginal tag is present in metadata with exifTagNames(). If not, fixDateTimeOriginal() might help.",
                                               call. = FALSE)
   # warning if at least one date/time tag is not readable
   if(!all(copy.info.table$DateReadable)) warning(paste("Some DateTimeOriginal tags are unreadable, e.g. \n", 

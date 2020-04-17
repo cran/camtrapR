@@ -51,9 +51,10 @@ Juergen Niedballa
 if (Sys.which("exiftool") != ""){        # only run this example if ExifTool is available
 
 # copy sample images to temporary directory (so we don't mess around in the package directory)
-wd_images_ID <- system.file(file.path("pictures", "sample_images"), package = "camtrapR")
+wd_images_ID <- system.file(file.path("pictures", "sample_images_species_dir"), 
+                            package = "camtrapR")
 file.copy(from = wd_images_ID, to = tempdir(), recursive = TRUE)
-wd_images_ID_copy <- file.path(tempdir(), "sample_images")
+wd_images_ID_copy <- file.path(tempdir(), "sample_images_species_dir")
 
 # define a sample tag
 copyrightTagToAdd <- "Your Name (Your Organisation)"
@@ -63,9 +64,10 @@ addCopyrightTag(inDir        = wd_images_ID_copy,
                 copyrightTag = copyrightTagToAdd)
 1     # we choose "YES", i.e., we want to add a copyright tag
                 
-# you can check the outcome with function exifTagNames (find the field "Copyright")
+# you can check the outcome with function exifTagNames
 
-exifTagNames(wd_images_ID_copy, returnMetadata = TRUE)
+metadat <- exifTagNames(wd_images_ID_copy)
+metadat [metadat$tag_name == "Copyright",]
 }
 
 

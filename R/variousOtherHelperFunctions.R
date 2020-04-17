@@ -62,6 +62,14 @@ runExiftool <- function(command.tmp,
   tmp1 <- strsplit(system(command.tmp, intern=TRUE), split = "\t")
   
   if(length(tmp1) == 0) return(NULL) # if nothing returned (no images, no metadata)
+  if(length(tmp1) == 1) {
+    if(grepl(tmp1[[1]], pattern = "^Error: ", perl = TRUE)){
+      warning(paste(unlist(tmp1)), call. = FALSE)
+      return(NULL)
+      }
+    }
+  # if first entry is exiftool warning about FileName encoding remove (happens when there's special characters in directory name)
+  if(any(grepl(pattern = "FileName encoding not specified", tmp1[[1]]))) tmp1[[1]] <- NULL
   
   metadata.tmp <- as.data.frame(matrix(unlist(lapply(tmp1, FUN = function(X){X[2]})),
                                        ncol = length(colnames.tmp),
@@ -154,30 +162,38 @@ assignSpeciesID <- function(intable,
   if(IDfrom == "directory"){
     intable[,speciesCol] <-  sapply(strsplit(intable$Directory, split = file.sep, fixed = TRUE), FUN = function(X){X[length(X)]})
     return(intable)
-  } else {
+  } else {           # if IDfrom = "metadata"
     if(hasArg(metadataSpeciesTag)){
       metadataSpeciesTag2 <- paste("metadata", metadataSpeciesTag, sep = "_")
+      
+      # if the metadata_Species tag is found in metadata.tmp1
       if(metadataSpeciesTag2 %in% colnames(intable)){
         
+        # copy to species column proper
         intable[,speciesCol] <- intable[,metadataSpeciesTag2]
-        nrow.intable <- nrow(intable)
+        
+        # find records without proper species tag, to be removes
         species_records_to_remove <- which(is.na(intable[,speciesCol]))
         
-        if(length(species_records_to_remove) >= 1){
+        # if there's records to remove
+        if(length(species_records_to_remove) >= 1){    
           
+          # give warnings
           if(isTRUE(returnFileNamesMissingTags)){
-            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "records out of", nrow.intable,
+            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "records out of", nrow(intable),
                                  "because of missing species metadata tag:\n"),
                           paste(head(paste(intable$Directory[species_records_to_remove], intable$FileName[species_records_to_remove], sep = file.sep)), collapse = "\n")),
                     call. = FALSE, immediate. = TRUE)
           } else {
-            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "records out of", nrow.intable,
+            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "records out of", nrow(intable),
                                  "because of missing species metadata tag")),
                     call. = FALSE, immediate. = TRUE)
           }
-          intable <- intable[-species_records_to_remove,]      #remove records without species tag
+          #remove records without species tag
+          intable <- intable[-species_records_to_remove,]      
         }
         
+        # duplicate records with multiple species (separate row for each species)
         intable <- separateMultipleSpecies (intable                = intable,
                                             speciesCol             = speciesCol,
                                             multiple_tag_separator = multiple_tag_separator)
@@ -364,7 +380,7 @@ assessTemporalIndependence <- function(intable,
   if(any(is.na(intable$DateTimeOriginal))){
     which.tmp <- which(is.na(intable$DateTimeOriginal))
     if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), " Consider checking for corrupted Exif metadata.")
-    warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them. Consider checking for corrupted Exif metadata. \n",
+    warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them.\nConsider checking for corrupted Exif metadata. Or does your selected time zone have daylight saving time and the image(s) fall in the misisng hour at spring formward (cameras don't usually record DST)?. \n",
                   paste(file.path(intable[which.tmp, "Directory"],
                                   intable[which.tmp, "FileName"]), collapse = "\n")), call. = FALSE, immediate. = TRUE)
     intable <- intable[-which.tmp ,]
@@ -621,10 +637,18 @@ createDateRangeTable <- function(cam.op,
   rownames(date_ranges) <- rownames(cam.op)
   
   # check if images were taken between setup and retrieval dates (Error if images outside station date range)
-  if(any(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE)) warning(paste("record date before camera operation date range: ",
-                                                                                                             paste(rownames(date_ranges)[which(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp))], "\n", collapse = ", " )), call. = FALSE)
-  if(any(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE)) warning(paste("record date after camera operation date range: ",
-                                                                                                             paste(rownames(date_ranges)[which(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp))], "\n", collapse = ", " )), call. = FALSE)
+  if(any(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE)){
+    warning(paste("At", sum(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE), "stations",
+                  "there were records before camera operation date range: ",
+                  paste(rownames(date_ranges)[which(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp))], 
+                        sep = "\n", collapse = ", " )), call. = FALSE)
+  }
+  if(any(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE)) {
+    warning(paste("At", sum(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE), "stations",
+                  "there records after camera operation date range: ",
+                  paste(rownames(date_ranges)[which(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp))], 
+                        sep = "\n", collapse = ", " )), call. = FALSE)
+  }
   
   # define when first occasion begins (to afterwards remove prior records in function    cleanSubsetSpecies)
   if(!hasArg(buffer_tmp)) buffer_tmp <- 0
@@ -782,11 +806,19 @@ cleanSubsetSpecies <- function(subset_species2 ,
   remove.these <- which(subset_species2$DateTime2 < corrected_start_time_by_record)
   if(length(remove.these) >= 1){
     
-    warning(paste(length(remove.these), "records out of", nrow_subset_species2, "were removed because they were taken within the buffer period, before day1 (if a date was specified), or before occasionStartTime on the 1st day\n"),
-            paste(subset_species2[remove.these, stationCol2], subset_species2$DateTime2[remove.these], collapse = "\n", sep = ": "), call. = FALSE)
+    warning(paste(length(remove.these), 
+                  " records (out of ", 
+                  nrow_subset_species2, 
+                  ") were removed because they were taken before day1 (if a date was specified),  within the buffer period, or before occasionStartTime on the 1st day, e.g.:\n", sep = ""),
+            paste(head(subset_species2[remove.these, stationCol2]), 
+                       head(subset_species2$DateTime2[remove.these]), 
+                       collapse = "\n", 
+                       sep = ": "),
+            call. = FALSE)
     
     subset_species2 <- subset_species2[-remove.these,]
-    if(nrow(subset_species2) == 0) stop("No more records left. The detection history would be empty.")
+    if(nrow(subset_species2) == 0) stop("No more records after removing records before survey begin. The detection history would be empty.")
+    
     rm(corrected_start_time_by_record, remove.these)
   }
   
@@ -796,8 +828,16 @@ cleanSubsetSpecies <- function(subset_species2 ,
   remove.these2 <- which(subset_species2$DateTime2 > corrected_end_time_by_record)
   if(length(remove.these2) >= 1){
     
-    warning(paste(length(remove.these2), "records out of", nrow_subset_species2, "were removed because they were taken after the end of the last occasion\n"), 
-            paste(subset_species2[remove.these2, stationCol2], subset_species2$DateTime2[remove.these2], collapse = "\n", sep = ": "), call. = FALSE)
+    warning(paste(paste(length(remove.these2), 
+                        " records (out of ", 
+                        nrow_subset_species2, 
+                        ") were removed because they were taken after the end of the last occasion, e.g.:", sep = ""),
+                  paste(head(subset_species2[remove.these2, stationCol2]), 
+                        head(subset_species2$DateTime2[remove.these2]), 
+                        collapse = "\n", 
+                        sep = ": "), 
+                  sep = "\n"), 
+            call. = FALSE)
     
     subset_species2 <- subset_species2[-remove.these2,]
     
@@ -916,7 +956,8 @@ makeSurveyZip <- function(output,
                           Ycol,
                           recordDateTimeCol,
                           recordDateTimeFormat,
-                          sinkpath){
+                          sinkpath,
+                          usePackageZip){
   
   wd0 <- getwd()
   on.exit(setwd(wd0))
@@ -1150,15 +1191,28 @@ makeSurveyZip <- function(output,
   
   # write zip
   setwd(dir.tmp)
-  cat("compiling zip file \n",
-      paste(sinkpath, paste(dir.zip.short, ".zip\n\n", sep = ""), sep = file.sep))
   
-  suppressMessages(zip(zipfile = file.path(sinkpath,
+  if(isFALSE(usePackageZip)) {
+  zip(zipfile = file.path(sinkpath,
                                            paste(dir.zip.short, ".zip", sep = "")),
                        files   = files2zip,
-                       flags   = ""))
+                       flags   = "")
+  }
   
+  if(isTRUE(usePackageZip)) {
+    zip::zipr(zipfile = file.path(sinkpath,
+                                  paste(dir.zip.short, ".zip", sep = "")),
+              files   = files2zip)
+  }
   
+  # check if output was created
+  if(file.exists(file.path(sinkpath,
+                           paste(dir.zip.short, ".zip", sep = "")))){
+  message("zip file compiled \n",
+      paste(sinkpath, paste(dir.zip.short, ".zip\n\n", sep = ""), sep = file.sep))
+  } else {
+    message("zip file creation failed")
+  }
   
   # remove temporary directory
   #unlink(dir.zip, recursive = TRUE)
@@ -1564,4 +1618,235 @@ makeProgressbar <- function(current,
               paste(rep(" ", times = progress_bar_width - round(perc * progress_bar_width)), collapse = ""), 
               "|", 
               "  ", formatC(round(perc * 100), width = 3), "%", sep = "")
+}
+
+
+# access digiKam database and provide tables to extract species tags for videos
+# call before exiftool
+
+accessDigiKamDatabase <- function(db_directory,   # database directory 
+                                  db_filename     # database filename
+)
+{
+  # establish database connection
+  if(!dir.exists(db_directory)) stop("Could not find db_directory")
+  if(!file.exists(file.path(db_directory, db_filename))) stop("Could not find db_filename in db_directory") 
+  
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file.path(db_directory, db_filename))
+  
+  # read tables
+  Images      <- RSQLite::dbReadTable(con, 'Images')
+  Tags        <- RSQLite::dbReadTable(con, 'Tags')
+  ImageTags   <- RSQLite::dbReadTable(con, 'ImageTags')
+  Albums      <- RSQLite::dbReadTable(con, 'Albums')
+  AlbumRoots  <- RSQLite::dbReadTable(con, 'AlbumRoots')
+  
+#  ImageInformation  <- RSQLite::dbReadTable(con, 'ImageInformation')
+#  ImageMetadata     <- RSQLite::dbReadTable(con, 'ImageMetadata')
+  
+  # disconnect database  
+  RSQLite::dbDisconnect(con)
+  
+  # make output
+  return(list(Albums           = Albums,
+              AlbumRoots       = AlbumRoots,
+              Images           = Images, 
+              Tags             = Tags,
+              ImageTags        = ImageTags#,
+#              ImageInformation = ImageInformation,
+#              ImageMetadata    = ImageMetadata
+))
+}
+
+
+
+# extract species tags of videos from digiKam database tables
+
+digiKamVideoHierarchicalSubject <- function(stationDir,
+                                    digiKamTablesList,    # output of accessDigiKamDatabase
+                                    videoFormat           # character vector of desired video formats
+)
+{
+  
+  Albums           <- digiKamTablesList$Albums
+  AlbumRoots       <- digiKamTablesList$AlbumRoots
+  Images           <- digiKamTablesList$Images
+  Tags             <- digiKamTablesList$Tags
+  ImageTags        <- digiKamTablesList$ImageTags
+# ImageInformation <- digiKamTablesList$ImageInformation
+#  ImageMetadata    <- digiKamTablesList$ImageMetadata
+  
+  # guess which AlbumRoot is correct, based on string distance (choose the smallest one)
+  # adist(x = stationDir, y = AlbumRoots$specificPath)
+  
+  # combine album root and album path
+  Albums$albumPath_full <- paste(AlbumRoots[Albums$albumRoot, "specificPath"], 
+                                 Albums$relativePath, sep = "")
+  
+  # add drive letter (only relevant on Windows, and can potentially be wrong if there's Album roots on different drives)
+  Albums$albumPath_full2 <- paste(substr(stationDir, 1,2),   # the Drive letter, digiKam doesn't return it
+                                  Albums$albumPath_full, sep = "")
+  
+  pathColumn <- "albumPath_full2"
+  
+  # see if stationDir exists in database
+  if(!stationDir %in% Albums[, pathColumn]){
+    stop(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE)
+    # try to handle with a warning instead
+  }
+  
+  # find current station in albums
+  album_of_interest <- Albums [which(Albums[, pathColumn] == stationDir),]
+  if(nrow(album_of_interest) == 0) {
+    warning("Could not locate album for", stationDir, ". Skipping")
+    
+  }
+  
+  # keep only images in the current album
+  image_subset <- Images[Images$album == album_of_interest$id,]
+  # NAs are possible, so remove them
+  if(any(is.na(image_subset$id))) {
+    image_subset <- image_subset[!is.na(image_subset$id),]
+  }
+  
+  # keep only desired video files
+  
+  image_subset2 <- image_subset[tolower(substr(image_subset$name, 
+                                               nchar(image_subset$name) - 3, 
+                                               nchar(image_subset$name))) %in% 
+                                  paste(".", videoFormat, sep = ""),]
+  
+  # find "Species" tag group and its children
+   
+   # subset image tags
+   ImageTags <- ImageTags[ImageTags$tagid %in% Tags$id,]
+   
+   # get proper labels for tags (with parent labels)
+   ImageTags$cleartext_child  <- Tags$name [match(ImageTags$tagid, Tags$id)]
+   ImageTags$cleartext_parent <- Tags$name [Tags$pid[match(ImageTags$tagid, Tags$id)]] 
+   
+   ImageTags$cleartext_full <- paste(ImageTags$cleartext_parent, ImageTags$cleartext_child, sep = "|")
+   
+   
+   
+   # remove unnecessary (internal) tags (not essential)
+    remove1 <- grep(Tags$name, pattern = "_Digikam_Internal_Tags_")
+    remove2 <- grep(Tags$name, pattern = "Color Label ")
+    remove3 <- grep(Tags$name, pattern = "Pick Label ")
+   # 
+    Tags <- Tags[!Tags$id %in% c(remove1, remove2, remove3),]
+    Tags <- Tags[!Tags$pid %in% c(remove1, remove2, remove3),]
+   
+   ImageTags <- ImageTags[!ImageTags$tagid %in% c(remove1, remove2, remove3),]
+   
+   ImageTags_aggregate <- aggregate(ImageTags$cleartext_full,
+             by = list(ImageTags$imageid),
+             FUN = paste, sep  = "", collapse = ", ")
+   colnames(ImageTags_aggregate) <- c("imageid", "HierarchicalSubject")
+   
+   # get parent and children of Species Tag
+   # parent   <- Tags[which(Tags$name == metadataSpeciesTag),]
+   # children <- Tags[which(Tags$pid == parent$id),]
+   #parent <- u
+   
+
+  
+  #children$name[match(ImageTags$tagid, children$id)]
+  #children$name[match(ImageTags$tagid, children$id)]
+  
+   image_subset2$HierarchicalSubject <- ImageTags_aggregate$HierarchicalSubject[match(image_subset2$id, ImageTags_aggregate$imageid)]
+
+   
+  # # subset ImageTags to image subset
+  # ImageTags_subset <- ImageTags[ImageTags$imageid  %in% image_subset2$id,]
+  # 
+  # # further subset to Species tags only
+  # ImageTags_subset2 <- ImageTags_subset[ImageTags_subset$tagid %in% children$id,]
+  # 
+  # # Add species names to tag table
+  # ImageTags_subset2$Species <- children$name [match(ImageTags_subset2$tagid, children$id)]
+  # 
+  # # aggregate if multiple tags assigned to same image (only needed with this approach)
+  # image_subset2$Species <- ImageTags_subset2$Species[match(image_subset2$id, ImageTags_subset2$imageid)] 
+  # 
+  # # add species names to Image table
+  # # aggregate not needed with this approach (but images without tags are lost)
+  # #image_subset2 <- cbind(image_subset[match(ImageTags_subset2$imageid, image_subset$id),], ImageTags_subset2)
+  # 
+  # # add directory to table (does it work with camera / station subdirectories?)
+  # image_subset2$stationDirectory <- album_of_interest$relativePath
+  # 
+  # image_subset3 <- cbind(image_subset2, 
+  #                        ImageInformation[match(image_subset2$id, ImageInformation$imageid),],
+  #                        ImageMetadata[match(image_subset2$id, ImageMetadata$imageid),])
+  return(image_subset2) 
+}
+
+# process the "video" argument of recordTable
+
+processVideoArgument <- function(IDfrom = IDfrom,
+                                 video = video){
+  
+  stopifnot(exists("file_formats",  where = video))
+  stopifnot(exists("dateTimeTag",   where = video))
+  
+  file_formats <- video$file_formats
+  
+  # check file_formats argument
+  stopifnot(is.character(file_formats))
+  file_formats <- tolower(file_formats)
+  
+  # access digiKam database, if required
+  if(IDfrom == "metadata"){
+    stopifnot(exists("db_directory", where = video))
+    stopifnot(exists("db_filename",  where = video))
+    stopifnot(dir.exists(video$db_directory))
+    stopifnot(file.exists(file.path(video$db_directory, video$db_filename)))
+    
+    if (!requireNamespace("RSQLite", quietly = TRUE)) {
+      stop("the package 'RSQLite' is needed for extracting data from digiKam database,  you can install it via: install.packages('RSQLite')")
+    } 
+    # if (!requireNamespace("DBI", quietly = TRUE)) {
+    #   stop("the package 'DBI' is needed for extracting data from digiKam database,  you can install it via: install.packages('DBI')")
+    # } 
+    digiKam_data <- accessDigiKamDatabase (db_directory = video$db_directory,
+                                           db_filename = video$db_filename)
+  } else {
+    digiKam_data <- NULL
+  }
+  return(list(digiKam_data = digiKam_data,
+              file_formats = file_formats))
+}
+
+
+# if video files extracted, add DateTimeOriginal and HierarchicalSubject
+
+addVideoDateTimeOriginal <- function(metadata.tmp,
+                                    video){
+  # if there's missing entries in DateTimeOriginal that are present in the video date time tag, copy the video tags over
+  rows_of_interest1 <- which(metadata.tmp$DateTimeOriginal == "-" & 
+                               metadata.tmp[,video$dateTimeTag] != "-")
+  if(length(rows_of_interest1) >= 1) {
+    metadata.tmp$DateTimeOriginal[rows_of_interest1] <- metadata.tmp[rows_of_interest1, video$dateTimeTag] 
+  }
+  metadata.tmp[, video$dateTimeTag] <- NULL
+ 
+  return(metadata.tmp) 
+}
+  # add HierachicalSubject for video files
+
+addVideoHierachicalSubject <- function(metadata.tmp,
+                                       video,
+                                       digiKamVideoMetadata){
+  
+  # add HierarchialSubject for video files (match by filename, must be unique)
+  metadata.tmp$HierarchicalSubject_video <- digiKamVideoMetadata$HierarchicalSubject [match(metadata.tmp$FileName, digiKamVideoMetadata$name)]
+  
+  rows_of_interest2 <- which(!is.na(metadata.tmp$HierarchicalSubject_video) & 
+                               metadata.tmp$HierarchicalSubject == "-")
+  if(length(rows_of_interest2) >= 1) {
+    metadata.tmp$HierarchicalSubject[rows_of_interest2] <- metadata.tmp$HierarchicalSubject_video[rows_of_interest2] 
+  }
+  metadata.tmp$HierarchicalSubject_video <- NULL
+  return(metadata.tmp)
 }

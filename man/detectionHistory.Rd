@@ -125,7 +125,7 @@ Depending on the value of \code{includeEffort} and \code{scaleEffort}, a list wi
  \section{Warning}{
  Setting \code{output = "count"} returns a count of detections, not individuals. We strongly advise against using it as input for models of animal abundance (such as N-Mixture models) models which use counts as input. 
 
- Please note the section about defining argument \code{timeZone} in the vignette on data extraction (accessible via \code{vignette("DataExtraction")} or online (\url{https://cran.r-project.org/package=camtrapR/vignettes/DataExtraction.html})).
+ Please note the section about defining argument \code{timeZone} in the vignette on data extraction (accessible via \code{vignette("DataExtraction")} or online (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
  }
 
 
@@ -136,7 +136,7 @@ Juergen Niedballa
 \examples{
 
 # define image directory
-wd_images_ID <- system.file("pictures/sample_images", package = "camtrapR")
+wd_images_ID <- system.file("pictures/sample_images_species_dir", package = "camtrapR")
 
 # load station information
 data(camtraps)
@@ -156,7 +156,7 @@ recordTableSample <- recordTable(inDir               = wd_images_ID,
                                  IDfrom              = "directory",
                                  minDeltaTime        = 60,
                                  deltaTimeComparedTo = "lastRecord",
-                                 exclude             = "NO_ID",
+                                 exclude             = "UNID",
                                  timeZone            = "Asia/Kuala_Lumpur"
 )
 }
