@@ -1,3 +1,9 @@
+## ----setup, echo=FALSE, message = FALSE, results = "hide"---------------------
+exiftool_present <- Sys.which("exiftool") != ""
+
+## ---- echo=FALSE, eval = !exiftool_present------------------------------------
+#  print("WARNING: THIS VIGNETTE WAS CREATED WITHOUT EXIFTOOL. OUTPUT IS INCOMPLETE SINCE ESSENTIAL FUNCTIONS DID NOT RUN!")
+
 ## ----message = FALSE, results = "hide"----------------------------------------
 library(camtrapR)
 library(secr)
@@ -9,7 +15,7 @@ wd_images_ID <- system.file("pictures/sample_images_species_dir", package = "cam
 ## -----------------------------------------------------------------------------
 length(list.files(wd_images_ID, pattern = "JPG", recursive = TRUE))
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 rec.db.species0 <- recordTable(inDir  = wd_images_ID,
                                IDfrom = "directory")
 
@@ -18,7 +24,7 @@ head(rec.db.species0)
 ## -----------------------------------------------------------------------------
 list.files(file.path(wd_images_ID, "StationB", "MNE"))
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 rec.db.species60 <- recordTable(inDir               = wd_images_ID,
                                 IDfrom              = "directory",
                                 minDeltaTime        = 60,
@@ -27,7 +33,7 @@ rec.db.species60 <- recordTable(inDir               = wd_images_ID,
 
 nrow(rec.db.species60)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 # see what species  we recorded
 table(rec.db.species60$Species)
 
@@ -43,11 +49,11 @@ rec.db.species60.exclude <- recordTable(inDir               = wd_images_ID,
 table(rec.db.species60.exclude$Species)
 
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 wd_images_ID <- system.file("pictures/sample_images_species_dir", package = "camtrapR")
 exifTagNames(inDir = wd_images_ID)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 rec.db.species.metadata1 <- recordTable(inDir                  = wd_images_ID,
                                         IDfrom                 = "directory",
                                         timeZone               = "Asia/Kuala_Lumpur",
@@ -55,7 +61,7 @@ rec.db.species.metadata1 <- recordTable(inDir                  = wd_images_ID,
 
 head(rec.db.species.metadata1)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 # find the directory with tagged sample images contained in the package
 wd_images_individual_ID <- system.file("pictures/sample_images_indiv_tag/LeopardCat", package = "camtrapR")
  # missing space in species = "LeopardCat" is because of CRAN package policies
@@ -70,7 +76,7 @@ wd_images_individual_ID <- system.file("pictures/sample_images_indiv_tag/Leopard
  )
 
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 head(rec.db.pbe)
 
 ## -----------------------------------------------------------------------------
@@ -79,6 +85,7 @@ head(rec.db.pbe)
 data(camtraps)
 
 dateFormat <- "%d/%m/%Y"
+# alternatively, use "dmy" (requires package "lubridate")
  
 camop_problem <- cameraOperation(CTtable      = camtraps,
                                  stationCol   = "Station",
@@ -107,8 +114,8 @@ camopPlot <- function(camOp,
   values_tmp <- sort(na.omit(unique(c(camOp))))
 
   # hcl.colors only exists in R >3.6.0, use heat.colors for earlier versions
-  if(exists("hcl.colors")) {
-    image_colors <- hcl.colors(n = length(values_tmp), palette = palette, rev = TRUE)
+  if(getRversion() >= "3.6.0") {
+    image_colors <- grDevices::hcl.colors(n = length(values_tmp), palette = palette, rev = TRUE)
   } else {
     image_colors <- heat.colors(n = length(values_tmp), rev = TRUE)
   }
@@ -131,7 +138,7 @@ par(mfrow = c(1,2))
 ## ----eval = FALSE-------------------------------------------------------------
 #  camOp <- read.csv(file = ..., row.names = 1, check.names = FALSE)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 
 # create camera operation matrix
 camop_no_problem <- cameraOperation(CTtable      = camtraps,
@@ -168,7 +175,7 @@ DetHist1 <- detectionHistory(recordTable         = recordTableSample,
 DetHist1
 
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 
 # make detection history (with trapping effort)
 DetHist2 <- detectionHistory(recordTable          = recordTableSample,
@@ -187,7 +194,7 @@ DetHist2 <- detectionHistory(recordTable          = recordTableSample,
 DetHist2[[1]]  # detection history
 DetHist2[[2]]  # effort (in days per occasion)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 
 DetHist3 <- detectionHistory(recordTable          = recordTableSample,
                              camOp                = camop_no_problem,

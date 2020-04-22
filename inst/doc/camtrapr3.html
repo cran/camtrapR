@@ -11,7 +11,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2020-04-19" />
+<meta name="date" content="2020-04-22" />
 
 <title>3. Extracting Data from Camera Trapping Images and videos, creating occupancy &amp; secr input</title>
 
@@ -1518,7 +1518,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">3. Extracting Data from Camera Trapping Images and videos, creating occupancy &amp; secr input</h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com" class="email">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2020-04-19</h4>
+<h4 class="date">2020-04-22</h4>
 
 </div>
 
@@ -1564,13 +1564,13 @@ wd_images_ID &lt;- system.file(&quot;pictures/sample_images_species_dir&quot;, p
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                                  Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+##                                                                                                                   Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
 ##                                FileName n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG        1
@@ -1579,7 +1579,7 @@ wd_images_ID &lt;- system.file(&quot;pictures/sample_images_species_dir&quot;, p
 ## 5 StationA__2009-04-23__00-09-00(1).JPG        1
 ## 6 StationA__2009-05-07__17-11-00(1).JPG        1</code></pre>
 <p>Argument <code>IDfrom</code> tells the function to look for species directories within the station directories and to take species IDs from these. <code>IDfrom</code> must be set to “metadata” if metadata tagging was used for species identification.</p>
-<p>By default, the function returns all records. Nevertheless, we get a data frame containing 56 records, less than the number of images in the image directory. This is because a number of images were taken at the same time (measured with 1 minute precision by these cameras) and the function removes duplicate records.</p>
+<p>By default, the function returns all records. Nevertheless, we get a data frame containing 56 records, less than the number of images in the image directory (68). This is because a number of images were taken at the same time (measured with 1 minute precision by these cameras) and the function removes duplicate records.</p>
 <p>It may suffice to illustrate this with the Pig-tailed macaque images from stationB:</p>
 <pre class="r"><code>list.files(file.path(wd_images_ID, &quot;StationB&quot;, &quot;MNE&quot;))</code></pre>
 <pre><code>##  [1] &quot;StationB__2009-04-15__07-21-00(1).JPG&quot;
@@ -1714,7 +1714,7 @@ table(rec.db.species60.exclude$Species)</code></pre>
 <pre class="r"><code>wd_images_ID &lt;- system.file(&quot;pictures/sample_images_species_dir&quot;, package = &quot;camtrapR&quot;)
 exifTagNames(inDir = wd_images_ID)</code></pre>
 <pre><code>## Metadata of:
-## C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##    tag_group                tag_name
 ## 1   ExifTool         ExifToolVersion
 ## 2   ExifTool                 Warning
@@ -1759,50 +1759,50 @@ exifTagNames(inDir = wd_images_ID)</code></pre>
 ## 41 Composite               ImageSize
 ## 42 Composite              Megapixels
 ## 43 Composite            ShutterSpeed
-##                                                                                                                       value
-## 1                                                                                                                     11.80
-## 2                                                                                Invalid EXIF text encoding for UserComment
-## 3                                                                                     StationA__2009-04-21__00-40-00(1).JPG
-## 4  C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 5                                                                                                                     27 kB
-## 6                                                                                                 2020:04:19 23:05:56+02:00
-## 7                                                                                                 2020:04:19 23:05:56+02:00
-## 8                                                                                                 2020:04:19 23:05:56+02:00
-## 9                                                                                                                 rw-rw-rw-
-## 10                                                                                                                     JPEG
-## 11                                                                                                                      jpg
-## 12                                                                                                               image/jpeg
-## 13                                                                                                Little-endian (Intel, II)
-## 14                                                                                                                      100
-## 15                                                                                                                       75
-## 16                                                                                             Baseline DCT, Huffman coding
-## 17                                                                                                                        8
-## 18                                                                                                                        3
-## 19                                                                                                         YCbCr4:2:2 (2 1)
-## 20                                                                                                                       G4
-## 21                                                                                                                CUDDEBACK
-## 22                                                                                                                       72
-## 23                                                                                                                       72
-## 24                                                                                                      2009:04:21 00:40:00
-## 25                                                                                                                   inches
-## 26                                                                                                                 Co-sited
-## 27                                                                                                                     0200
-## 28                                                                                                             Y, Cb, Cr, -
-## 29                                                                                                                     0100
-## 30                                                                                                                     sRGB
-## 31                                                                                                                      100
-## 32                                                                                                                       75
-## 33                                                                                                      2009:04:21 00:40:00
-## 34                                                                                                      2009:04:21 00:40:00
-## 35                                                                                                            1 ATTEMPT G1H
-## 36                                                                                                                        1
-## 37                                                                                                         JPEG (old-style)
-## 38                                                                                                                      408
-## 39                                                                                                                    25353
-## 40                                                                      (Binary data 25353 bytes, use -b option to extract)
-## 41                                                                                                                   100x75
-## 42                                                                                                                    0.007
-## 43                                                                                                                        1</code></pre>
+##                                                                                                                        value
+## 1                                                                                                                      11.80
+## 2                                                                                 Invalid EXIF text encoding for UserComment
+## 3                                                                                      StationA__2009-04-21__00-40-00(1).JPG
+## 4  C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 5                                                                                                                      27 kB
+## 6                                                                                                  2020:04:22 20:21:56+02:00
+## 7                                                                                                  2020:04:22 20:21:56+02:00
+## 8                                                                                                  2020:04:22 20:21:56+02:00
+## 9                                                                                                                  rw-rw-rw-
+## 10                                                                                                                      JPEG
+## 11                                                                                                                       jpg
+## 12                                                                                                                image/jpeg
+## 13                                                                                                 Little-endian (Intel, II)
+## 14                                                                                                                       100
+## 15                                                                                                                        75
+## 16                                                                                              Baseline DCT, Huffman coding
+## 17                                                                                                                         8
+## 18                                                                                                                         3
+## 19                                                                                                          YCbCr4:2:2 (2 1)
+## 20                                                                                                                        G4
+## 21                                                                                                                 CUDDEBACK
+## 22                                                                                                                        72
+## 23                                                                                                                        72
+## 24                                                                                                       2009:04:21 00:40:00
+## 25                                                                                                                    inches
+## 26                                                                                                                  Co-sited
+## 27                                                                                                                      0200
+## 28                                                                                                              Y, Cb, Cr, -
+## 29                                                                                                                      0100
+## 30                                                                                                                      sRGB
+## 31                                                                                                                       100
+## 32                                                                                                                        75
+## 33                                                                                                       2009:04:21 00:40:00
+## 34                                                                                                       2009:04:21 00:40:00
+## 35                                                                                                             1 ATTEMPT G1H
+## 36                                                                                                                         1
+## 37                                                                                                          JPEG (old-style)
+## 38                                                                                                                       408
+## 39                                                                                                                     25353
+## 40                                                                       (Binary data 25353 bytes, use -b option to extract)
+## 41                                                                                                                    100x75
+## 42                                                                                                                     0.007
+## 43                                                                                                                         1</code></pre>
 <p>The output table contains tag groups, tag descriptions, tag names and tag values. The values in <code>tag_group</code> help to unambiguously identify specific metadata tags.</p>
 <p>Use the entries in <code>tag_name</code> (not <code>tag_description</code>) when providing values to the argument <code>additionalMetadataTags</code> in the<code>recordTable</code> functions.</p>
 <p>Of the tags shown here, “DateTimeOriginal” contains the date and time that camtrapR reads out. Apart from that, there is little information of ecological interest in the example data. However, for demonstration purposes, let’s extract information about the camera model and make. To be as precise as possible, we provide tags in the format: tag_group:tag_name (e.g. EXIF:Model)</p>
@@ -1828,13 +1828,13 @@ exifTagNames(inDir = wd_images_ID)</code></pre>
 ## 4             226              3.8             0.2
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
-##                                                                                                                  Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+##                                                                                                                   Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
 ##                                FileName EXIF.Model EXIF.Make n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG  CUDDEBACK        G4        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG  CUDDEBACK        G4        1
@@ -1879,13 +1879,13 @@ wd_images_individual_ID &lt;- system.file(&quot;pictures/sample_images_indiv_tag
 ## 4           13680             228              3.8             0.2
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
-##                                                                                                              Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+##                                                                                                               Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
 ##                                FileName metadata_Species metadata_individual
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat                   1
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat                   2
@@ -1911,6 +1911,7 @@ wd_images_individual_ID &lt;- system.file(&quot;pictures/sample_images_indiv_tag
 data(camtraps)
 
 dateFormat &lt;- &quot;%d/%m/%Y&quot;
+# alternatively, use &quot;dmy&quot; (requires package &quot;lubridate&quot;)
  
 camop_problem &lt;- cameraOperation(CTtable      = camtraps,
                                  stationCol   = &quot;Station&quot;,
@@ -1955,8 +1956,8 @@ camop_problem[, (ncol(camop_problem)-6):ncol(camop_problem)]</code></pre>
   values_tmp &lt;- sort(na.omit(unique(c(camOp))))
 
   # hcl.colors only exists in R &gt;3.6.0, use heat.colors for earlier versions
-  if(exists(&quot;hcl.colors&quot;)) {
-    image_colors &lt;- hcl.colors(n = length(values_tmp), palette = palette, rev = TRUE)
+  if(getRversion() &gt;= &quot;3.6.0&quot;) {
+    image_colors &lt;- grDevices::hcl.colors(n = length(values_tmp), palette = palette, rev = TRUE)
   } else {
     image_colors &lt;- heat.colors(n = length(values_tmp), rev = TRUE)
   }
@@ -1967,7 +1968,7 @@ camop_problem[, (ncol(camop_problem)-6):ncol(camop_problem)]</code></pre>
   abline(v = at.tmp, col = rgb(0,0,0, 0.2))
   box()
 }</code></pre>
-<p>And this is what we get (in two different color palettes).</p>
+<p>And this is what we get (in two different color palettes, on R 3.6.0 or higher).</p>
 <pre class="r"><code>par(mfrow = c(1,2))
 camopPlot(camOp = camop_problem)
 camopPlot(camOp = camop_problem, palette = &quot;Viridis&quot;)</code></pre>
@@ -2585,10 +2586,10 @@ sdh_multi &lt;- spatialDetectionHistory(recordTableIndividual = recordTableIndiv
 ##  144    -26.492  -1.2627  -3.5678  14.9091 
 ##  145    -26.492  -1.2627  -3.5679  14.9106 
 ##  146    -26.492  -1.2627  -3.5680  14.9121 
-## Completed in 0.28 seconds at 23:07:26 19 Apr 2020</code></pre>
+## Completed in 0.25 seconds at 20:23:38 22 Apr 2020</code></pre>
 <pre class="r"><code>  summary(secr.fit.example)</code></pre>
 <pre><code>## $versiontime
-## [1] &quot;4.1.0, run 23:07:26 19 Apr 2020, elapsed 0.28 s&quot;
+## [1] &quot;4.1.0, run 20:23:37 22 Apr 2020, elapsed 0.25 s&quot;
 ## 
 ## $capthist
 ##             1 2

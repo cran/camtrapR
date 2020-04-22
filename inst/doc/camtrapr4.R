@@ -78,7 +78,7 @@ shapefileTest@data
 all(shapefileTest@data == Mapstest3)
  
 
-## -----------------------------------------------------------------------------
+## ----eval = "raster" %in% installed.packages()--------------------------------
 detections_spdf <- SpatialPointsDataFrame(coords      = Mapstest3[,c("utm_x", "utm_y")],
                                           data        = Mapstest3,
                                           proj4string = CRS(shapefileProjection))

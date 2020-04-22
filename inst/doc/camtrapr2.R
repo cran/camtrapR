@@ -1,3 +1,9 @@
+## ----setup, echo=FALSE, message = FALSE, results = "hide"---------------------
+exiftool_present <- Sys.which("exiftool") != ""
+
+## ---- echo=FALSE, eval = !exiftool_present------------------------------------
+#  print("WARNING: THIS VIGNETTE WAS CREATED WITHOUT EXIFTOOL. OUTPUT IS INCOMPLETE SINCE ESSENTIAL FUNCTIONS DID NOT RUN!")
+
 ## -----------------------------------------------------------------------------
 library(camtrapR)
 data(camtraps)
@@ -94,7 +100,7 @@ SpecFolderCreate2 <- createSpeciesFolders (inDir               = wd_createSpecie
 
 SpecFolderCreate2
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 wd_images_ID <- system.file("pictures/sample_images_species_dir", package = "camtrapR")
 
 # run check with 120 seconds (2 minutes) maximum time differnce
@@ -104,7 +110,7 @@ check.folders <- checkSpeciesIdentification(inDir               = wd_images_ID,
                                             maxDeltaTime        = 120)
 check.folders
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 # check only station A and B (will give no results)
 checkSpeciesIdentification(inDir               = wd_images_ID,
                            IDfrom              = "directory",

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2020-04-19" />
+<meta name="date" content="2020-04-22" />
 
 <title>1. Organising raw camera trap images in camtrapR</title>
 
@@ -1518,7 +1518,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">1. Organising raw camera trap images in camtrapR</h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com" class="email">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2020-04-19</h4>
+<h4 class="date">2020-04-22</h4>
 
 </div>
 
@@ -1780,9 +1780,9 @@ StationFolderCreate1 &lt;- createStationFolders (inDir       = wd_createStationD
 ## 2 StationB
 ## 3 StationC
 ##                                                                                directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/createStationFoldersTest/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/createStationFoldersTest/StationB
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/createStationFoldersTest/StationC
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/createStationFoldersTest/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/createStationFoldersTest/StationB
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -1814,12 +1814,12 @@ timeshift_run &lt;- timeShiftImages(inDir                = wd_images_raw_copy,
                                  timeShiftColumn      = &quot;timeshift&quot;,
                                  timeShiftSignColumn  = &quot;sign&quot;
 )</code></pre>
-<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpshYSAN/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpshYSAN/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpQHY0jW/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpQHY0jW/raw_images/StationB</code></pre>
 <pre class="r"><code>timeshift_run</code></pre>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -1835,8 +1835,8 @@ timeshift_run &lt;- timeShiftImages(inDir                = wd_images_raw_copy,
 
 timeshift_undo</code></pre>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -1898,13 +1898,13 @@ renaming.table2 &lt;- imageRename(inDir               = wd_images_raw,
 <pre><code>## StationB:    3 images      |====================|  100%</code></pre>
 <pre class="r"><code># here is the information for a few images 
 head(renaming.table2)</code></pre>
-<pre><code>##                                                                                               Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmpwpwjs0/Rinst39a840e4bcf/camtrapR/pictures/raw_images/StationB
+<pre><code>##                                                                                                Directory
+## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -1913,12 +1913,12 @@ head(renaming.table2)</code></pre>
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                             outDir
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images_renamed/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images_renamed/StationA
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images_renamed/StationA
-## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images_renamed/StationB
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images_renamed/StationB
-## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpshYSAN/raw_images_renamed/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationA
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationA
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationB
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationB
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationB
 ##                            filename_new fileExistsAlready CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
@@ -2000,7 +2000,7 @@ addCopyrightTag(inDir        = wd_images_ID_copy,
 <p>When we check the outcome with function exifTagNames, we find field “Copyright” in line 27.</p>
 <pre class="r"><code>exifTagNames(wd_images_ID_copy)</code></pre>
 <pre><code>## Metadata of:
-## C:\Users\Juergen\AppData\Local\Temp\RtmpshYSAN/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:\Users\Juergen\AppData\Local\Temp\RtmpQHY0jW/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##    tag_group                tag_name
 ## 1   ExifTool         ExifToolVersion
 ## 2   ExifTool                 Warning
@@ -2050,11 +2050,11 @@ addCopyrightTag(inDir        = wd_images_ID_copy,
 ## 1                                                                                  11.80
 ## 2                                             Invalid EXIF text encoding for UserComment
 ## 3                                                  StationA__2009-04-21__00-40-00(1).JPG
-## 4  C:/Users/Juergen/AppData/Local/Temp/RtmpshYSAN/sample_images_species_dir/StationA/PBE
+## 4  C:/Users/Juergen/AppData/Local/Temp/RtmpQHY0jW/sample_images_species_dir/StationA/PBE
 ## 5                                                                                  27 kB
-## 6                                                              2020:04:19 23:06:23+02:00
-## 7                                                              2020:04:19 23:06:23+02:00
-## 8                                                              2020:04:19 23:06:21+02:00
+## 6                                                              2020:04:22 20:22:27+02:00
+## 7                                                              2020:04:22 20:22:27+02:00
+## 8                                                              2020:04:22 20:22:25+02:00
 ## 9                                                                              rw-rw-rw-
 ## 10                                                                                  JPEG
 ## 11                                                                                   jpg

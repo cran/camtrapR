@@ -2,19 +2,22 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 2.0.1
-Date: 2020-04-19
+Version: 2.0.2
+Date: 2020-04-22
 Authors@R: c(
         person("Juergen", "Niedballa", email = "camtrapr@gmail.com", role = c("aut", "cre"),
                 comment = c(ORCID = "0000-0002-9187-2116")),
         person("Alexandre", "Courtiol", role = "aut",
                 comment = c(ORCID = "0000-0003-0637-2959")),
-        person("Rahel", "Sollmann", role = "aut"),
+        person("Rahel", "Sollmann", role = "aut",
+                comment = c(ORCID = "0000-0002-1607-2039")),
         person("John", "Mathai", role = "ctb"),
         person("Seth Timothy", "Wong", role = "ctb"),
         person("An The Truong", "Nguyen", role = "ctb"),
-        person("Azlan bin", "Mohamed", role = "ctb"),
-        person("Andrew", "Tilker", role = "ctb"),
+        person("Azlan bin", "Mohamed", role = "ctb",
+                comment = c(ORCID = "0000-0003-3788-4383")),
+        person("Andrew", "Tilker", role = "ctb",
+                comment = c(ORCID = "0000-0003-3630-8691")),
         person("Andreas", "Wilting", role = c("ctb", "ths"),
                 comment = c(ORCID = "0000-0001-5073-9186"))
         )
@@ -33,16 +36,16 @@ BugReports: https://groups.google.com/forum/#!forum/camtrapr
 Encoding: UTF-8
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2020-04-19 21:07:31 UTC; Juergen
+Packaged: 2020-04-22 18:23:44 UTC; Juergen
 Author: Juergen Niedballa [aut, cre] (<https://orcid.org/0000-0002-9187-2116>),
   Alexandre Courtiol [aut] (<https://orcid.org/0000-0003-0637-2959>),
-  Rahel Sollmann [aut],
+  Rahel Sollmann [aut] (<https://orcid.org/0000-0002-1607-2039>),
   John Mathai [ctb],
   Seth Timothy Wong [ctb],
   An The Truong Nguyen [ctb],
-  Azlan bin Mohamed [ctb],
-  Andrew Tilker [ctb],
+  Azlan bin Mohamed [ctb] (<https://orcid.org/0000-0003-3788-4383>),
+  Andrew Tilker [ctb] (<https://orcid.org/0000-0003-3630-8691>),
   Andreas Wilting [ctb, ths] (<https://orcid.org/0000-0001-5073-9186>)
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-04-19 22:00:05 UTC
+Date/Publication: 2020-04-23 00:14:19 UTC

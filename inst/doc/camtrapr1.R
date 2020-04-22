@@ -1,3 +1,9 @@
+## ----setup, echo=FALSE, message = FALSE, results = "hide"---------------------
+exiftool_present <- Sys.which("exiftool") != ""
+
+## ---- echo=FALSE, eval = !exiftool_present------------------------------------
+#  print("WARNING: THIS VIGNETTE WAS CREATED WITHOUT EXIFTOOL. OUTPUT IS INCOMPLETE SINCE ESSENTIAL FUNCTIONS DID NOT RUN!")
+
 ## ----eval = FALSE-------------------------------------------------------------
 #  install.packages(camtrapR)
 
@@ -43,7 +49,7 @@ StationFolderCreate1
 data(timeShiftTable)
 timeShiftTable
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 # copy sample images to another location (so we don't mess around in the package directory)
 wd_images_raw <- system.file("pictures/raw_images", package = "camtrapR")
 file.copy(from = wd_images_raw, to = tempdir() , recursive = TRUE)
@@ -60,7 +66,7 @@ timeshift_run <- timeShiftImages(inDir                = wd_images_raw_copy,
 timeshift_run
 
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 timeshift_undo <- timeShiftImages(inDir               = wd_images_raw_copy,
                                  timeShiftTable       = timeShiftTable,
                                  stationCol           = "Station",
@@ -72,7 +78,7 @@ timeshift_undo <- timeShiftImages(inDir               = wd_images_raw_copy,
 
 timeshift_undo
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
  # raw image location
 wd_images_raw <- system.file("pictures/raw_images", package = "camtrapR")   
  # destination for renamed images to be copied to
@@ -87,7 +93,7 @@ renaming.table2 <- imageRename(inDir               = wd_images_raw,
 # here is the information for a few images 
 head(renaming.table2)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 # copy sample images to temporary directory (so we don't mess around in the package directory)
 wd_images_ID <- system.file("pictures/sample_images_species_dir", package = "camtrapR")
 file.copy(from = wd_images_ID, to = tempdir(), recursive = TRUE)
@@ -101,6 +107,6 @@ addCopyrightTag(inDir        = wd_images_ID_copy,
                 copyrightTag = copyrightTagToAdd, 
                 askFirst     = FALSE)                  # askFirst = FALSE prevents function from asking user to confirm action (which doesn't work in vignettes)
 
-## -----------------------------------------------------------------------------
+## ----eval = exiftool_present--------------------------------------------------
 exifTagNames(wd_images_ID_copy)
 
