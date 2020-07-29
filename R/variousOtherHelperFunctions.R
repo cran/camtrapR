@@ -395,56 +395,70 @@ assessTemporalIndependence <- function(intable,
                         delta.time.days  = NA,
                         independent      = ifelse(minDeltaTime == 0, TRUE, NA),   # all independent if no temporal filtering
                         stringsAsFactors = FALSE,
-                        check.names = FALSE)        # to prevent ":" being converted to ".", e.g. in EXIF:Make
+                        check.names      = FALSE)        # to prevent ":" being converted to ".", e.g. in EXIF:Make
   
   # sort records by station, species, then time
   intable <- intable[order(intable[, stationCol], intable[, columnOfInterest], intable$DateTimeOriginal),]
   
   for(xy in 1:nrow(intable)){     # for every record
     
+    
+    which.columnOfInterest <- which(intable[, columnOfInterest]  == intable[xy, columnOfInterest])          # same species/individual
+    which.stationCol       <- which(intable[, stationCol]        == intable[xy, stationCol])                # at same station
+    which.independent      <- which(intable$independent          == TRUE)                                   # independent (first or only record of a species at a station)
+    which.earlier          <- which(intable$DateTimeOriginal     <  intable$DateTimeOriginal[xy])          # earlier than record xy (takes long)
+    #which.earlier          <- 1: (xy-1)                                                                  # earlier than record xy  (fast alternative, relies on table being sorted by date/time before anything else)
+    if(camerasIndependent) {
+      which.cameraCol      <- which(intable[, cameraCol]  == intable[xy, cameraCol])                        # at same camera
+    }
+    
     # set independent = TRUE and delta.time = 0 if it is the 1st/only  record of a species / individual
     
     if(camerasIndependent == TRUE){
-      if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which(intable[, columnOfInterest] == intable[xy, columnOfInterest] &
-                                                                             intable[, stationCol]       == intable[xy, stationCol] &
-                                                                             intable[, cameraCol]        == intable[xy, cameraCol]) ])){    # cameras at same station assessed independently
+      which.tmp <- Reduce(intersect, list(which.columnOfInterest, 
+                                          which.stationCol, 
+                                          which.cameraCol))
+      if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which.tmp])){    # cameras at same station assessed independently
         intable$independent[xy]       <- TRUE
         intable$delta.time.secs[xy]   <- 0
       }
     } else {
-      if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which(intable[, columnOfInterest] == intable[xy, columnOfInterest] &
-                                                                             intable[, stationCol]       == intable[xy, stationCol]) ])){
+      which.tmp <- Reduce(intersect, list(which.columnOfInterest, 
+                                          which.stationCol))
+      if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which.tmp])){
         intable$independent[xy]       <- TRUE
         intable$delta.time.secs[xy]   <- 0
       }
     }
     
-    if(is.na(intable$delta.time.secs[xy])) {   # calculate time difference to previous records of same species at this station (if not the 1st/only record)
+    # calculate time difference to previous records of same species at this station (if not the 1st/only record)
+    if(is.na(intable$delta.time.secs[xy])) {
       
       if(deltaTimeComparedTo == "lastIndependentRecord"){
         
         if(camerasIndependent == TRUE){
-          which_time2 <- which(intable[, columnOfInterest]       == intable[xy, columnOfInterest] &    # same species/individual
-                                 intable[, stationCol]              == intable[xy, stationCol] &          # at same station
-                                 intable[, cameraCol]               == intable[xy, cameraCol] &           # at same camera
-                                 intable$independent                == TRUE &                             # independent (first or only record of a species at a station)
-                                 intable$DateTimeOriginal           <  intable$DateTimeOriginal[xy])      # earlier than record xy
+          which_time2 <- Reduce(intersect, list(which.columnOfInterest, 
+                                              which.stationCol,
+                                              which.cameraCol,
+                                              which.independent,
+                                              which.earlier))
         } else {
-          which_time2 <- which(intable[, columnOfInterest]       == intable[xy, columnOfInterest] &
-                                 intable[, stationCol]             == intable[xy, stationCol] &
-                                 intable$independent               == TRUE &
-                                 intable$DateTimeOriginal          <  intable$DateTimeOriginal[xy])
+          
+          which_time2 <- Reduce(intersect, list(which.columnOfInterest, 
+                                                which.stationCol,
+                                                which.independent,
+                                                which.earlier))
         }
       }  else {    # if(deltaTimeComparedTo == "lastRecord"){'
         if(camerasIndependent  == TRUE){
-          which_time2 <- which(intable[, columnOfInterest]       == intable[xy, columnOfInterest] &
-                                 intable[, stationCol]             == intable[xy, stationCol] &
-                                 intable[, cameraCol]              == intable[xy, cameraCol] &
-                                 intable$DateTimeOriginal          <  intable$DateTimeOriginal[xy])
+          which_time2 <- Reduce(intersect, list(which.columnOfInterest, 
+                                                which.stationCol,
+                                                which.cameraCol,
+                                                which.earlier))
         } else {
-          which_time2 <- which(intable[, columnOfInterest]       == intable[xy, columnOfInterest] &
-                                 intable[, stationCol]             == intable[xy, stationCol] &
-                                 intable$DateTimeOriginal          <  intable$DateTimeOriginal[xy])
+          which_time2 <- Reduce(intersect, list(which.columnOfInterest, 
+                                                which.stationCol,
+                                                which.earlier))
         }
       }
       
@@ -495,17 +509,17 @@ assessTemporalIndependence <- function(intable,
     current_row <- which_independent[xy]
     
     if(camerasIndependent){
-      which_records_to_group <- which(intable[, columnOfInterest]       == intable[current_row, columnOfInterest] &   # same species
-                                        intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
-                                        intable[, cameraCol]            == intable[current_row, cameraCol]   &        # same camera
-                                        intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row]  &
-                                        !isTRUE(intable$independent))                                        # not independent
+      which_records_to_group <- which(intable[, columnOfInterest]     == intable[current_row, columnOfInterest] &   # same species
+                                      intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
+                                      intable[, cameraCol]            == intable[current_row, cameraCol]   &        # same camera
+                                      intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row] &    # later than current record
+                                      !isTRUE(intable$independent))                                        # not independent
       
     } else {
-      which_records_to_group <- which(intable[, columnOfInterest]       == intable[current_row, columnOfInterest] &   # same species
-                                        intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
-                                        intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row] &
-                                        !isTRUE(intable$independent))                                        # not independent
+      which_records_to_group <- which(intable[, columnOfInterest]     == intable[current_row, columnOfInterest] &   # same species
+                                      intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
+                                      intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row] &
+                                      !isTRUE(intable$independent))                                        # not independent
     }
     
     # subset to records before the next independent record
@@ -737,8 +751,8 @@ adjustCameraOperationMatrix <- function(cam.op,
   
   
   ####################################
-  # trim camera operation matrix (taking into account buffer, occasionStartTime, maxNumberDays)
-  # based on data frame   date_ranges   computed by    createDateRangeTable
+  # trim camera operation matrix (taking into account buffer, occasionStartTime(?), maxNumberDays)
+  # based on data frame   "date_ranges"   computed by function   createDateRangeTable
   
   if(day1_2 == "station") {    # 1st day of each station OR some specified date
     
@@ -1330,8 +1344,10 @@ assignSessionIDtoRecordTable <- function(recordTable_tmp,
   which_na <- which(is.na(recordTable_tmp[, sessionCol]))
   
   if(length(which_na) > 0) {
-    recordTable_tmp <- recordTable_tmp[-which_na,]
-    warning(paste(length(which_na), "records were removed because they could not be assigned to an active station / session"), call. = FALSE)
+    recordTable_tmp_na <- recordTable_tmp[which_na, ]
+    recordTable_tmp <- recordTable_tmp[-which_na, ]
+    warning(paste(length(which_na), "records were removed because they could not be assigned to an active station / session:\n",
+                  file.path(recordTable_tmp_na$Directory, recordTable_tmp_na$FileName)), call. = FALSE)
   }
   
   separatorSession <- "__SESS_"
@@ -1360,7 +1376,7 @@ dataFrameTibbleCheck <- function(df,
     
     if(tibble::is_tibble(df)) {
       if(tibble_allowed) {
-        message (paste(substitute(df), "was converted from tibble to data.frame"), call. = FALSE)
+        message (paste(substitute(df), "was converted from tibble to data.frame"))
         df <- as.data.frame(df)
       } else {
         stop (paste(substitute(df), "is a tibble. Please provide a data.frame instead (use read.csv() or as.data.frame())"), call. = FALSE)
@@ -1374,7 +1390,7 @@ dataFrameTibbleCheck <- function(df,
     
     if(data.table::is.data.table(df)) {
       if(data_table_allowed) {
-        message (paste(substitute(df), "was converted from data.table to data.frame"), call. = FALSE)
+        message (paste(substitute(df), "was converted from data.table to data.frame"))
         #df <- as.data.frame(df)
         df <- setDF(df)
       } else {
@@ -1396,23 +1412,27 @@ parseDateObject <- function(inputColumn,
                             checkEmpty    # throw error if there are blank values in input  (only setup / retrieval, not problems)
 ){
   
-  inputColumn <- as.character(inputColumn)
   #if(!class(inputColumn) %in% c("factor", "character")) stop(paste("date column must be a factor or character:", deparse(substitute(inputColumn))), call. = FALSE)
   
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
   if(checkEmpty & any(inputColumn == "")) stop(paste("there are blank values in", deparse(substitute(inputColumn))), call. = FALSE)
   
+  inputColumn.char <- as.character(inputColumn)
+  
   # option 1: base functions for dates as per strptime (identified by "%")
   if(grepl(pattern = "%", x = dateFormat, fixed = TRUE)){
-    out <- as.Date(inputColumn,     format = dateFormat)
+    out <- as.Date(inputColumn.char,     format = dateFormat)
   } else {
     # option 2: lubridate functions (identified by absence of "%")
     if(!requireNamespace("lubridate", quietly = TRUE)) stop(paste("package 'lubridate' is required for the specified dateFormat", dateFormat))
     
-    out <- lubridate::date(lubridate::parse_date_time(inputColumn, orders = dateFormat))
+    out <- lubridate::date(lubridate::parse_date_time(inputColumn.char, orders = dateFormat))
   }
   
-  if(all(is.na(out))) stop(paste("Cannot read date format in", deparse(substitute(inputColumn)), ". Output is all NA."), call. = FALSE)
+ # if(all(is.na(out))) stop(paste0("Cannot read date format in", deparse(substitute(inputColumn)), ". Output is all NA."), call. = FALSE)
+  
+  if(all(is.na(out))) stop(paste0("Cannot read date format in ", deparse(substitute(inputColumn)), ". Output is all NA.\n",
+                                  "expected:  ", dateFormat, "\nactual:    ", inputColumn[1]), call. = FALSE)
   
   if(checkNA & any(is.na(out))) stop(paste("At least one entry in", deparse(substitute(inputColumn)), "cannot be interpreted using dateFormat:", dateFormat, "\n",
                                            "rows", paste(which(is.na(out)), collapse = ", ")), call. = FALSE)
@@ -1430,23 +1450,26 @@ parseDateTimeObject <- function(inputColumn,
                                 checkNA_out = TRUE  # throw error when there is NAs in output (FALSE so reporting is done by detectionHistory, which returns correct row numbers)
 ){
   
-  inputColumn <- as.character(inputColumn)
+  
   if(!class(inputColumn) %in% c("factor", "character")) stop(paste("datetime column must be a factor or character:", deparse(substitute(inputColumn))), call. = FALSE)
   
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
   if(checkEmpty & any(inputColumn == "")) stop(paste("there are blank values in", deparse(substitute(inputColumn))), call. = FALSE)
   
+  inputColumn.char <- as.character(inputColumn)
+  
   # option 1: base functions for dates as per strptime (identified by "%")
   if(grepl(pattern = "%", x = dateTimeFormat, fixed = TRUE)){
-    out <- as.POSIXlt(inputColumn, tz = timeZone, format = dateTimeFormat)
+    out <- as.POSIXlt(inputColumn.char, tz = timeZone, format = dateTimeFormat)
   } else {
     # option 2: lubridate functions (identified by absence of "%")
     if(!requireNamespace("lubridate", quietly = TRUE)) stop(paste("package 'lubridate' is required for the specified dateTimeFormat", dateTimeFormat))
     
-    out <- lubridate::parse_date_time(inputColumn, orders = dateTimeFormat, tz = timeZone)
+    out <- lubridate::parse_date_time(inputColumn.char, orders = dateTimeFormat, tz = timeZone)
   }
   
-  if(all(is.na(out))) stop(paste("Cannot read datetime format in", deparse(substitute(inputColumn)), ". Output is all NA."), call. = FALSE)
+  if(all(is.na(out))) stop(paste0("Cannot read datetime format in ", deparse(substitute(inputColumn)), ". Output is all NA.\n",
+  "expected:  ", dateTimeFormat, "\nactual:    ", inputColumn[1]), call. = FALSE)
   
   if(checkNA_out & any(is.na(out))) stop(paste(sum(is.na(out)), "out of", length(out), "records in",
                                                deparse(substitute(inputColumn)), "cannot be interpreted using dateTimeFormat:", dateTimeFormat, "\n",
@@ -1628,10 +1651,11 @@ accessDigiKamDatabase <- function(db_directory,   # database directory
                                   db_filename     # database filename
 )
 {
-  # establish database connection
-  if(!dir.exists(db_directory)) stop("Could not find db_directory")
-  if(!file.exists(file.path(db_directory, db_filename))) stop("Could not find db_filename in db_directory") 
+  # ensure database directory and file exist
+  if(!dir.exists(db_directory)) stop("Could not find directory 'db_directory'", call. = FALSE)
+  if(!file.exists(file.path(db_directory, db_filename))) stop("Could not find db_filename in db_directory", call. = FALSE)
   
+  # establish database connection
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file.path(db_directory, db_filename))
   
   # read tables
@@ -1673,9 +1697,7 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
   Images           <- digiKamTablesList$Images
   Tags             <- digiKamTablesList$Tags
   ImageTags        <- digiKamTablesList$ImageTags
-# ImageInformation <- digiKamTablesList$ImageInformation
-#  ImageMetadata    <- digiKamTablesList$ImageMetadata
-  
+
   # guess which AlbumRoot is correct, based on string distance (choose the smallest one)
   # adist(x = stationDir, y = AlbumRoots$specificPath)
   
@@ -1698,19 +1720,19 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
   # find current station in albums
   album_of_interest <- Albums [which(Albums[, pathColumn] == stationDir),]
   if(nrow(album_of_interest) == 0) {
-    warning("Could not locate album for", stationDir, ". Skipping")
+    warning("Could not locate album for ", stationDir, ". Skipping")   # NOTE TO SELF: DOESN'T SKIP OR BREAK. CHANGE?
     
   }
   
   # keep only images in the current album
   image_subset <- Images[Images$album == album_of_interest$id,]
+  
   # NAs are possible, so remove them
   if(any(is.na(image_subset$id))) {
     image_subset <- image_subset[!is.na(image_subset$id),]
   }
   
   # keep only desired video files
-  
   image_subset2 <- image_subset[tolower(substr(image_subset$name, 
                                                nchar(image_subset$name) - 3, 
                                                nchar(image_subset$name))) %in% 
@@ -1721,64 +1743,53 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
    # subset image tags
    ImageTags <- ImageTags[ImageTags$tagid %in% Tags$id,]
    
-   # get proper labels for tags (with parent labels)
+   # get proper labels for image tags (and their parent labels = tag group names)
    ImageTags$cleartext_child  <- Tags$name [match(ImageTags$tagid, Tags$id)]
-   ImageTags$cleartext_parent <- Tags$name [Tags$pid[match(ImageTags$tagid, Tags$id)]] 
+   #ImageTags$cleartext_parent <- Tags$name [Tags$pid[match(ImageTags$tagid, Tags$id)]]        # this is wrong!
+   # issue here: Tags$pid can be 0 if tag has no parent! Then indexing fails and functions errors
    
+   Tags$parent_name <- Tags$name[match(Tags$pid, Tags$id)]
+   ImageTags$cleartext_parent <- Tags$parent_name[match(ImageTags$tagid, Tags$id)]    #alternative to above, seems to work (and above seems wrong suddenly)
+   
+   
+   # # # solution by Joel Ruprecht (Google group 2020-07-21) - if a station has no tags with parent ID, doesn't seem to work yet, but should be identical to above solution
+   # parentNA <- which(is.na(Tags$name.parent))
+   # Tags$name.parent[parentNA] <- Tags$name[parentNA]
+   # ImageTags$cleartext_parent_Joel <- Tags$name.parent[match(ImageTags$tagid, Tags$id)]
+   
+   
+   
+   # combine parent and child to create HierarchicalTags
    ImageTags$cleartext_full <- paste(ImageTags$cleartext_parent, ImageTags$cleartext_child, sep = "|")
-   
    
    
    # remove unnecessary (internal) tags (not essential)
     remove1 <- grep(Tags$name, pattern = "_Digikam_Internal_Tags_")
     remove2 <- grep(Tags$name, pattern = "Color Label ")
     remove3 <- grep(Tags$name, pattern = "Pick Label ")
-   # 
-    Tags <- Tags[!Tags$id %in% c(remove1, remove2, remove3),]
+
+    Tags <- Tags[!Tags$id  %in% c(remove1, remove2, remove3),]
     Tags <- Tags[!Tags$pid %in% c(remove1, remove2, remove3),]
    
    ImageTags <- ImageTags[!ImageTags$tagid %in% c(remove1, remove2, remove3),]
+
+   # # if parent ID = NA (the tag has no parent), then save it without the NA|  (below works but will lead to problems parsing HierarchicalSubject). Requires some more testing
+   # ImageTags$cleartext_full[is.na(ImageTags$cleartext_parent)] <- gsub(pattern = "NA|",
+   #                                                                     replacement = "",
+   #                                                                     ImageTags$cleartext_full[is.na(ImageTags$cleartext_parent)],
+   #                                                                     fixed = TRUE)
    
+   # combine multiple tags for images into single field "HierarchicalSubject"
    ImageTags_aggregate <- aggregate(ImageTags$cleartext_full,
-             by = list(ImageTags$imageid),
-             FUN = paste, sep  = "", collapse = ", ")
+                                    by = list(ImageTags$imageid),
+                                    FUN = paste, sep  = "", collapse = ", ")
+
+   # assign column names to output
    colnames(ImageTags_aggregate) <- c("imageid", "HierarchicalSubject")
    
-   # get parent and children of Species Tag
-   # parent   <- Tags[which(Tags$name == metadataSpeciesTag),]
-   # children <- Tags[which(Tags$pid == parent$id),]
-   #parent <- u
-   
-
-  
-  #children$name[match(ImageTags$tagid, children$id)]
-  #children$name[match(ImageTags$tagid, children$id)]
-  
+   # assign HierarchicalSubject to matching images
    image_subset2$HierarchicalSubject <- ImageTags_aggregate$HierarchicalSubject[match(image_subset2$id, ImageTags_aggregate$imageid)]
 
-   
-  # # subset ImageTags to image subset
-  # ImageTags_subset <- ImageTags[ImageTags$imageid  %in% image_subset2$id,]
-  # 
-  # # further subset to Species tags only
-  # ImageTags_subset2 <- ImageTags_subset[ImageTags_subset$tagid %in% children$id,]
-  # 
-  # # Add species names to tag table
-  # ImageTags_subset2$Species <- children$name [match(ImageTags_subset2$tagid, children$id)]
-  # 
-  # # aggregate if multiple tags assigned to same image (only needed with this approach)
-  # image_subset2$Species <- ImageTags_subset2$Species[match(image_subset2$id, ImageTags_subset2$imageid)] 
-  # 
-  # # add species names to Image table
-  # # aggregate not needed with this approach (but images without tags are lost)
-  # #image_subset2 <- cbind(image_subset[match(ImageTags_subset2$imageid, image_subset$id),], ImageTags_subset2)
-  # 
-  # # add directory to table (does it work with camera / station subdirectories?)
-  # image_subset2$stationDirectory <- album_of_interest$relativePath
-  # 
-  # image_subset3 <- cbind(image_subset2, 
-  #                        ImageInformation[match(image_subset2$id, ImageInformation$imageid),],
-  #                        ImageMetadata[match(image_subset2$id, ImageMetadata$imageid),])
   return(image_subset2) 
 }
 
@@ -1787,31 +1798,31 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
 processVideoArgument <- function(IDfrom = IDfrom,
                                  video = video){
   
-  stopifnot(exists("file_formats",  where = video))
-  stopifnot(exists("dateTimeTag",   where = video))
+  if(!exists("file_formats",  where = video)) stop("'file_formats' is missing in argument 'video'", call. = FALSE)
+  if(!exists("dateTimeTag",   where = video)) stop("'dateTimeTag' is missing in argument 'video'", call. = FALSE)
   
   file_formats <- video$file_formats
   
   # check file_formats argument
-  stopifnot(is.character(file_formats))
+  if(!is.character(file_formats)) stop("'file_formats' in argument 'video' must be of class 'character'", call. = FALSE)
   file_formats <- tolower(file_formats)
   
   # access digiKam database, if required
   if(IDfrom == "metadata"){
-    stopifnot(exists("db_directory", where = video))
-    stopifnot(exists("db_filename",  where = video))
-    stopifnot(dir.exists(video$db_directory))
-    stopifnot(file.exists(file.path(video$db_directory, video$db_filename)))
+    if(!exists("db_directory", where = video)) stop("'db_directory' is missing in argument 'video'", call. = FALSE)
+    if(!exists("db_filename",  where = video)) stop("'db_filename' is missing in argument 'video'", call. = FALSE)
+    if(!dir.exists(video$db_directory)) stop("directory 'db_directory' does not exist", call. = FALSE)
+    if(!file.exists(file.path(video$db_directory, video$db_filename))) stop(paste("file 'db_filename' in directory 'db_directory' does not exist\n",
+                                                                                  file.path(video$db_directory, video$db_filename)), call. = FALSE)
     
     if (!requireNamespace("RSQLite", quietly = TRUE)) {
       stop("the package 'RSQLite' is needed for extracting data from digiKam database,  you can install it via: install.packages('RSQLite')")
     } 
-    # if (!requireNamespace("DBI", quietly = TRUE)) {
-    #   stop("the package 'DBI' is needed for extracting data from digiKam database,  you can install it via: install.packages('DBI')")
-    # } 
+   
+    # read digiKam database with helper function
     digiKam_data <- accessDigiKamDatabase (db_directory = video$db_directory,
                                            db_filename = video$db_filename)
-  } else {
+  } else {    # if IDfrom != "metadata"
     digiKam_data <- NULL
   }
   return(list(digiKam_data = digiKam_data,
@@ -1822,7 +1833,7 @@ processVideoArgument <- function(IDfrom = IDfrom,
 # if video files extracted, add DateTimeOriginal and HierarchicalSubject
 
 addVideoDateTimeOriginal <- function(metadata.tmp,
-                                    video){
+                                     video){
   # if there's missing entries in DateTimeOriginal that are present in the video date time tag, copy the video tags over
   rows_of_interest1 <- which(metadata.tmp$DateTimeOriginal == "-" & 
                                metadata.tmp[,video$dateTimeTag] != "-")
@@ -1830,23 +1841,27 @@ addVideoDateTimeOriginal <- function(metadata.tmp,
     metadata.tmp$DateTimeOriginal[rows_of_interest1] <- metadata.tmp[rows_of_interest1, video$dateTimeTag] 
   }
   metadata.tmp[, video$dateTimeTag] <- NULL
- 
+  
   return(metadata.tmp) 
 }
-  # add HierachicalSubject for video files
 
-addVideoHierachicalSubject <- function(metadata.tmp,
-                                       video,
-                                       digiKamVideoMetadata){
+# add HierachicalSubject for video files
+addVideoHierarchicalSubject <- function(metadata.tmp,
+                                        video,
+                                        digiKamVideoMetadata){
   
   # add HierarchialSubject for video files (match by filename, must be unique)
   metadata.tmp$HierarchicalSubject_video <- digiKamVideoMetadata$HierarchicalSubject [match(metadata.tmp$FileName, digiKamVideoMetadata$name)]
   
+  # find rows that have video metadata
   rows_of_interest2 <- which(!is.na(metadata.tmp$HierarchicalSubject_video) & 
                                metadata.tmp$HierarchicalSubject == "-")
+  # write HierarchicalSubject of videos to the normal HierarchicalSubject column
   if(length(rows_of_interest2) >= 1) {
     metadata.tmp$HierarchicalSubject[rows_of_interest2] <- metadata.tmp$HierarchicalSubject_video[rows_of_interest2] 
   }
+  # remove column HierarchicalSubject_video
   metadata.tmp$HierarchicalSubject_video <- NULL
+  
   return(metadata.tmp)
 }

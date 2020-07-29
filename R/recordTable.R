@@ -72,8 +72,8 @@ recordTable <- function(inDir,
     if(!is.character(exclude)) stop("exclude must be of class 'character'", call. = FALSE)
   }
 
-  stopifnot(is.logical(removeDuplicateRecords))
-  stopifnot(is.logical(returnFileNamesMissingTags))
+  if(!is.logical(removeDuplicateRecords))     stop("'removeDuplicateRecords' must be logical (TRUE / FALSE)", call. = FALSE)
+  if(!is.logical(returnFileNamesMissingTags)) stop("'returnFileNamesMissingTags' must be logical (TRUE / FALSE)", call. = FALSE)
 
 
   metadata.tagname <- "HierarchicalSubject"    # for extracting metadata assigned in tagging software
@@ -88,7 +88,7 @@ recordTable <- function(inDir,
   }
 
   minDeltaTime <- as.integer(minDeltaTime)
-  stopifnot(is.integer(minDeltaTime))
+  if(!is.integer(minDeltaTime)) stop("'minDeltaTime' must be an integer", call. = FALSE)
 
   if(minDeltaTime != 0){
     if(isFALSE(removeDuplicateRecords)){
@@ -153,7 +153,8 @@ recordTable <- function(inDir,
   colnames.tmp <- c("Directory", "FileName", "DateTimeOriginal")
   if(hasArg(video)) colnames.tmp <- c(colnames.tmp, video$dateTimeTag)
   colnames.tmp <- c(colnames.tmp, "HierarchicalSubject")
-  if(hasArg(additionalMetadataTags)) colnames.tmp <- c(colnames.tmp, additionalMetadataTags)
+  if(hasArg(additionalMetadataTags)) colnames.tmp <- c(colnames.tmp, additionalMetadataTags [nchar(additionalMetadataTags) >= 2]) 
+  # only add as new column if entry of additionalMetadataTag has more than 2 characters (to allow users to specify exiftool commands, e.g. -L)
   
   
   for(i in 1:length(dirs)){   # loop through station directories
@@ -180,9 +181,9 @@ recordTable <- function(inDir,
                                                                     digiKamTablesList = digiKam_data,    # output of accessDigiKamDatabase
                                                                     videoFormat = file_formats[!grepl(file_formats, pattern = "jpg")])
           # add HierarchialSubject for video files (match by filename, must be unique)
-          metadata.tmp <- addVideoHierachicalSubject (metadata.tmp = metadata.tmp,
-                                                      video = video,
-                                                      digiKamVideoMetadata = digiKamVideoMetadata)
+          metadata.tmp <- addVideoHierarchicalSubject (metadata.tmp = metadata.tmp,
+                                                       video = video,
+                                                       digiKamVideoMetadata = digiKamVideoMetadata)
         }
       }
       

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2020-04-22" />
+<meta name="date" content="2020-07-29" />
 
 <title>3. Extracting Data from Camera Trapping Images and videos, creating occupancy &amp; secr input</title>
 
@@ -1518,7 +1518,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">3. Extracting Data from Camera Trapping Images and videos, creating occupancy &amp; secr input</h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com" class="email">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2020-04-22</h4>
+<h4 class="date">2020-07-29</h4>
 
 </div>
 
@@ -1565,12 +1565,12 @@ wd_images_ID &lt;- system.file(&quot;pictures/sample_images_species_dir&quot;, p
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                                   Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
 ##                                FileName n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG        1
@@ -1714,7 +1714,7 @@ table(rec.db.species60.exclude$Species)</code></pre>
 <pre class="r"><code>wd_images_ID &lt;- system.file(&quot;pictures/sample_images_species_dir&quot;, package = &quot;camtrapR&quot;)
 exifTagNames(inDir = wd_images_ID)</code></pre>
 <pre><code>## Metadata of:
-## C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##    tag_group                tag_name
 ## 1   ExifTool         ExifToolVersion
 ## 2   ExifTool                 Warning
@@ -1763,11 +1763,11 @@ exifTagNames(inDir = wd_images_ID)</code></pre>
 ## 1                                                                                                                      11.80
 ## 2                                                                                 Invalid EXIF text encoding for UserComment
 ## 3                                                                                      StationA__2009-04-21__00-40-00(1).JPG
-## 4  C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 4  C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
 ## 5                                                                                                                      27 kB
-## 6                                                                                                  2020:04:22 20:21:56+02:00
-## 7                                                                                                  2020:04:22 20:21:56+02:00
-## 8                                                                                                  2020:04:22 20:21:56+02:00
+## 6                                                                                                  2020:07:29 12:39:02+02:00
+## 7                                                                                                  2020:07:29 12:39:02+02:00
+## 8                                                                                                  2020:07:29 12:39:02+02:00
 ## 9                                                                                                                  rw-rw-rw-
 ## 10                                                                                                                      JPEG
 ## 11                                                                                                                       jpg
@@ -1829,12 +1829,12 @@ exifTagNames(inDir = wd_images_ID)</code></pre>
 ## 5               2              0.0             0.0
 ## 6           21182            353.0            14.7
 ##                                                                                                                   Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_species_dir/StationA/PBE
 ##                                FileName EXIF.Model EXIF.Make n_images
 ## 1 StationA__2009-04-21__00-40-00(1).JPG  CUDDEBACK        G4        1
 ## 2 StationA__2009-04-22__20-19-00(1).JPG  CUDDEBACK        G4        1
@@ -1880,12 +1880,12 @@ wd_images_individual_ID &lt;- system.file(&quot;pictures/sample_images_indiv_tag
 ## 5               0               0              0.0             0.0
 ## 6          625800           10430            173.8             7.2
 ##                                                                                                               Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/sample_images_indiv_tag/LeopardCat
 ##                                FileName metadata_Species metadata_individual
 ## 1 StationA__2009-05-07__17-11-00(1).JPG      Leopard Cat                   1
 ## 2 StationA__2009-04-21__00-40-00(1).JPG      Leopard Cat                   2
@@ -2302,11 +2302,10 @@ umf &lt;- unmarked::unmarkedMultFrame(y = DetHist_multi$detection_history,
                                    siteCovs = site_covariates,
                                    yearlySiteCovs = list(year = year_matrix),
                                    obsCovs = list(effort = DetHist_multi$effort),
-                                   numPrimary = 2)
-
-
-
-colext_example &lt;- unmarked::colext(psiformula = ~ treecover,    # First-year occupancy
+                                   numPrimary = 2)</code></pre>
+<pre><code>## Warning: siteCovs contains characters. Converting them to factors.</code></pre>
+<pre><code>## Warning: yearlySiteCovs contains characters. Converting them to factors.</code></pre>
+<pre class="r"><code>colext_example &lt;- unmarked::colext(psiformula = ~ treecover,    # First-year occupancy
                                    gammaformula = ~ 1,          # Colonization
                                    epsilonformula = ~ 1,        # Extinction
                                    pformula = ~ effort,         # Detection
@@ -2436,6 +2435,14 @@ sdh_multi &lt;- spatialDetectionHistory(recordTableIndividual = recordTableIndiv
 ## differ between sessions</code></pre>
 <pre><code>## Warning in secr.fit(capthist = sdh_multi, start = c(-1, -2, 10)): using default
 ## buffer width 100 m</code></pre>
+<pre><code>## Warning: Using formula(x) is deprecated when x is a character vector of length &gt; 1.
+##   Consider formula(paste(x, collapse = &quot; &quot;)) instead.
+
+## Warning: Using formula(x) is deprecated when x is a character vector of length &gt; 1.
+##   Consider formula(paste(x, collapse = &quot; &quot;)) instead.
+
+## Warning: Using formula(x) is deprecated when x is a character vector of length &gt; 1.
+##   Consider formula(paste(x, collapse = &quot; &quot;)) instead.</code></pre>
 <pre><code>## Preparing detection design matrices 
 ## Preparing density design matrix 
 ## Maximizing likelihood... 
@@ -2586,10 +2593,10 @@ sdh_multi &lt;- spatialDetectionHistory(recordTableIndividual = recordTableIndiv
 ##  144    -26.492  -1.2627  -3.5678  14.9091 
 ##  145    -26.492  -1.2627  -3.5679  14.9106 
 ##  146    -26.492  -1.2627  -3.5680  14.9121 
-## Completed in 0.25 seconds at 20:23:38 22 Apr 2020</code></pre>
+## Completed in 0.28 seconds at 12:40:34 29 Jul 2020</code></pre>
 <pre class="r"><code>  summary(secr.fit.example)</code></pre>
 <pre><code>## $versiontime
-## [1] &quot;4.1.0, run 20:23:37 22 Apr 2020, elapsed 0.25 s&quot;
+## [1] &quot;4.2.2, run 12:40:34 29 Jul 2020, elapsed 0.28 s&quot;
 ## 
 ## $capthist
 ##             1 2
@@ -2718,7 +2725,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

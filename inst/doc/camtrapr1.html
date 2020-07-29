@@ -11,7 +11,7 @@
 
 <meta name="author" content="Juergen Niedballa (camtrapr@gmail.com)" />
 
-<meta name="date" content="2020-04-22" />
+<meta name="date" content="2020-07-29" />
 
 <title>1. Organising raw camera trap images in camtrapR</title>
 
@@ -1518,7 +1518,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">1. Organising raw camera trap images in camtrapR</h1>
 <h4 class="author">Juergen Niedballa (<a href="mailto:camtrapr@gmail.com" class="email">camtrapr@gmail.com</a>)</h4>
-<h4 class="date">2020-04-22</h4>
+<h4 class="date">2020-07-29</h4>
 
 </div>
 
@@ -1530,9 +1530,9 @@ div.tocify {
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>You can install the newest stable version from CRAN via:</p>
-<pre class="r"><code>install.packages(camtrapR)</code></pre>
+<pre class="r"><code>install.packages(&quot;camtrapR&quot;)</code></pre>
 <p>Alternatively, you can install the development version from GitHub (requires package devtools):</p>
-<pre class="r"><code>library(devtools)
+<pre class="r"><code>library(remotes)
 install_github(&quot;jniedballa/camtrapR&quot;)</code></pre>
 <p>Afterwards, load camtrapR via:</p>
 <pre class="r"><code>library(camtrapR)</code></pre>
@@ -1629,10 +1629,10 @@ install_github(&quot;jniedballa/camtrapR&quot;)</code></pre>
 </div>
 <div id="exiftool" class="section level2">
 <h2>ExifTool</h2>
-<p>camtrapR relies on the free and open-source software <strong>ExifTool</strong> written by Phil Harvey to extract metadata from images. ExifTool is freely available <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/">here</a> and runs on Windows, Linux and MacOS. In order to use it, your system must be able to find the software. On MacOS, Linux and Unix it needs installation and should afterwards be found by the system without problems. How to set up Exiftool for Windows is detailed below. General installation instruction can be found <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/install.html">here</a>.</p>
+<p>camtrapR relies on the free and open-source software <strong>ExifTool</strong> written by Phil Harvey to extract metadata from images. ExifTool is freely available <a href="https://exiftool.org/">here</a> and runs on Windows, Linux and MacOS. In order to use it, your system must be able to find the software. On MacOS, Linux and Unix it needs installation and should afterwards be found by the system without problems. How to set up Exiftool for Windows is detailed below. General installation instruction can be found <a href="https://exiftool.org/install.html">here</a>.</p>
 <div id="exiftool-for-windows" class="section level3">
 <h3>ExifTool for Windows</h3>
-<p>On Windows, ExifTool does not need installation. In order for Windows to be able to find ExifTool, follow the instructions found <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/install.html">here</a>. Be sure to download the stand-alone executable. The download file is a .zip which you need to unzip, rename the contained “exiftool(-k).exe” file to “exiftool.exe” and place it in, e.g., C:/Windows. Windows will be able to find ExifTool if exiftool.exe is placed in a directory that is contained in Windows PATH variable (e.g. C:/Windows).</p>
+<p>On Windows, ExifTool does not need installation. In order for Windows to be able to find ExifTool, follow the instructions found <a href="https://exiftool.org/install.html">here</a>. Be sure to download the stand-alone executable. The download file is a .zip which you need to unzip, rename the contained “exiftool(-k).exe” file to “exiftool.exe” and place it in, e.g., C:/Windows. Windows will be able to find ExifTool if exiftool.exe is placed in a directory that is contained in Windows PATH variable (e.g. C:/Windows).</p>
 <pre class="r"><code># Check which directories are in PATH (output not shown here)
 Sys.getenv(&quot;PATH&quot;)</code></pre>
 <pre class="r"><code># Check if the system can find Exiftool (if output is empty &quot;&quot;, system can&#39;t find Exiftool)
@@ -1780,9 +1780,9 @@ StationFolderCreate1 &lt;- createStationFolders (inDir       = wd_createStationD
 ## 2 StationB
 ## 3 StationC
 ##                                                                                directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/createStationFoldersTest/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/createStationFoldersTest/StationB
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/createStationFoldersTest/StationC
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/createStationFoldersTest/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/createStationFoldersTest/StationB
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/createStationFoldersTest/StationC
 ##   created exists
 ## 1    TRUE   TRUE
 ## 2    TRUE   TRUE
@@ -1814,12 +1814,12 @@ timeshift_run &lt;- timeShiftImages(inDir                = wd_images_raw_copy,
                                  timeShiftColumn      = &quot;timeshift&quot;,
                                  timeShiftSignColumn  = &quot;sign&quot;
 )</code></pre>
-<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpQHY0jW/raw_images/StationA</code></pre>
-<pre><code>## C:\Users\Juergen\AppData\Local\Temp\RtmpQHY0jW/raw_images/StationB</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\Rtmpkfp4TW/raw_images/StationA</code></pre>
+<pre><code>## C:\Users\Juergen\AppData\Local\Temp\Rtmpkfp4TW/raw_images/StationB</code></pre>
 <pre class="r"><code>timeshift_run</code></pre>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images/StationB
 ##               n_directories                  n_images
 ## 1     1 directories scanned     3 image files updated
 ## 2     1 directories scanned     3 image files updated</code></pre>
@@ -1835,8 +1835,8 @@ timeshift_run &lt;- timeShiftImages(inDir                = wd_images_raw_copy,
 
 timeshift_undo</code></pre>
 <pre><code>##                                                                  directory
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images/StationB
 ##   n_images_undo
 ## 1             3
 ## 2             3</code></pre>
@@ -1899,12 +1899,12 @@ renaming.table2 &lt;- imageRename(inDir               = wd_images_raw,
 <pre class="r"><code># here is the information for a few images 
 head(renaming.table2)</code></pre>
 <pre><code>##                                                                                                Directory
-## 1 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationA
-## 2 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationA
-## 3 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationA
-## 4 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationB
-## 5 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationB
-## 6 C:/Users/Juergen/AppData/Local/Temp/Rtmp2DNLng/Rinst48c0333b1550/camtrapR/pictures/raw_images/StationB
+## 1 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/raw_images/StationA
+## 2 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/raw_images/StationA
+## 3 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/raw_images/StationA
+## 4 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/raw_images/StationB
+## 5 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/raw_images/StationB
+## 6 C:/Users/Juergen/AppData/Local/Temp/RtmpCOrquD/Rinst31f011eb4211/camtrapR/pictures/raw_images/StationB
 ##      FileName  Station Camera    DateTimeOriginal DateReadable
 ## 1 IMG0001.JPG StationA     NA 2009-04-10 05:07:00         TRUE
 ## 2 IMG0002.JPG StationA     NA 2009-04-21 00:40:00         TRUE
@@ -1913,12 +1913,12 @@ head(renaming.table2)</code></pre>
 ## 5 IMG0002.JPG StationB     NA 2009-04-05 23:13:00         TRUE
 ## 6 IMG0003.JPG StationB     NA 2009-04-07 00:23:00         TRUE
 ##                                                                             outDir
-## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationA
-## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationA
-## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationA
-## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationB
-## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationB
-## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\RtmpQHY0jW/raw_images_renamed/StationB
+## 1 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images_renamed/StationA
+## 2 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images_renamed/StationA
+## 3 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images_renamed/StationA
+## 4 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images_renamed/StationB
+## 5 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images_renamed/StationB
+## 6 C:\\Users\\Juergen\\AppData\\Local\\Temp\\Rtmpkfp4TW/raw_images_renamed/StationB
 ##                            filename_new fileExistsAlready CopyStatus
 ## 1 StationA__2009-04-10__05-07-00(1).JPG             FALSE      FALSE
 ## 2 StationA__2009-04-21__00-40-00(1).JPG             FALSE      FALSE
@@ -2000,7 +2000,7 @@ addCopyrightTag(inDir        = wd_images_ID_copy,
 <p>When we check the outcome with function exifTagNames, we find field “Copyright” in line 27.</p>
 <pre class="r"><code>exifTagNames(wd_images_ID_copy)</code></pre>
 <pre><code>## Metadata of:
-## C:\Users\Juergen\AppData\Local\Temp\RtmpQHY0jW/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
+## C:\Users\Juergen\AppData\Local\Temp\Rtmpkfp4TW/sample_images_species_dir/StationA/PBE/StationA__2009-04-21__00-40-00(1).JPG</code></pre>
 <pre><code>##    tag_group                tag_name
 ## 1   ExifTool         ExifToolVersion
 ## 2   ExifTool                 Warning
@@ -2050,11 +2050,11 @@ addCopyrightTag(inDir        = wd_images_ID_copy,
 ## 1                                                                                  11.80
 ## 2                                             Invalid EXIF text encoding for UserComment
 ## 3                                                  StationA__2009-04-21__00-40-00(1).JPG
-## 4  C:/Users/Juergen/AppData/Local/Temp/RtmpQHY0jW/sample_images_species_dir/StationA/PBE
+## 4  C:/Users/Juergen/AppData/Local/Temp/Rtmpkfp4TW/sample_images_species_dir/StationA/PBE
 ## 5                                                                                  27 kB
-## 6                                                              2020:04:22 20:22:27+02:00
-## 7                                                              2020:04:22 20:22:27+02:00
-## 8                                                              2020:04:22 20:22:25+02:00
+## 6                                                              2020:07:29 12:39:33+02:00
+## 7                                                              2020:07:29 12:39:33+02:00
+## 8                                                              2020:07:29 12:39:31+02:00
 ## 9                                                                              rw-rw-rw-
 ## 10                                                                                  JPEG
 ## 11                                                                                   jpg
@@ -2146,7 +2146,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

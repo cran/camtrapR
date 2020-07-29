@@ -5,10 +5,10 @@ exiftool_present <- Sys.which("exiftool") != ""
 #  print("WARNING: THIS VIGNETTE WAS CREATED WITHOUT EXIFTOOL. OUTPUT IS INCOMPLETE SINCE ESSENTIAL FUNCTIONS DID NOT RUN!")
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  install.packages(camtrapR)
+#  install.packages("camtrapR")
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  library(devtools)
+#  library(remotes)
 #  install_github("jniedballa/camtrapR")
 
 ## ----eval = TRUE--------------------------------------------------------------

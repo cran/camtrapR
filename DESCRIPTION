@@ -2,8 +2,8 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 2.0.2
-Date: 2020-04-22
+Version: 2.0.3
+Date: 2020-07-29
 Authors@R: c(
         person("Juergen", "Niedballa", email = "camtrapr@gmail.com", role = c("aut", "cre"),
                 comment = c(ORCID = "0000-0002-9187-2116")),
@@ -36,7 +36,7 @@ BugReports: https://groups.google.com/forum/#!forum/camtrapr
 Encoding: UTF-8
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2020-04-22 18:23:44 UTC; Juergen
+Packaged: 2020-07-29 10:40:40 UTC; Juergen
 Author: Juergen Niedballa [aut, cre] (<https://orcid.org/0000-0002-9187-2116>),
   Alexandre Courtiol [aut] (<https://orcid.org/0000-0003-0637-2959>),
   Rahel Sollmann [aut] (<https://orcid.org/0000-0002-1607-2039>),
@@ -48,4 +48,4 @@ Author: Juergen Niedballa [aut, cre] (<https://orcid.org/0000-0002-9187-2116>),
   Andreas Wilting [ctb, ths] (<https://orcid.org/0000-0001-5073-9186>)
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-04-23 00:14:19 UTC
+Date/Publication: 2020-07-29 12:20:02 UTC
