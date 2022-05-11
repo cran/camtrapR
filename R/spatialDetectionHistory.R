@@ -1,3 +1,242 @@
+#' Generate a \code{capthist} object for spatial capture-recapture analyses
+#' from camera-trapping data
+#' 
+#' This function generates spatial detection histories of individuals of a
+#' species for spatial capture-recapture analyses with package
+#' \code{\link[secr:secr-package]{secr}}. Data are stored in a
+#' \code{\link[secr]{capthist}} object. The \code{\link[secr]{capthist}} object
+#' contains detection histories, camera-trap station location and possibly
+#' individual and station-level covariates. Detection histories can have
+#' adjustable occasion length and occasion start time (as in the function
+#' \code{\link{detectionHistory}}).
+#' 
+#' The function creates a \code{\link[secr]{capthist}} object by combining
+#' three different objects: 1) a record table of identified individuals of a
+#' species, 2) a camera trap station table with station coordinates and 3) a
+#' camera operation matrix computed with \code{\link{cameraOperation}}. The
+#' record table must contain a column with individual IDs and optionally
+#' individual covariates. The camera trap station table must contain station
+#' coordinates and optionally station-level covariates. The camera operation
+#' matrix provides the dates stations were active or not and the number of
+#' active stations.
+#' 
+#' \code{day1} defines if each stations detection history will begin on that
+#' station's setup day (\code{day1 = "station"}) or if all station's detection
+#' histories have a common origin (the day the first station was set up if
+#' \code{day1 = "survey"} or a fixed date if, e.g. \code{day1 = "2015-12-31"}).
+#' 
+#' \code{includeEffort} controls whether an effort matrix is computed or not.
+#' If TRUE, effort will be used for object \code{\link[secr]{usage}}
+#' information in a \code{\link[secr]{traps}}. \code{binaryEffort} makes the
+#' effort information binary. \code{scaleEffort} is currently not used and must
+#' be set to FALSE. The reason is that \code{\link[secr]{usage}} can only be
+#' either binary, or nonnegative real values, whereas scaling effort would
+#' return negative values.
+#' 
+#' The number of days that are aggregated is controlled by
+#' \code{occasionLength}. \code{occasionStartTime} will be removed from the
+#' function. It has moved to \code{\link{cameraOperation}}, to ensure daily
+#' effort is computed correctly and takes the occasion start time into
+#' account.%\code{occasionStartTime} can be used to make occasions begin
+#' another hour than midnight (the default). This may be relevant for nocturnal
+#' animals, in which 1 whole night would be considered an occasion.
+#' 
+#' Output can be returned as individual counts per occasion (\code{output =
+#' "count"}) or as binary observation (\code{output = "binary"}).
+#' 
+#' Argument \code{sessionCol} can be used to a create multi-session
+#' \code{\link[secr]{capthist}} object. There are two different ways in which
+#' the argument is interpreted. It depends on whether a column with the name
+#' you specify in argument \code{sessionCol} exists in
+#' \code{recordTableIndividual} or in \code{CTtable}. If \code{sessionCol} is
+#' found in \code{recordTableIndividual}, the records will be assigned to the
+#' specified sessions, and it will be assumed that all camera trap station were
+#' used in all sessions. Alternatively, if \code{sessionCol} is found
+#' in\code{CTtable}, it will be assumed that only a subset of stations was used
+#' in each session, and the records will be assigned automatically (using the
+#' station IDs to identify which session they belong into). In both cases,
+#' session information must be provided as a sequence of integer numbers
+#' beginnign with 1, i.e., you provide the session number directly in
+#' \code{sessionCol}. See \code{\link[secr]{session}} for more information
+#' about sessions in \pkg{secr}.
+#' 
+#' \code{\link[secr]{capthist}} objects (as created by
+#' \code{\link{spatialDetectionHistory}} for spatial capture-recapture
+#' analyses) expect the units of coordinates (\code{Xcol} and \code{col} in
+#' \code{CTtable}) to be meters. Therefore, please use a suitable coordinate
+#' system (e.g. UTM).
+#' 
+#' \code{recordDateTimeFormat} defaults to the "YYYY-MM-DD HH:MM:SS"
+#' convention, e.g. "2014-09-30 22:59:59". \code{recordDateTimeFormat} can be
+#' interpreted either by base-R via \code{\link[base]{strptime}} or in
+#' \pkg{lubridate} via \code{\link[lubridate]{parse_date_time}} (argument
+#' "orders"). \pkg{lubridate} will be used if there are no "\%" characters in
+#' \code{recordDateTimeFormat}.
+#' 
+#' For "YYYY-MM-DD HH:MM:SS", \code{recordDateTimeFormat} would be either
+#' "\%Y-\%m-\%d \%H:\%M:\%S" or "ymd HMS". For details on how to specify date
+#' and time formats in R see \code{\link[base]{strptime}} or
+#' \code{\link[lubridate]{parse_date_time}}.
+#' 
+#' @param recordTableIndividual data.frame. the record table with individual
+#' IDs created by \code{\link{recordTableIndividual}}
+#' @param species character. the species for which to compute the detection
+#' history
+#' @param camOp The camera operability matrix as created by
+#' \code{\link{cameraOperation}}
+#' @param CTtable data.frame. contains station IDs and coordinates. Same as
+#' used in \code{\link{cameraOperation}}.
+#' @param output character. Return individual counts ("count") or binary
+#' observations ("binary")?
+#' @param stationCol character. name of the column specifying Station ID in
+#' \code{recordTableIndividual} and \code{CTtable}
+#' @param speciesCol character. name of the column specifying species in
+#' \code{recordTableIndividual}
+#' @param sessionCol character. name of the column specifying session IDs,
+#' either in \code{recordTableIndividual} or in \code{CTtable}. See 'Details'
+#' for more information. Session ID values must be a sequence of integer
+#' numbers beginning with 1 (i.e., 1,2,3,...).
+#' @param Xcol character. name of the column specifying x coordinates in
+#' \code{CTtable}
+#' @param Ycol character. name of the column specifying y coordinates in
+#' \code{CTtable}
+#' @param stationCovariateCols character. name of the column(s) specifying
+#' station-level covariates in \code{CTtable}
+#' @param individualCol character. name of the column specifying individual IDs
+#' in \code{recordTableIndividual}
+#' @param individualCovariateCols character. name of the column(s) specifying
+#' individual covariates in \code{recordTableIndividual}
+#' @param recordDateTimeCol character. name of the column specifying date and
+#' time in \code{recordTableIndividual}
+#' @param recordDateTimeFormat format of column \code{recordDateTimeCol} in
+#' \code{recordTableIndividual}
+#' @param occasionLength integer. occasion length in days
+#' @param minActiveDaysPerOccasion integer. minimum number of active trap days
+#' for occasions to be included (optional)
+#' @param occasionStartTime (DEPRECATED) integer. time of day (the full hour)
+#' at which to begin occasions. Please use argument \code{occasionStartTime} in
+#' \code{\link{cameraOperation}} instead.
+#' @param maxNumberDays integer. maximum number of trap days per station
+#' (optional)
+#' @param day1 character. When should occasions begin: station setup date
+#' ("station"), first day of survey ("survey"), a specific date (e.g.
+#' "2015-12-31")?
+#' @param buffer integer. Makes the first occasion begin a number of days after
+#' station setup. (optional)
+#' @param includeEffort logical. Include trapping effort (number of active
+#' camera trap days per station and occasion) as usage in
+#' \code{\link[secr]{capthist}} object?
+#' @param scaleEffort logical. scale and center effort matrix to mean = 0 and
+#' sd = 1? Currently not used. Must be FALSE.
+#' @param binaryEffort logical. Should effort be binary (1 if >1 active day per
+#' occasion, 0 otherwise)?
+#' @param timeZone character. Must be a value returned by
+#' \code{\link[base:timezones]{OlsonNames}}
+#' @param makeRMarkInput logical. If \code{FALSE}, output will be a data frame
+#' for RMark. If \code{FALSE} or not specified, a secr
+#' \code{\link[secr]{capthist}} object
+#' 
+#' @return Output depends on argument \code{makeRMarkInput}:
+#' 
+#' \item{list("makeRMarkInput = FALSE")}{A \code{\link[secr]{capthist}} object}
+#' \item{list("makeRMarkInput = TRUE")}{A data frame for use in RMark}
+#' 
+#' @section Warning : Please note the section about defining argument
+#' \code{timeZone} in the vignette on data extraction (accessible via
+#' \code{vignette("DataExtraction")} or online
+#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
+#' 
+#' @author Juergen Niedballa
+#' 
+#' @seealso \pkg{secr} \pkg{RMark}
+#' 
+#' @examples
+#' 
+#' 
+#' data(recordTableIndividualSample)
+#' data(camtraps)
+#' 
+#' # create camera operation matrix (with problems/malfunction)
+#' camop_problem <- cameraOperation(CTtable      = camtraps,
+#'                                  stationCol   = "Station",
+#'                                  setupCol     = "Setup_date",
+#'                                  retrievalCol = "Retrieval_date",
+#'                                  writecsv     = FALSE,
+#'                                  hasProblems  = TRUE,
+#'                                  dateFormat   = "dmy"
+#' )
+#' 
+#' sdh <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSample,
+#'                                species               = "LeopardCat",
+#'                                camOp                 = camop_problem,
+#'                                CTtable               = camtraps,
+#'                                output                = "binary",
+#'                                stationCol            = "Station",
+#'                                speciesCol            = "Species",
+#'                                Xcol                  = "utm_x",
+#'                                Ycol                  = "utm_y",
+#'                                individualCol         = "Individual",
+#'                                recordDateTimeCol     = "DateTimeOriginal",
+#'                                recordDateTimeFormat  = "ymd HMS",
+#'                                occasionLength        = 10,
+#'                                day1                  = "survey",
+#'                                includeEffort         = TRUE,
+#'                                timeZone              = "Asia/Kuala_Lumpur"
+#'   )
+#' 
+#' # missing space in species = "LeopardCat" was introduced by recordTableIndividual
+#' # (because of CRAN package policies.
+#' # In your data you can have spaces in your directory names)
+#' 
+#'   summary(sdh)
+#'   plot(sdh, tracks = TRUE)
+#' 
+#'   ## multi-season capthist object
+#'   # see vignette "3. Extracting Data from Camera Trapping Images, creating occupancy & secr input"
+#'   
+#'   data(camtrapsMultiSeason)
+#'   camtrapsMultiSeason$session[camtrapsMultiSeason$session == 2009] <- 1
+#'   camtrapsMultiSeason$session[camtrapsMultiSeason$session == 2010] <- 2
+#' 
+#'   data(recordTableIndividualSampleMultiSeason)
+#' 
+#'   # create camera operation matrix (with problems/malfunction)
+#'   camop_session <- cameraOperation(CTtable         = camtrapsMultiSeason,
+#'                                       stationCol   = "Station",
+#'                                       setupCol     = "Setup_date",
+#'                                       sessionCol   = "session",
+#'                                       retrievalCol = "Retrieval_date",
+#'                                       hasProblems  = TRUE,
+#'                                       dateFormat   = "dmy"
+#'   )
+#' 
+#' sdh_multi <- spatialDetectionHistory(recordTableIndividual = recordTableIndividualSampleMultiSeason,
+#'                                species               = "LeopardCat",
+#'                                output                = "binary",
+#'                                camOp                 = camop_session,
+#'                                CTtable               = camtrapsMultiSeason,
+#'                                stationCol            = "Station",
+#'                                speciesCol            = "Species",
+#'                                sessionCol            = "session",
+#'                                Xcol                  = "utm_x",
+#'                                Ycol                  = "utm_y",
+#'                                individualCol         = "Individual",
+#'                                recordDateTimeCol     = "DateTimeOriginal",
+#'                                recordDateTimeFormat  = "ymd HMS",
+#'                                occasionLength        = 10,
+#'                                day1                  = "survey",
+#'                                includeEffort         = TRUE,
+#'                                timeZone              = "Asia/Kuala_Lumpur",
+#'                                stationCovariateCols  = "utm_y",         # example
+#'                                individualCovariateCols = "Individual"   # example
+#'   )
+#' 
+#'   summary(sdh_multi)
+#'   plot(sdh_multi, tracks = TRUE)
+#' 
+#' @importFrom secr read.traps make.capthist traps RMarkInput usage covariates
+#' @export spatialDetectionHistory
+#' 
 spatialDetectionHistory <- function(recordTableIndividual,
                                     species,
                                     camOp,
@@ -12,10 +251,10 @@ spatialDetectionHistory <- function(recordTableIndividual,
                                     individualCol,
                                     individualCovariateCols,
                                     recordDateTimeCol = "DateTimeOriginal",
-                                    recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
+                                    recordDateTimeFormat = "ymd HMS",
                                     occasionLength,
                                     minActiveDaysPerOccasion,
-                                    occasionStartTime = 0,
+                                    occasionStartTime = "deprecated",
                                     maxNumberDays,
                                     day1,
                                     buffer,
@@ -99,6 +338,22 @@ spatialDetectionHistory <- function(recordTableIndividual,
   }
   if(!all(recordTableIndividual$Station %in% CTtable$Station)) stop ("there are entries in stationCol of recordTableIndividual that are not found in stationCol of CTtable")
 
+  #####################################################################################################################
+  # bring date, time, station ids into shape
+  
+  recordTableIndividual$DateTime2 <- parseDateTimeObject(inputColumn = recordTableIndividual[,recordDateTimeCol],
+                                                  dateTimeFormat = recordDateTimeFormat,
+                                                  timeZone = timeZone,
+                                                  checkNA_out = FALSE)
+  
+  if(any(is.na(recordTableIndividual$DateTime2))) stop(paste(sum(is.na(recordTableIndividual$DateTime2)), "out of",
+                                                      nrow(recordTableIndividual),
+                                                      "entries in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat (NA). row",
+                                                      paste(rownames(recordTableIndividual)[which(is.na(recordTableIndividual$DateTime2))], collapse = ", ")))
+  
+  
+  
+  
   # check sessionCol argument
   if(hasArg(sessionCol)) {
     checkForSpacesInColumnNames(sessionCol = sessionCol)
@@ -130,10 +385,11 @@ spatialDetectionHistory <- function(recordTableIndividual,
       
       recordTableIndividual <- assignSessionIDtoRecordTable (recordTable_tmp = recordTableIndividual,
                                                camOp = camOp,
-                                               dateTimeCol = recordDateTimeCol,
+                                               dateTimeCol = "DateTime2", # recordDateTimeCol,
                                                stationCol = stationCol,
                                                sessionCol = sessionCol
       )
+
       
       # see if there are duplicate station#session IDs in CTtable (meaning multiple cameras per station/session)
       
@@ -182,10 +438,11 @@ spatialDetectionHistory <- function(recordTableIndividual,
     if(!minActiveDaysPerOccasion <= occasionLength) stop("minActiveDaysPerOccasion must be smaller than or equal to occasionLength", call. = FALSE)
   }
 
-  if(length(occasionStartTime) != 1) stop("occasionStartTime must have length 1")
-  occasionStartTime    <- as.integer(round(occasionStartTime))
-  if(occasionStartTime != 0 & !is.integer(occasionStartTime)) stop ("occasionStartTime must be between 0 and 23", call. = FALSE)
-  if(occasionStartTime < 0 | occasionStartTime >= 24)         stop ("occasionStartTime must be between 0 and 23", call. = FALSE)
+  if(hasArg(occasionStartTime)) warning("'occasionStartTime' is deprecated and will be removed in the next release. It is now found in cameraOperation()")
+  # if(length(occasionStartTime) != 1) stop("occasionStartTime must have length 1")
+  # occasionStartTime    <- as.integer(round(occasionStartTime))
+  # if(occasionStartTime != 0 & !is.integer(occasionStartTime)) stop ("occasionStartTime must be between 0 and 23", call. = FALSE)
+  # if(occasionStartTime < 0 | occasionStartTime >= 24)         stop ("occasionStartTime must be between 0 and 23", call. = FALSE)
 
   occasionLength    <- as.integer(round(occasionLength))
   if(length(occasionLength) != 1)  stop("occasionLength may only contain one value", call. = FALSE)
@@ -205,8 +462,8 @@ spatialDetectionHistory <- function(recordTableIndividual,
     if(!buffer >= 1)        stop("if buffer is defined, it must be 1 or higher", call. = FALSE)
   }
 
-
-  if(!species %in% recordTableIndividual[,speciesCol]) stop("species", species, "not found in speciesCol of recordTableIndividual")
+  # check that species is in the speciesCol
+  if(!species %in% recordTableIndividual[,speciesCol]) stop("species ", species, " not found in speciesCol of recordTableIndividual")
   # check all stations in recordTableIndividual are matched in CTtable
   if(!all(recordTableIndividual[,stationCol] %in% CTtable[,stationCol])) {
     stop(paste("items of stationCol in recordTableIndividual are not matched in stationCol of CTtable: ", paste(recordTableIndividual[-which(recordTableIndividual[,stationCol] %in% CTtable[,stationCol]),stationCol], collapse = ", ")))
@@ -229,22 +486,8 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   
 
-  #####################################################################################################################
-  # bring date, time, station ids into shape
-
+ # subset to species of interest
   subset_species           <- recordTableIndividual[recordTableIndividual[,speciesCol] == species,]
-  subset_species$DateTime2 <- parseDateTimeObject(inputColumn = subset_species[,recordDateTimeCol],
-                                                  dateTimeFormat = recordDateTimeFormat,
-                                                  timeZone = timeZone,
-                                                  checkNA_out = FALSE)
-  
-  if(any(is.na(subset_species$DateTime2))) stop(paste(sum(is.na(subset_species$DateTime2)), "out of",
-                                                      nrow(subset_species),
-                                                      "entries in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat (NA). row",
-                                                      paste(rownames(subset_species)[which(is.na(subset_species$DateTime2))], collapse = ", ")))
-  
-  
-  
   
   # if sessionCol is defined and present in CTtable, check if all records are within correct session. remove if not
   if(hasArg(sessionCol)){
@@ -285,8 +528,16 @@ spatialDetectionHistory <- function(recordTableIndividual,
   }
 
 
-  ####
-  checkCamOpColumnNames (cameraOperationMatrix = camOp)
+  
+  # check that column names can be interpreted as day, as extract occasionStartTime if relevant
+  camOp <- checkCamOpColumnNames (cameraOperationMatrix = camOp)
+  if(hasArg(occasionStartTime)){
+    if(occasionStartTime != attributes(camOp)$occasionStartTime){
+      stop(paste("occasionStartTime", occasionStartTime, "differs from occasionStartTime in camOp", attributes(camOp)$occasionStartTime)) 
+    }
+  }
+  occasionStartTime <- attributes(camOp)$occasionStartTime
+  
   cam.op.worked0 <- as.matrix(camOp)
   
   if(all(as.character(unique(subset_species[,stationCol])) %in% rownames(cam.op.worked0)) == FALSE){
@@ -403,7 +654,6 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   ############
   # remove records for which effort was 0 or NA
-
   rowindex_sdh_to_remove <- vector()
 
   for(rowindex_sdh in 1:nrow(sdh2)){
@@ -414,10 +664,11 @@ spatialDetectionHistory <- function(recordTableIndividual,
   }
   
   
+  
   # if there were records in occasions with effort = 0/NA, remove these records
   if(length(rowindex_sdh_to_remove) != 0){
-    warning(paste("removed ", length(rowindex_sdh_to_remove), " record(s) because of effort = 0/NA, incomplete occasions (if includeEffort = FALSE), or effort < minActiveDaysPerOccasion \n(rownames: ",
-                  paste(rownames(sdh2)[rowindex_sdh_to_remove], collapse = ", "), ")", sep = ""),
+    warning("removed ", length(rowindex_sdh_to_remove), " record(s) because of effort = 0/NA, incomplete occasions (if includeEffort = FALSE), or effort < minActiveDaysPerOccasion:\n",
+            paste(capture.output(print(sdh2[rowindex_sdh_to_remove,])), collapse = "\n"),
             call. = FALSE)
     sdh2 <- sdh2[-rowindex_sdh_to_remove,]
   }

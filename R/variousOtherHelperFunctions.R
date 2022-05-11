@@ -80,7 +80,7 @@ runExiftool <- function(command.tmp,
   # find and remove ._ files created on Macs
   strangeMacFiles <- grep("^[._]", metadata.tmp$FileName, fixed = FALSE)
   if(length(strangeMacFiles) >= 1)  {
-    warning(paste("found", length(strangeMacFiles), "JPG files beginning with '._' in", paste(unique(metadata.tmp$Directory[strangeMacFiles]), collapse = ","), ". Will ignore them."), call. = FALSE, immediate. = TRUE)
+    warning(paste("found", length(strangeMacFiles), "JPG files beginning with '._' in", paste(unique(metadata.tmp$Directory[strangeMacFiles]), collapse = "\n"), ". \nThese images will be ignored."), call. = FALSE, immediate. = TRUE)
     metadata.tmp <- metadata.tmp[-strangeMacFiles,]
   }
   return(metadata.tmp)
@@ -100,49 +100,81 @@ addMetadataAsColumns <- function(intable,
   
   # find all metadata categories, remove spaces
   list.tmp <- vector()
-  for(xy in 1:length(tmp3)){
+  
+  # loop over images, get name of tag groups
+    for(xy in 1:length(tmp3)){
     list.tmp <- c(list.tmp, gsub(pattern = " ",
                                  replacement = "",
-                                 x =  unlist(lapply(strsplit(tmp3[[xy]],
+                                 x =  sapply(strsplit(tmp3[[xy]],
                                                              split = metadataHierarchyDelimitor,
                                                              fixed = TRUE),
-                                                    FUN = function(Y){Y = Y[1]}))))
+                                                    FUN = function(Y){Y = Y[1]})))
   }
   cols2add <- unique(list.tmp)    # these are the columns to add
   
-  # add as columns
+  # add empty columns
   if(length(cols2add) >= 1){    # if anything to add
-    intable <- data.frame(intable, matrix(NA, ncol = length(cols2add), nrow = nrow(intable)), check.names = FALSE)
+    intable <- data.frame(intable, 
+                          matrix(NA, ncol = length(cols2add), nrow = nrow(intable)), 
+                          check.names = FALSE)
     colnames(intable)[seq((ncol(intable) - length(cols2add) + 1),ncol(intable))] <- cols2add
     
+    
     # fill metadata columns
-    for(xyz in 1:length(cols2add)){
-      intable[,cols2add[xyz]] <- unlist(lapply(lapply(tmp3, FUN = function(X) {sapply(strsplit(X[grep(x = X,
-                                                                                                      pattern = paste(cols2add[xyz],
-                                                                                                                      metadataHierarchyDelimitor,
-                                                                                                                      collapse = "",
-                                                                                                                      sep      = ""),
-                                                                                                      fixed = TRUE)],
-                                                                                               split = metadataHierarchyDelimitor,
-                                                                                               fixed = TRUE),
-                                                                                      FUN = function(Y){Y[2]})}),
-                                               FUN = function(Z){paste(Z, collapse = multiple_tag_separator)}))
+    for(index_new_col in 1:length(cols2add)){                 # loop over metadata tag groups
       
-      intable[which(intable[,cols2add[xyz]] == ""), cols2add[xyz]] <- NA
-    } # end for xyz
-  } # end if
+      taggroup <- paste0(cols2add[index_new_col],
+                         metadataHierarchyDelimitor)
+      
+
+      for(img in 1:length(tmp3)) {
+        
+        current <- tmp3[[img]]
+        if(length(current) == 1) if(current == "") intable[img, cols2add[index_new_col]] <- NA
+        
+        # remove leading space
+        current <- gsub("^ ", "", current)
+        
+        # subset to current tag group
+        current_subset <- subset_taggroup(current, taggroup)
+        
+        use_these <- vector(length = length(current_subset))
+        # check if current tag is included in another tag at a deeper level in the hierarchy
+        for(tag in 1:length(current_subset)){
+          use_these[tag] <- ifelse(is.na(charmatch(current_subset[tag], current_subset[-tag])), TRUE, FALSE)
+        }
+          
+          #get the deepest hierarchical level of the tag
+          current_subset_split <- sapply(current_subset[use_these], 
+                                         strsplit,
+                                         split = metadataHierarchyDelimitor,
+                                         fixed = TRUE)
+          tags_to_use <- sapply(current_subset_split, FUN = function(x) x [length(x)]) 
+          intable[img, cols2add[index_new_col]] <- paste(tags_to_use, collapse = multiple_tag_separator)
+          
+          rm(tags_to_use, current_subset_split, current_subset, current)
+        }
+    } # end for index_new_col
+  }  # end if(length(cols2add) >= 1){ 
   
   which_cols_to_rename <- which(colnames(intable) %in% cols2add)
-  
-  # remove spaces and punctuation in column names
-  #colnames(intable) <- gsub(pattern = "[[:blank:]]", replacement = "", x = colnames(intable))
-  #colnames(intable) <- gsub(pattern = "[[:punct:]]", replacement = "", x = colnames(intable))
   
   # rename metadata columns with prefix "metadata_"
   colnames(intable)[which_cols_to_rename] <- paste("metadata_", colnames(intable)[which_cols_to_rename], sep = "")
   
   return(intable)
 }
+
+
+
+
+subset_taggroup <- function(x, parent) {
+  x[grep(x = x,
+         pattern = parent,
+         fixed = TRUE)]
+}
+
+
 
 
 # assign species IDs from metadata tags or directory names   ####
@@ -153,8 +185,18 @@ assignSpeciesID <- function(intable,
                             dirs_short,
                             i_tmp,
                             multiple_tag_separator,
-                            returnFileNamesMissingTags)
+                            returnFileNamesMissingTags,
+                            parent = "recordTable")
 {
+  
+  if(parent == "recordTable") {
+    parent_name <- "species"
+    parent_argname <- "metadataSpeciesTag"
+  }
+  if(parent == "recordTableIndividual") {
+    parent_name <- "individual" 
+    parent_argname <- "metadataIDTag"
+  }
   
   file.sep <- .Platform$file.sep
   
@@ -180,13 +222,13 @@ assignSpeciesID <- function(intable,
           
           # give warnings
           if(isTRUE(returnFileNamesMissingTags)){
-            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "records out of", nrow(intable),
-                                 "because of missing species metadata tag:\n"),
+            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "images out of", nrow(intable),
+                                 "because of missing", parent_name, "metadata tag:\n"),
                           paste(head(paste(intable$Directory[species_records_to_remove], intable$FileName[species_records_to_remove], sep = file.sep)), collapse = "\n")),
                     call. = FALSE, immediate. = TRUE)
           } else {
-            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "records out of", nrow(intable),
-                                 "because of missing species metadata tag")),
+            warning(paste(paste( dirs_short[i_tmp],":  removed", length(species_records_to_remove), "images out of", nrow(intable),
+                                 "because of missing", parent_name, "metadata tag")),
                     call. = FALSE, immediate. = TRUE)
           }
           #remove records without species tag
@@ -200,11 +242,14 @@ assignSpeciesID <- function(intable,
         
         return(intable)
       } else {
-        warning(paste(dirs_short[i_tmp], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'.", sep = ""), call. = FALSE, immediate. = TRUE)
+        warning(paste(dirs_short[i_tmp], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'.", 
+                      ifelse(grepl(" ", metadataSpeciesTag, fixed = T), paste0("This is probably because of an empty space in '", metadataSpeciesTag, "'"), ""), 
+                      sep = ""), call. = FALSE, immediate. = TRUE)
+        
         return("found no species tag")
       }
     } else {
-      stop(paste("station", dirs_short[i_tmp], ":   cannot figure out species names. Is metadataSpeciesTag defined?"), call. = FALSE)
+      stop(paste("station", dirs_short[i_tmp], ":   cannot figure out", parent_name, "names. Is", parent_argname, "defined?"), call. = FALSE)
     }
   }
 }
@@ -297,7 +342,7 @@ checkDateTimeOriginal <- function (intable, dirs_short, i){
     # if date/time information is missing for some records only
     if(any(intable$DateTimeOriginal == "-")){
       which_no_time <- which(intable$DateTimeOriginal == "-")
-      warning(paste(dirs_short[i], ": omitting", length(which_no_time), "images because of missing/unreadable date/time information."), call. = FALSE,  immediate. = TRUE)
+      warning(paste(dirs_short[i], ": omitting", length(which_no_time), "images because of missing/unreadable date/time information."), call. = FALSE,  immediate. = FALSE)
       intable <-  intable[-which_no_time,]    # removing rows with missing date/time information
     }
   }
@@ -498,10 +543,7 @@ assessTemporalIndependence <- function(intable,
     summary_column_name <- paste(eventSummaryColumn, eventSummaryFunction, sep = "_")
     intable[, summary_column_name[eventSummaryColumn %in% colnames(intable)]] <- NA
     
-    
-    # summary_column_name <- paste(eventSummaryColumn, eventSummaryFunction, sep = "_")[which(eventSummaryColumn %in% colnames(intable))]
-    # intable[, summary_column_name] <- NA
-  }    # end    if(hasArg(eventSummaryColumn)){
+    }    # end    if(hasArg(eventSummaryColumn)){
   
   
   for(xy in 1:length(which_independent)){     # for every independent record (the ones that end up in record table)
@@ -519,7 +561,7 @@ assessTemporalIndependence <- function(intable,
       which_records_to_group <- which(intable[, columnOfInterest]     == intable[current_row, columnOfInterest] &   # same species
                                       intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
                                       intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row] &
-                                      !isTRUE(intable$independent))                                        # not independent
+                                      !isTRUE(intable$independent))                                                 # not independent
     }
     
     # subset to records before the next independent record
@@ -550,7 +592,15 @@ assessTemporalIndependence <- function(intable,
       }    # end for(eventSummaryIndex in 1:length(eventSummaryColumn)
     }      # end if(hasArg(eventSummaryColumn))
     
-    intable[ current_row, n_imagesColumn] <- length(which_records_to_group)
+    
+    # quick and dirty solution to prevent n_images = 0 when lenght(which_records_to_group) = 0 (can happen if only 1 image in a directory)
+    
+    if(length(which_records_to_group) == 0) {
+      intable[ current_row, n_imagesColumn] <- 1
+    } else {
+      intable[ current_row, n_imagesColumn] <- length(which_records_to_group)
+    }
+    
     rm(which_records_to_group, current_row)
     
   }        # end for(xy in 1:length(which_independent))
@@ -612,10 +662,28 @@ addNewColumnsToGlobalTable <- function(intable,
 # for detectionHistory functions
 
 # check column names of camera operation matrix  ####
+# if there's a time shift from cameraOperation, extract return number as attribute
 checkCamOpColumnNames <- function(cameraOperationMatrix){
-  camopTest <- try(as.Date(colnames(cameraOperationMatrix)), silent = TRUE)
-  if(class(camopTest) == "try-error") stop(paste('Could not interpret column names in camOp as Dates. Desired format is YYYY-MM-DD, e.g. "2016-12-31". First column name in your camera operation matrix is "', colnames(cameraOperationMatrix)[1], '"', sep = '' ), call. = FALSE)
+  
   if(any(is.na(colnames(cameraOperationMatrix)))) stop("There are NAs in the column names of camOp", call. = FALSE)
+  
+  # check if camera operration matrix has time shift
+  if(all(grepl(pattern = "+", colnames(cameraOperationMatrix), fixed = TRUE))){
+    colnames_as_dates <- sapply(strsplit(colnames(cameraOperationMatrix), split = "+", fixed = TRUE), FUN = function(x)x[1])
+    camopTest <- try(as.Date(colnames_as_dates), silent = TRUE)
+    occasionStartTime <- as.numeric(gsub("h", "", unique(sapply(strsplit(colnames(cameraOperationMatrix), split = "+", fixed = TRUE), FUN = function(x)x[2]))))
+  } else {
+    occasionStartTime <- 0
+    camopTest <- try(as.Date(colnames(cameraOperationMatrix)), silent = TRUE)
+  }
+  
+  if("try-error" %in% class(camopTest)) stop(paste('Could not interpret column names in camOp as Dates. Desired format is YYYY-MM-DD (e.g. "2016-12-31") YYYY-MM-DD+Xh (X being a number, e.g. "2016-12-31+12h"). First column name in your camera operation matrix is "', colnames(cameraOperationMatrix)[1], '"', sep = '' ), call. = FALSE)
+  
+  
+  colnames(cameraOperationMatrix) <- as.character(camopTest)
+  
+  attr(cameraOperationMatrix, "occasionStartTime") <- occasionStartTime   # return time shift extracted from the column names
+  return(cameraOperationMatrix)    
 }
 
 
@@ -630,9 +698,12 @@ createDateRangeTable <- function(cam.op,
                                  timeZone_tmp)
 {
   
-  cam.tmp.min <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})    # 1st day of each station
-  cam.tmp.max <- apply(cam.op, MARGIN = 1, function(X){max(which(!is.na(X)))})    # last day of each station
+  # first day of each station
+  cam.tmp.min <- apply(cam.op, MARGIN = 1, function(X){min(which(!is.na(X)))})
+  # last day of each station
+  cam.tmp.max <- apply(cam.op, MARGIN = 1, function(X){max(which(!is.na(X)))})
   
+  # date of first / last record by station
   rec.tmp.min  <- aggregate(as.Date(subset_species_tmp$DateTime2, tz = timeZone_tmp),
                             list(subset_species_tmp[,stationCol_tmp]),
                             FUN = min)
@@ -641,7 +712,7 @@ createDateRangeTable <- function(cam.op,
                             FUN = max)
   
   
-  
+  # combine record dates and camera operation dates in one table
   date_ranges <- data.frame(rec.min = rec.tmp.min[match(rownames(cam.op), rec.tmp.min[,1]), 2],       # first record
                             rec.max = rec.tmp.max[match(rownames(cam.op), rec.tmp.max[,1]), 2],       # last record
                             cam.min = as.POSIXct(colnames(cam.op)[cam.tmp.min], tz = timeZone_tmp),   # station setup date
@@ -650,16 +721,16 @@ createDateRangeTable <- function(cam.op,
   
   rownames(date_ranges) <- rownames(cam.op)
   
-  # check if images were taken between setup and retrieval dates (Error if images outside station date range)
+  # check if images were taken between setup and retrieval dates (warning if images outside station date range)
   if(any(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE)){
-    warning(paste("At", sum(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE), "stations",
+    warning(paste("\nAt", sum(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp), na.rm = TRUE), "stations",
                   "there were records before camera operation date range: ",
                   paste(rownames(date_ranges)[which(date_ranges$rec.min < as.Date(date_ranges$cam.min, tz = timeZone_tmp))], 
                         sep = "\n", collapse = ", " )), call. = FALSE)
   }
   if(any(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE)) {
-    warning(paste("At", sum(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE), "stations",
-                  "there records after camera operation date range: ",
+    warning(paste("\nAt", sum(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp), na.rm = TRUE), "stations",
+                  "there were records after camera operation date range: ",
                   paste(rownames(date_ranges)[which(date_ranges$rec.max > as.Date(date_ranges$cam.max, tz = timeZone_tmp))], 
                         sep = "\n", collapse = ", " )), call. = FALSE)
   }
@@ -667,12 +738,10 @@ createDateRangeTable <- function(cam.op,
   # define when first occasion begins (to afterwards remove prior records in function    cleanSubsetSpecies)
   if(!hasArg(buffer_tmp)) buffer_tmp <- 0
   
-  #if(day1_tmp == "station") {
+  
   date_ranges$start_first_occasion <- date_ranges$cam.min + buffer_tmp * 86400 + occasionStartTime_tmp * 3600     #each stations setup  + buffer + starttime
-  #  } else {
-  #    if(day1_tmp == "survey") {
   date_ranges$start_first_occasion_survey <- min(date_ranges$cam.min) + buffer_tmp * 86400 + occasionStartTime_tmp * 3600    # first station's setup  + buffer + starttime
-  #      } else {
+
   
   if(day1_tmp %in% c("survey", "station") == FALSE) {
     if(as.Date(day1_tmp, tz = timeZone_tmp) < min(as.Date(date_ranges$cam.min,  tz = timeZone_tmp))) stop(paste("day1 (", day1_tmp, ") is before the first station's setup date (",  min(as.Date(date_ranges$cam.min,  tz = timeZone_tmp)), ")", sep = ""))
@@ -682,8 +751,23 @@ createDateRangeTable <- function(cam.op,
   
   
   
-  # define when last occasion ends
+  # # define when last occasion ends 
+  # the old way:
   date_ranges$end_of_retrieval_day <- as.POSIXct(paste(date_ranges$cam.max, "23:59:59"), tz = timeZone_tmp, format = "%Y-%m-%d %H:%M:%S")    # end of retrieval day
+  
+  # new possible solution:
+  # # Option 1: end of retrieval day
+  # end_of_retrieval_day <- as.POSIXct(paste(date_ranges$cam.max, "23:59:59"), tz = timeZone_tmp, format = "%Y-%m-%d %H:%M:%S")    # end of retrieval day
+  # # Option 2: exactly at retrieval hour (this only makes sense if value in camOp on retrieval day is fraction (if time of day was provided))
+  # # if there was a problem on the last day, it will be incorrect (return 0:0:0 if effort = 0)
+  # end_of_retrieval_day_hour <- date_ranges$cam.max + dhours(apply(cam.op, MARGIN = 1, function(X){X[max(which(!is.na(X)))] * 24}))
+  # 
+  # # define end of survey: exact retrieval time (if effort is a fraction of day)
+  # if(all(end_of_retrieval_day_hour < end_of_retrieval_day)) {
+  #   date_ranges$end_of_retrieval_day <- end_of_retrieval_day_hour
+  # } else{
+  #   date_ranges$end_of_retrieval_day <- end_of_retrieval_day
+  # }
   
   # if maxNumberDays is defined, find which is earlier: start + maxNumberDays or station retrieval?
   if(hasArg(maxNumberDays_tmp)) {
@@ -696,14 +780,18 @@ createDateRangeTable <- function(cam.op,
       date_ranges$start_first_occasion_plus_maxNumberDays <- date_ranges$start_first_occasion + (maxNumberDays_tmp * 86400) - 1   # -1 second ensures that last occasion does not spill into next day if occasionStartTime = 0
     }
     
+    # end of last occasion by staion (either end of retrieval day, or after maximum number of days)
     for(xy in 1:nrow(date_ranges)){
       date_ranges$end_last_occasion[xy] <- min(date_ranges$end_of_retrieval_day[xy], date_ranges$start_first_occasion_plus_maxNumberDays[xy])   # use smaller value
     }
-    attributes(date_ranges$end_last_occasion) <- attributes(date_ranges$start_first_occasion)   # assign the attributes: POSIX + time zone (to convert from numeric value back to date/time)
-  } else {
+    # assign the attributes: POSIX + time zone (to convert from numeric value back to date/time)
+    attributes(date_ranges$end_last_occasion) <- attributes(date_ranges$start_first_occasion)   
+  } 
+  
+  # if maxNumberDays is not defined, occasions end on station retrieval?
+  if(!hasArg(maxNumberDays_tmp)) {
     date_ranges$end_last_occasion <- date_ranges$end_of_retrieval_day
   }
-  
   
   return(date_ranges)
   
@@ -718,9 +806,7 @@ adjustCameraOperationMatrix <- function(cam.op,
                                         timeZone_tmp,
                                         day1_2
 ){
-  
-  
-  
+  # remove stations where occasions begin after end of last occasion (if buffer argument is too large)
   if(any(date_ranges2$start_first_occasion > date_ranges2$end_last_occasion)){
     remove.these.stations <- which(date_ranges2$start_first_occasion > date_ranges2$end_last_occasion)
     if(length(remove.these.stations) == nrow(date_ranges2)) stop("In all stations, the occasions begin after retrieval. Choose a smaller buffer argument.")
@@ -806,7 +892,7 @@ adjustCameraOperationMatrix <- function(cam.op,
 
 
 # check consistency of species record table before creating detection history (remove records outside date range etc)  ####
-cleanSubsetSpecies <- function(subset_species2 ,
+cleanSubsetSpecies <- function(subset_species2,
                                stationCol2,
                                date_ranges2
 ){
@@ -842,7 +928,8 @@ cleanSubsetSpecies <- function(subset_species2 ,
   remove.these2 <- which(subset_species2$DateTime2 > corrected_end_time_by_record)
   if(length(remove.these2) >= 1){
     
-    warning(paste(paste(length(remove.these2), 
+    warning(paste("\n", 
+                  paste(length(remove.these2), 
                         " records (out of ", 
                         nrow_subset_species2, 
                         ") were removed because they were taken after the end of the last occasion, e.g.:", sep = ""),
@@ -868,7 +955,8 @@ calculateTrappingEffort <- function(cam.op,
                                     occasionLength2,
                                     scaleEffort2,
                                     includeEffort2,
-                                    minActiveDaysPerOccasion2){
+                                    minActiveDaysPerOccasion2,
+                                    occasionStartTime2){
   
   ######################
   # calculate trapping effort by station and occasion
@@ -893,8 +981,11 @@ calculateTrappingEffort <- function(cam.op,
       effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {sum(is.na(X))}) == length(index.tmp), NA, effort[,m])
       # if full occasion = 0 in cam.op, make effort NA
       effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {all(X == 0)}),   NA, effort[,m])
-      # if full occasion is smaller than 1 (i.e. all 0 or NA), set effort NA
-      effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {all(X < 1)}),   NA, effort[,m])
+      
+      ## if full occasion is smaller than 1 (i.e. all 0 or NA), set effort NA
+      ## EDIT: 2020-09-12: This can cause problems if cameraOperation calculated fraction of days.
+      ## Also, the cases with 0 and NA are covered above. So I comment it for now.
+      #effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {all(X < 1)}),   NA, effort[,m])
       
       # set cells in effort matrix NA (according to input arguments)
       # this is later used to adjust the detection/non-detection matrix
@@ -913,8 +1004,11 @@ calculateTrappingEffort <- function(cam.op,
           }
           
         }
-      } else {
-        if(hasArg(minActiveDaysPerOccasion2)){   # includeEffort = TRUE and minActiveDays is defined
+        
+        ## includeEffort = TRUE
+      } else {    
+        # if minActiveDays is defined
+        if(hasArg(minActiveDaysPerOccasion2)){   
           # if occasion has less actice days than minActiveDays, set NA
           effort[, m] <- ifelse(apply(as.matrix(cam.op[,index.tmp]), MARGIN = 1, FUN = function(X) {sum(X, na.rm = TRUE) < minActiveDaysPerOccasion2}), NA, effort[,m])
         } else {                                 # includeEffort = TRUE and minActiveDays not defined
@@ -986,17 +1080,14 @@ makeSurveyZip <- function(output,
   unlink(dir.zip, recursive = TRUE)
   dir.create(dir.zip, showWarnings = FALSE, recursive = TRUE)
   
-  
   # create directories
   invisible(sapply(file.path(dir.zip, c("surveyReport", "activity", "scripts", "detectionMaps")), dir.create, showWarnings = FALSE))
-  
   
   ######
   # save input tables
   
   write.csv(recordTable, file = file.path(dir.zip, "recordTable.csv"), row.names = FALSE)
   write.csv(CTtable, file = file.path(dir.zip, "CTtable.csv"), row.names = FALSE)
-  
   
   ######
   # save surveyReport tables
@@ -1010,11 +1101,8 @@ makeSurveyZip <- function(output,
   }
   rm(xyz)
   
-  
-  
   ######
   # make activity plots
-  
   
   activityDensity(recordTable          = recordTable,
                   allSpecies           = TRUE,
@@ -1024,8 +1112,6 @@ makeSurveyZip <- function(output,
                   plotR                = FALSE,
                   writePNG             = TRUE,
                   plotDirectory        = file.path(dir.zip, "activity"))
-  
-  
   
   ######
   # make detection maps
@@ -1140,7 +1226,6 @@ makeSurveyZip <- function(output,
             #buffer                                  = 0,
             includeEffort                            = TRUE,
             scaleEffort                              = FALSE,
-            occasionStartTime                        = 0,
             datesAsOccasionNames                     = FALSE,
             timeZone                                 = timeZone,
             writecsv                                 = FALSE #,
@@ -1227,9 +1312,6 @@ makeSurveyZip <- function(output,
   } else {
     message("zip file creation failed")
   }
-  
-  # remove temporary directory
-  #unlink(dir.zip, recursive = TRUE)
 }
 
 
@@ -1296,6 +1378,8 @@ assignSessionIDtoRecordTableIndividual <- function(recordTableIndividual_tmp,
               CTtable     = cameraTrapTable_tmp))
 }
 
+
+
 assignSessionIDtoRecordTable <- function(recordTable_tmp,
                                          camOp,
                                          dateTimeCol,
@@ -1306,9 +1390,22 @@ assignSessionIDtoRecordTable <- function(recordTable_tmp,
   
   camop.info.df <- deparseCamOpRownames(camOp)
   
+  # if there's records at stations that are not in the camop row names
+  if(!any(recordTable_tmp[, stationCol] %in% unique(camop.info.df$station))) {
+    stop("Stations in record table station column don't match stations in row names of camera operation matrix.")
+  }
+    
+  if(!all(recordTable_tmp[, stationCol] %in% unique(camop.info.df$station))) {
+    warning(paste("Some stations in the record table are not matched by stations in camOp row names:\n",
+                  paste(unique(recordTable_tmp[!recordTable_tmp[, stationCol] %in% unique(camop.info.df$station), stationCol]), collapse = ", ")))
+  }
+  
   recordTable_tmp[, sessionCol] <- NA
   
   record_dates_tmp <- as.Date(recordTable_tmp[, dateTimeCol])
+  if(all(is.na(record_dates_tmp))) stop("Could not interpret record date/time. Output is all NA.")
+  
+  record_dates_backup <- record_dates_tmp
   camOp_dates_tmp  <- as.Date(colnames(camOp))
   
   # remove records before / after camOp date range
@@ -1316,7 +1413,7 @@ assignSessionIDtoRecordTable <- function(recordTable_tmp,
   
   if(length(records_too_early) > 0) {
     recordTable_tmp <- recordTable_tmp[-records_too_early, ]
-    warning(paste(length(records_too_late), "records were removed because they were before the first day in the camera operation matrix"), call. = FALSE)
+    warning(paste(length(records_too_early), "records were removed because they were before the first day in the camera operation matrix"), call. = FALSE)
     record_dates_tmp <- as.Date(recordTable_tmp[, dateTimeCol])
   }
   
@@ -1328,6 +1425,8 @@ assignSessionIDtoRecordTable <- function(recordTable_tmp,
     record_dates_tmp <- as.Date(recordTable_tmp[, dateTimeCol])
   }
   
+  if(nrow(recordTable_tmp) == 0) stop(paste0("Date range mismatch between records (", paste(range(record_dates_backup), collapse = " - "),
+                                            ") and camera operation matrix (", paste(range(camOp_dates_tmp), collapse = " - "), ")"))
   
   for(i in 1:nrow(camop.info.df)){
     # for every row in camOp, find all records at that station  
@@ -1346,8 +1445,12 @@ assignSessionIDtoRecordTable <- function(recordTable_tmp,
   if(length(which_na) > 0) {
     recordTable_tmp_na <- recordTable_tmp[which_na, ]
     recordTable_tmp <- recordTable_tmp[-which_na, ]
-    warning(paste(length(which_na), "records were removed because they could not be assigned to an active station / session:\n",
-                  file.path(recordTable_tmp_na$Directory, recordTable_tmp_na$FileName)), call. = FALSE)
+    if(length(which_na) == nrow(recordTable_tmp)) {
+      stop("Could not assign session to any record. Please check format of column names of camOp and station column of record table")
+    } else {
+      warning(paste0(length(which_na), " records were removed because they could not be assigned to an active station / session:\n",
+                    paste(recordTable_tmp_na[, stationCol], recordTable_tmp_na[, dateTimeCol], sep = ": ", collapse = "\n")), call. = FALSE)
+    }
   }
   
   separatorSession <- "__SESS_"
@@ -1409,7 +1512,9 @@ dataFrameTibbleCheck <- function(df,
 parseDateObject <- function(inputColumn,     
                             dateFormat,   
                             checkNA,      # throw error if there are NAs in input (only setup / retrieval, not problems)
-                            checkEmpty    # throw error if there are blank values in input  (only setup / retrieval, not problems)
+                            checkEmpty,    # throw error if there are blank values in input  (only setup / retrieval, not problems)
+                            allowEmptyOutput = FALSE,
+                            returndatetime = FALSE
 ){
   
   #if(!class(inputColumn) %in% c("factor", "character")) stop(paste("date column must be a factor or character:", deparse(substitute(inputColumn))), call. = FALSE)
@@ -1417,44 +1522,56 @@ parseDateObject <- function(inputColumn,
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
   if(checkEmpty & any(inputColumn == "")) stop(paste("there are blank values in", deparse(substitute(inputColumn))), call. = FALSE)
   
+  if(all(inputColumn == "") & allowEmptyOutput) return(NA)
+  
   inputColumn.char <- as.character(inputColumn)
   
   # option 1: base functions for dates as per strptime (identified by "%")
   if(grepl(pattern = "%", x = dateFormat, fixed = TRUE)){
+    if(any(grepl(pattern = " ", inputColumn.char))) warning(paste0("There are spaces in ", deparse(substitute(inputColumn)), ", but not in dateFormat\n"), call. = FALSE)
     out <- as.Date(inputColumn.char,     format = dateFormat)
   } else {
-    # option 2: lubridate functions (identified by absence of "%")
+  # option 2: lubridate functions (identified by absence of "%")
     if(!requireNamespace("lubridate", quietly = TRUE)) stop(paste("package 'lubridate' is required for the specified dateFormat", dateFormat))
     
     out <- lubridate::date(lubridate::parse_date_time(inputColumn.char, orders = dateFormat))
   }
-  
- # if(all(is.na(out))) stop(paste0("Cannot read date format in", deparse(substitute(inputColumn)), ". Output is all NA."), call. = FALSE)
   
   if(all(is.na(out))) stop(paste0("Cannot read date format in ", deparse(substitute(inputColumn)), ". Output is all NA.\n",
                                   "expected:  ", dateFormat, "\nactual:    ", inputColumn[1]), call. = FALSE)
   
   if(checkNA & any(is.na(out))) stop(paste("At least one entry in", deparse(substitute(inputColumn)), "cannot be interpreted using dateFormat:", dateFormat, "\n",
                                            "rows", paste(which(is.na(out)), collapse = ", ")), call. = FALSE)
-  return(out)
+  if(isTRUE(returndatetime))  return(as_datetime(out, tz = "UTC"))
+  if(isFALSE(returndatetime)) return(out)
 }
 
 
 # check and convert date - time (character) to datetime objects (POSIXlt), either with base functions or lubridate    ####
 
-parseDateTimeObject <- function(inputColumn,     
+parseDateTimeObject <- function(inputColumn,   
                                 dateTimeFormat,
                                 timeZone,
                                 checkNA = TRUE,      # throw error if there are NAs in input (only setup / retrieval, not problems)
-                                checkEmpty = TRUE,    # throw error if there are blank values in input  (only setup / retrieval, not problems)
-                                checkNA_out = TRUE  # throw error when there is NAs in output (FALSE so reporting is done by detectionHistory, which returns correct row numbers)
+                                checkEmpty = TRUE,   # throw error if there are blank values in input  (only setup / retrieval, not problems)
+                                checkNA_out = TRUE,  # throw error when there is NAs in output (FALSE so reporting is done by detectionHistory, which returns correct row numbers)
+                                allowEmptyOutput = FALSE,  
+                                quiet = FALSE
 ){
   
   
-  if(!class(inputColumn) %in% c("factor", "character")) stop(paste("datetime column must be a factor or character:", deparse(substitute(inputColumn))), call. = FALSE)
+  if("POSIXct" %in% class(inputColumn)){
+    message(paste("datetime column is in POSIXct format. Converting to character:", deparse(substitute(inputColumn)), ""), call. = FALSE)
+    inputColumn <- as.character(inputColumn)
+  } else {
+    if(!class(inputColumn) %in% c("factor", "character")) stop(paste("datetime column must be a factor or character:", deparse(substitute(inputColumn))), call. = FALSE)
+  }
   
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
   if(checkEmpty & any(inputColumn == "")) stop(paste("there are blank values in", deparse(substitute(inputColumn))), call. = FALSE)
+  
+  if(all(inputColumn == "") & allowEmptyOutput) return(NA)
+  
   
   inputColumn.char <- as.character(inputColumn)
   
@@ -1465,7 +1582,7 @@ parseDateTimeObject <- function(inputColumn,
     # option 2: lubridate functions (identified by absence of "%")
     if(!requireNamespace("lubridate", quietly = TRUE)) stop(paste("package 'lubridate' is required for the specified dateTimeFormat", dateTimeFormat))
     
-    out <- lubridate::parse_date_time(inputColumn.char, orders = dateTimeFormat, tz = timeZone)
+    out <- lubridate::parse_date_time(inputColumn.char, orders = dateTimeFormat, tz = timeZone, quiet = quiet)
   }
   
   if(all(is.na(out))) stop(paste0("Cannot read datetime format in ", deparse(substitute(inputColumn)), ". Output is all NA.\n",
@@ -1486,8 +1603,7 @@ stationSessionCamMatrix <- function(CTtable,
                                     cameraCol, 
                                     sessionCol, 
                                     setupCol,
-                                    retrievalCol,
-                                    separator
+                                    retrievalCol
 ){
   
   separatorCam     <- "__CAM_"
@@ -1496,6 +1612,12 @@ stationSessionCamMatrix <- function(CTtable,
   double_underscore <- "__"
   
   if(length(grep(pattern = double_underscore, x = CTtable[,stationCol])) >= 1) stop(paste("Station IDs may not contain double underscores", double_underscore), call. = FALSE)
+  
+  
+  # convert setup and retrievalCol to Dates (in case they contain times)
+  CTtable[,setupCol]     <- as.Date(as.character(CTtable[,setupCol]))
+  CTtable[,retrievalCol] <- as.Date(as.character(CTtable[,retrievalCol]))
+  
   
   if(hasArg(sessionCol)){
     if(any(CTtable[,sessionCol] == "")) stop("there are empty cells in sessionCol Please provide camera IDs for all cameras",
@@ -1542,17 +1664,11 @@ stationSessionCamMatrix <- function(CTtable,
     colnames(m) <- as.character(as.Date(min(CTtable[,setupCol]):max(CTtable[,retrievalCol]), origin = "1970-01-01"))
     rownames(m) <- CTtable[, stationCol]
   }
-  
-  # # assign attributes to rownames
-  # attr(rownames(m), "station") <- CTtable[,stationCol]
-  # 
-  # if(hasArg(sessionCol)) attr(rownames(m), "session") <- CTtable[, sessionCol]
-  # if(hasArg(cameraCol))  attr(rownames(m), "camera")  <- CTtable[, cameraCol]
-  
+
   return(m)
 }
 
-
+# analyse row names of camera operation matrix to extract station, camera and session information (the latter two only if applicable)
 deparseCamOpRownames <- function(camOp){
   
   separatorCam <- "__CAM_"
@@ -1698,16 +1814,36 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
   Tags             <- digiKamTablesList$Tags
   ImageTags        <- digiKamTablesList$ImageTags
 
-  # guess which AlbumRoot is correct, based on string distance (choose the smallest one)
-  # adist(x = stationDir, y = AlbumRoots$specificPath)
   
-  # combine album root and album path
-  Albums$albumPath_full <- paste(AlbumRoots[Albums$albumRoot, "specificPath"], 
-                                 Albums$relativePath, sep = "")
+  # add platform file separator to stationDir
+  stationDir0 <- stationDir
+  stationDir <- paste0(stationDir, .Platform$file.sep)
+  
+  # combine album root and album path (match by albumRoot id, not index position)
+  Albums <- merge(Albums, AlbumRoots, by.x = "albumRoot", by.y = "id", sort = FALSE)
+  Albums$albumPath_full <- paste0(Albums$specificPath, Albums$relativePath)
   
   # add drive letter (only relevant on Windows, and can potentially be wrong if there's Album roots on different drives)
-  Albums$albumPath_full2 <- paste(substr(stationDir, 1,2),   # the Drive letter, digiKam doesn't return it
-                                  Albums$albumPath_full, sep = "")
+  # also not sure if this works on Mac / Linux due to missing drive letters
+  if(.Platform$OS.type == "windows"){
+    Albums$albumPath_full2 <- paste(substr(stationDir, 1,2),   # the Drive letter, digiKam doesn't return it
+                                    Albums$albumPath_full,
+                                    sep = "")
+  }
+  
+  # Linux/Mac solution?
+  if(.Platform$OS.type == "unix"){
+    Albums$albumPath_full2 <- Albums$albumPath_full#paste(substr(stationDir, 1,2),
+                                    #Albums$albumPath_full,
+                                    #sep = "")
+  }
+  
+  
+  
+  # add "/" to ensure Station1 doesn't include Station10 also. Also ensure all folders end with one / only
+  Albums$albumPath_full2 <- ifelse(endsWith(Albums$albumPath_full2, .Platform$file.sep),
+                                   Albums$albumPath_full2,
+                                   paste0(Albums$albumPath_full2, .Platform$file.sep)) 
   
   pathColumn <- "albumPath_full2"
   
@@ -1715,17 +1851,24 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
   if(!stationDir %in% Albums[, pathColumn]){
     stop(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE)
     # try to handle with a warning instead
+    # warning(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE, immediate. = T)
+    # next
   }
   
   # find current station in albums
-  album_of_interest <- Albums [which(Albums[, pathColumn] == stationDir),]
+  #album_of_interest <-Albums [which(Albums[, pathColumn] == stationDir),]   # only return the station directory, not camera subdirectories
+  album_of_interest <- Albums [grep(pattern = stationDir, Albums[, pathColumn]),]   # This one returns Station directory and camera subdirectories
   if(nrow(album_of_interest) == 0) {
-    warning("Could not locate album for ", stationDir, ". Skipping")   # NOTE TO SELF: DOESN'T SKIP OR BREAK. CHANGE?
-    
+    warning("Could not locate album for ", stationDir, ". Skipping", call. = FALSE)   # NOTE TO SELF: DOESN'T SKIP OR BREAK. CHANGE?
   }
   
   # keep only images in the current album
-  image_subset <- Images[Images$album == album_of_interest$id,]
+  image_subset <- Images[Images$album %in% album_of_interest$id,]  # returns matches for all directories. Also, no NAs apparently
+  
+  # add stationDirectory 
+  image_subset$stationDir <- stationDir0
+  
+  # to do: handle situation where there's no images in image_subset
   
   # NAs are possible, so remove them
   if(any(is.na(image_subset$id))) {
@@ -1738,6 +1881,16 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
                                                nchar(image_subset$name))) %in% 
                                   paste(".", videoFormat, sep = ""),]
   
+  image_subset_others <- image_subset[!tolower(substr(image_subset$name, 
+                                               nchar(image_subset$name) - 3, 
+                                               nchar(image_subset$name))) %in% 
+                                  paste(".", videoFormat, sep = ""),]
+  
+  #warning if no videos found
+  if(nrow(image_subset2) == 0) {
+    warning("Could not find any ", paste(videoFormat, collapse = "/"), " files in ", stationDir, call. = FALSE)
+  }
+  
   # find "Species" tag group and its children
    
    # subset image tags
@@ -1745,8 +1898,6 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
    
    # get proper labels for image tags (and their parent labels = tag group names)
    ImageTags$cleartext_child  <- Tags$name [match(ImageTags$tagid, Tags$id)]
-   #ImageTags$cleartext_parent <- Tags$name [Tags$pid[match(ImageTags$tagid, Tags$id)]]        # this is wrong!
-   # issue here: Tags$pid can be 0 if tag has no parent! Then indexing fails and functions errors
    
    Tags$parent_name <- Tags$name[match(Tags$pid, Tags$id)]
    ImageTags$cleartext_parent <- Tags$parent_name[match(ImageTags$tagid, Tags$id)]    #alternative to above, seems to work (and above seems wrong suddenly)
@@ -1773,12 +1924,6 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
    
    ImageTags <- ImageTags[!ImageTags$tagid %in% c(remove1, remove2, remove3),]
 
-   # # if parent ID = NA (the tag has no parent), then save it without the NA|  (below works but will lead to problems parsing HierarchicalSubject). Requires some more testing
-   # ImageTags$cleartext_full[is.na(ImageTags$cleartext_parent)] <- gsub(pattern = "NA|",
-   #                                                                     replacement = "",
-   #                                                                     ImageTags$cleartext_full[is.na(ImageTags$cleartext_parent)],
-   #                                                                     fixed = TRUE)
-   
    # combine multiple tags for images into single field "HierarchicalSubject"
    ImageTags_aggregate <- aggregate(ImageTags$cleartext_full,
                                     by = list(ImageTags$imageid),
@@ -1789,8 +1934,8 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
    
    # assign HierarchicalSubject to matching images
    image_subset2$HierarchicalSubject <- ImageTags_aggregate$HierarchicalSubject[match(image_subset2$id, ImageTags_aggregate$imageid)]
-
-  return(image_subset2) 
+  
+   return(image_subset2) 
 }
 
 # process the "video" argument of recordTable
@@ -1802,6 +1947,8 @@ processVideoArgument <- function(IDfrom = IDfrom,
   if(!exists("dateTimeTag",   where = video)) stop("'dateTimeTag' is missing in argument 'video'", call. = FALSE)
   
   file_formats <- video$file_formats
+  
+  if(any(duplicated(file_formats))) stop("There are duplicates in file_formats (in the video argument")
   
   # check file_formats argument
   if(!is.character(file_formats)) stop("'file_formats' in argument 'video' must be of class 'character'", call. = FALSE)
@@ -1830,7 +1977,7 @@ processVideoArgument <- function(IDfrom = IDfrom,
 }
 
 
-# if video files extracted, add DateTimeOriginal and HierarchicalSubject
+# if video files extracted, add DateTimeOriginal
 
 addVideoDateTimeOriginal <- function(metadata.tmp,
                                      video){
@@ -1848,20 +1995,492 @@ addVideoDateTimeOriginal <- function(metadata.tmp,
 # add HierachicalSubject for video files
 addVideoHierarchicalSubject <- function(metadata.tmp,
                                         video,
-                                        digiKamVideoMetadata){
+                                        digiKamVideoMetadata,
+                                        digiKamTablesList,
+                                        videoFormat){
   
+  if(nrow(digiKamVideoMetadata) == 0) return(metadata.tmp)
   # add HierarchialSubject for video files (match by filename, must be unique)
-  metadata.tmp$HierarchicalSubject_video <- digiKamVideoMetadata$HierarchicalSubject [match(metadata.tmp$FileName, digiKamVideoMetadata$name)]
+
+  # new version, should match filenames AND paths in digiKamVideoMetadata with metadata.tmp (can deal with duplicate file names in separate folders)
+  # get (partial) album path for videos in digiKamVideoMetadata (for station / camera directory)
+  # NOTE: no idea how to get the drive letter from volumeid / uuid in AlbumRoots, so it is missing here
+  album_name_tmp  <- digiKamTablesList$Albums[match(digiKamVideoMetadata$album, digiKamTablesList$Albums$id), ]
+  album_name_tmp2 <- merge(digiKamTablesList$AlbumRoots, album_name_tmp, by.x = "id", by.y = "albumRoot")
+  album_name_tmp3 <- paste0(album_name_tmp2$specificPath, album_name_tmp2$relativePath)
+  
+  # combine partial path and filename of extracted videos 
+  digiKamVideoMetadata$almostFullPath <-  file.path(album_name_tmp3, digiKamVideoMetadata$name)
+  
+  
+  # subset metadata.tmp to video files only
+  metadata.tmp.video <- metadata.tmp[tolower(substr(metadata.tmp$FileName, 
+                                                    nchar(metadata.tmp$FileName) - 3, 
+                                                    nchar(metadata.tmp$FileName))) %in% 
+                                       paste(".", videoFormat, sep = ""), ]
+  
+  metadata.tmp.notvideo <- metadata.tmp[!tolower(substr(metadata.tmp$FileName, 
+                                                    nchar(metadata.tmp$FileName) - 3, 
+                                                    nchar(metadata.tmp$FileName))) %in% 
+                                       paste(".", videoFormat, sep = ""), ]
+  
+  
+  metadata.tmp.video$fullPath <- file.path(metadata.tmp.video$Directory, metadata.tmp.video$FileName)
+  
+  # order metadata.tmp.video.fullPath and metadata.tmp.video.fullPath
+  
+  metadata.tmp.video <- metadata.tmp.video[order(metadata.tmp.video$fullPath),]
+  digiKamVideoMetadata <- digiKamVideoMetadata[order(digiKamVideoMetadata$almostFullPath),]
+  
+  
+  # in metadata.tmp.video, strip drive letter (everything left of first forward slash)
+  metadata.tmp.almostFullPath <- substr(metadata.tmp.video$fullPath, 
+        start = (nchar(metadata.tmp.video$fullPath) - nchar(digiKamVideoMetadata$almostFullPath) + 1),
+        stop = nchar(metadata.tmp.video$fullPath))
+
+  # add metadata from digiKamVideoMetadata to metadata.tmp
+  metadata.tmp.video$HierarchicalSubject_video <- digiKamVideoMetadata$HierarchicalSubject [match(metadata.tmp.almostFullPath, 
+                                                                                              digiKamVideoMetadata$almostFullPath)]
+  
   
   # find rows that have video metadata
-  rows_of_interest2 <- which(!is.na(metadata.tmp$HierarchicalSubject_video) & 
-                               metadata.tmp$HierarchicalSubject == "-")
+  rows_of_interest2 <- which(!is.na(metadata.tmp.video$HierarchicalSubject_video) & 
+                               metadata.tmp.video$HierarchicalSubject == "-")
   # write HierarchicalSubject of videos to the normal HierarchicalSubject column
   if(length(rows_of_interest2) >= 1) {
-    metadata.tmp$HierarchicalSubject[rows_of_interest2] <- metadata.tmp$HierarchicalSubject_video[rows_of_interest2] 
+    metadata.tmp.video$HierarchicalSubject[rows_of_interest2] <- metadata.tmp.video$HierarchicalSubject_video[rows_of_interest2] 
   }
-  # remove column HierarchicalSubject_video
-  metadata.tmp$HierarchicalSubject_video <- NULL
   
-  return(metadata.tmp)
+  
+  metadata.tmp.out <- data.frame(rbindlist(list(metadata.tmp.video, metadata.tmp.notvideo), fill = TRUE))
+  
+  # remove column HierarchicalSubject_video
+  metadata.tmp.out$HierarchicalSubject_video <- NULL
+  metadata.tmp.out$fullPath <- NULL
+  
+  return(metadata.tmp.out)
+}
+
+
+# function to return fraction of day that has passed already at a given time (or its inverse, fraction of day remaining)
+fractionOfDay <- function(time, type) {
+  # time difference between time and midnight that day (fraction of the day that has passed already)
+  delta <- as.numeric(difftime(time, as.Date(time), units = "days"))
+  
+  # return fraction of day that remains (for setup day)
+  if(type == "after") return( 1 - delta)
+  # return fraction of day that has passed (for retrieval day)
+  if(type == "before")  return(delta)
+}
+
+# plot camera operation matrix (function from vignette 3)
+camopPlot <- function(camOp, 
+                      palette = "viridis",
+                      lattice = FALSE){
+  
+  which.tmp <- grep(as.Date(colnames(camOp)), pattern = "01$")
+  label.tmp <- format(as.Date(colnames(camOp))[which.tmp], "%Y-%m")
+  at.tmp <- which.tmp / ncol(camOp)
+  
+  values_tmp <- sort(na.omit(unique(c(camOp))))
+  
+  # hcl.colors only exists in R >3.6.0, use heat.colors for earlier versions
+  if(getRversion() >= "3.6.0") {
+    image_colors <- grDevices::hcl.colors(n = length(values_tmp), palette = palette, rev = TRUE)
+  } else {
+    image_colors <- heat.colors(n = length(values_tmp), rev = TRUE)
+  }
+
+  
+  # transpose and reverse x axis to make sure it plots in the same row/column order as toe original matrix
+  if(nrow(camOp) > 1) {
+    camop_for_plotting <- t(as.matrix(camOp)[seq(nrow(camOp) ,1),])
+  } else {
+    camop_for_plotting <- t(as.matrix(camOp))
+  }
+  
+  # lattice::levelplot
+  if(isTRUE(lattice)) {
+    
+    if (!requireNamespace("tibble", quietly = TRUE)) stop("package 'lattice' is required for levelplot (lattice = TRUE)")
+    # generate color ramp 
+    image_colors_lattice <- grDevices::hcl.colors(n = 100, palette = palette, rev = TRUE)
+    
+    
+    # levelplot in lattice
+    # to be improved: y axis labels (station IDs) are all drawn and can overlap. 
+    # this may help: https://stat.ethz.ch/R-manual/R-devel/library/lattice/html/axis.default.html
+    lattice::levelplot(camop_for_plotting,
+              col.regions = image_colors_lattice,
+              xlab = "", ylab ="",
+              scales = list(x = list(at = which.tmp,
+                                     labels = label.tmp, rot = 45)),
+              aspect = "fill", 
+    )
+
+  } else {
+    
+    # grDevices::image()    quite basic and no legend
+    image(camop_for_plotting, xaxt = "n", yaxt = "n", col = image_colors)
+    axis(1, at = at.tmp, labels = label.tmp)
+    axis(2, at = seq(from = 0, to = 1, length.out = nrow(camOp)), labels = rev(rownames(camOp)), las = 1)
+    abline(v = at.tmp, col = rgb(0,0,0, 0.2))
+    box()
+  }
+}
+
+# intersect intervals, fast (adapted from lubridate)
+#https://github.com/tidyverse/lubridate/blob/master/R/intervals.r
+intersect.Interval.fast <- function(int1, int2, ...) {  # (x, y, ...) {
+
+  starts <- pmax(int1@start, int2@start)
+  ends <- pmin(int1@start + int1@.Data, int2@start + int2@.Data)
+  spans <- as.numeric(ends) - as.numeric(starts)
+  
+  spans[spans < 0] <- NA
+  spans
+}
+
+
+
+# surveyReport legacy version (from 2.0.3)
+# intended to run instead of new surveyReport to prevent error when re-running old code
+
+surveyReport_legacy <- function(recordTable,
+                         CTtable,
+                         speciesCol = "Species",
+                         stationCol = "Station",
+                         cameraCol,
+                         setupCol,
+                         retrievalCol,
+                         CTDateFormat = "%Y-%m-%d",
+                         CTHasProblems = FALSE,
+                         recordDateTimeCol = "DateTimeOriginal",
+                         recordDateTimeFormat = "%Y-%m-%d %H:%M:%S",
+                         Xcol,
+                         Ycol,
+                         sinkpath,
+                         makezip
+){
+  
+  # check column names
+  checkForSpacesInColumnNames(stationCol = stationCol, setupCol = setupCol, retrievalCol = retrievalCol,
+                              recordDateTimeCol = recordDateTimeCol, speciesCol = speciesCol)
+  
+  CTtable     <- dataFrameTibbleCheck(df = CTtable)
+  recordTable <- dataFrameTibbleCheck(df = recordTable)
+  
+  if(!stationCol %in% colnames(CTtable))    stop(paste('stationCol = "',   stationCol,   '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!setupCol %in% colnames(CTtable))      stop(paste('setupCol = "',     setupCol,     '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  if(!retrievalCol %in% colnames(CTtable))  stop(paste('retrievalCol = "', retrievalCol, '" is not a column name in CTtable', sep = ''), call. = FALSE)
+  
+  if(!stationCol %in% colnames(recordTable))         stop(paste('stationCol = "',   stationCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!recordDateTimeCol %in% colnames(recordTable))  stop(paste('recordDateTimeCol = "', recordDateTimeCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  if(!speciesCol %in% colnames(recordTable))         stop(paste('speciesCol = "', speciesCol,  '" is not a column name in recordTable', sep = ''), call. = FALSE)
+  
+  
+  # make columns character
+  recordTable[,speciesCol]        <- as.character(recordTable[,speciesCol])
+  recordTable[,stationCol]        <- as.character(recordTable[,stationCol])
+  recordTable[,recordDateTimeCol] <- as.character(recordTable[,recordDateTimeCol])
+  
+  CTtable[,stationCol]    <- as.character(CTtable[,stationCol])
+  CTtable[,setupCol]      <- as.character(CTtable[,setupCol])
+  CTtable[,retrievalCol]  <- as.character(CTtable[,retrievalCol])
+  
+  
+  
+  if(hasArg(makezip)){
+    stopifnot(is.logical(makezip))
+  } else {
+    makezip <- FALSE
+  }
+  
+  if(isTRUE(makezip)){
+    if(hasArg(sinkpath) == FALSE) stop("if makezip is TRUE, please define sinkpath")
+    if(!dir.exists(sinkpath)) stop("Could not find sinkpath:\n", sinkpath, call. = FALSE)
+    
+    if(Sys.getenv("R_ZIPCMD") == "" & 
+       Sys.getenv("zip") == "") {
+      if(isFALSE(requireNamespace("zip", quietly = TRUE))) {
+        stop('cannot create zip file. Try installing the package "zip" via:  install.packages("zip")', call. = FALSE)
+      } else {
+        requireNamespace("zip")
+        usePackageZip <- TRUE
+      }
+    } else {
+      usePackageZip <- FALSE
+    }
+  }
+  
+  if(hasArg(cameraCol)){
+    if(cameraCol %in% colnames(CTtable) == FALSE) stop(paste(cameraCol, "is not a column of CTtable"))
+  } else {
+    if(any(table(CTtable[,stationCol]) > 1)){
+      stop("at least 1 station has more than 1 item in CTtable. Please specify 'cameraCol'")
+    }
+  }
+  
+  if(hasArg(Xcol)){
+    stopifnot(hasArg(Ycol))
+    stopifnot(c(Xcol, Ycol) %in% colnames(CTtable))
+    CTtable[,Xcol] <- as.numeric(as.character(CTtable[,Xcol]))
+    CTtable[,Ycol] <- as.numeric(as.character(CTtable[,Ycol]))
+  } 
+  
+  
+  recordTable$DateTime2 <- parseDateTimeObject(inputColumn = recordTable[,recordDateTimeCol],
+                                               dateTimeFormat = recordDateTimeFormat,
+                                               timeZone = "UTC")
+  recordTable$Date2 <- as.Date(recordTable$DateTime2, tz = "UTC")
+  
+  
+  # if("POSIXlt" %in% class(recordTable$DateTime2) == FALSE) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat")
+  # if(any(is.na(recordTable$DateTime2))) stop(paste("at least 1 entry in recordDateTimeCol of recordTable could not be interpreted using recordDateTimeFormat. row",
+  #                                                  paste(which(is.na(recordTable$DateTime2)), collapse = ", ")))
+  
+  if(all(as.character(unique(recordTable[,stationCol])) %in% CTtable[,stationCol]) == FALSE){
+    (stop("Not all values of stationCol in recordTable are matched by values of stationCol in CTtable"))
+  }
+  
+  # check date columns and format
+  
+  CTtable[,setupCol]     <- parseDateObject(inputColumn = CTtable[,setupCol],     CTDateFormat, checkNA = TRUE, checkEmpty = TRUE)
+  CTtable[,retrievalCol] <- parseDateObject(inputColumn = CTtable[,retrievalCol], CTDateFormat, checkNA = TRUE, checkEmpty = TRUE)
+  
+  
+  if(isTRUE(CTHasProblems)){    # camera problem columns
+    
+    # check that problems are arranged in order 1,2,3,...
+    cols.prob.from <- grep(colnames(CTtable), pattern = "Problem\\d\\Sfrom")
+    cols.prob.to   <- grep(colnames(CTtable), pattern = "Problem\\d\\Sto")
+    
+    if(length(cols.prob.from) == 0) stop("could not find column ProblemX_from")
+    if(length(cols.prob.to) == 0)   stop("could not find column ProblemX_to")
+    
+    if(all(order(colnames(CTtable)[cols.prob.from]) == seq(1:length(cols.prob.from))) == FALSE){"problem columns are not arranged correctly"}
+    if(all(order(colnames(CTtable)[cols.prob.to])   == seq(1:length(cols.prob.to)))   == FALSE){"problem columns are not arranged correctly"}
+    
+    if(length(cols.prob.from) != length(cols.prob.to)){
+      stop("number of 'Problem..._from' and 'Problem..._to' columns differs. Check column names Sample: 'Problem1_from', 'Problem1_to'")
+    }
+    
+    n_days_inactive <- data.frame(matrix(NA,
+                                         ncol = length(cols.prob.from),
+                                         nrow = nrow(CTtable)))
+    
+    for(xy in 1:length(cols.prob.from)){
+      
+      if(isTRUE(unlist(strsplit(colnames(CTtable)[cols.prob.from[xy]], split = "_"))[1] !=
+                unlist(strsplit(colnames(CTtable)[cols.prob.to[xy]], split = "_"))[1])) stop (
+                  paste("problem columns are arranged incorrectly (",
+                        colnames(CTtable)[cols.prob.from[xy]], ", ",
+                        colnames(CTtable)[cols.prob.to  [xy]], ")",
+                        sep = "")
+                )
+      
+      CTtable[, cols.prob.from[xy]] <- parseDateObject(inputColumn = CTtable[, cols.prob.from[xy]], CTDateFormat, checkNA = FALSE, checkEmpty = FALSE)
+      CTtable[, cols.prob.to[xy]]   <- parseDateObject(inputColumn = CTtable[, cols.prob.to[xy]],   CTDateFormat, checkNA = FALSE, checkEmpty = FALSE)
+      
+      n_days_inactive[,xy] <- CTtable[cols.prob.to[xy]] - CTtable[cols.prob.from[xy]]       # compute number of inactive trap nights
+      n_days_inactive[,xy] <- as.integer(n_days_inactive[,xy])
+    }
+    for(xyz in cols.prob.from){
+      if(any(CTtable[,setupCol] > CTtable[,xyz], na.rm = TRUE)){
+        stop(paste(paste(CTtable[which(CTtable[,setupCol] > CTtable[,xyz]), stationCol], collapse = ", "), ": Problem begins before Setup"))
+      }
+    }
+    for(xyz2 in cols.prob.to){
+      if(any(CTtable[,retrievalCol] < CTtable[,xyz2], na.rm = TRUE)){
+        stop(paste(paste(CTtable[which(CTtable[,retrievalCol] < CTtable[,xyz2]), stationCol], collapse = ", "), ": Problem ends after retrieval"))
+      }
+    }
+    rm(xy, xyz, xyz2)
+    
+    n_days_inactive_rowsum <- rowSums(n_days_inactive, na.rm = TRUE)
+  } else {
+    n_days_inactive_rowsum <- rep(0, times = nrow(CTtable))
+  }
+  stopifnot(nrow(n_days_inactive_rowsum) == nrow(CTtable))
+  
+  n_days_inactive_rowsum <- aggregate(n_days_inactive_rowsum,
+                                      by    = list(CTtable[,stationCol]),
+                                      FUN   = sum,
+                                      na.rm = TRUE)
+  
+  
+  # adjust options for printing results
+  options.tmp <- options()
+  on.exit(options(options.tmp))
+  options(max.print=1e6)
+  options(width = 1000)
+  
+  # station and image date ranges
+  station.tmp1 <- aggregate(CTtable[,setupCol],
+                            list(CTtable[,stationCol]),
+                            FUN = min)
+  station.tmp2 <- aggregate(CTtable[,retrievalCol],
+                            list(CTtable[,stationCol]),
+                            FUN = max)
+  image.tmp1   <- aggregate(recordTable$Date2,
+                            list(recordTable[,stationCol]),
+                            FUN = min)
+  image.tmp2   <- aggregate(recordTable$Date2,
+                            list(recordTable[,stationCol]),
+                            FUN = max)
+  
+  
+  n_nights_total      <- as.integer(CTtable[,retrievalCol] - CTtable[,setupCol])
+  n_nights_total_agg  <- aggregate(n_nights_total,
+                                   by  = list(CTtable[,stationCol]),
+                                   FUN = sum)
+  n_cameras_total_agg <- aggregate(CTtable[,stationCol],
+                                   by  = list(CTtable[,stationCol]),
+                                   FUN = length)
+  n_nights_active     <- n_nights_total_agg[,2] - n_days_inactive_rowsum[,2]
+  
+  date_range_combined <- data.frame(station.tmp1[,1], station.tmp1[,2],
+                                    image.tmp1[match(station.tmp1[,1], image.tmp1[,1]),2],
+                                    image.tmp2[match(station.tmp1[,1], image.tmp2[,1]),2],
+                                    station.tmp2[,2],
+                                    n_nights_total_agg[,2],
+                                    n_nights_active,
+                                    n_cameras_total_agg[,2])
+  colnames(date_range_combined) <- c(stationCol, "setup_date",  "first_image_date", "last_image_date", "retrieval_date",
+                                     "n_nights_total", "n_nights_active", "n_cameras")
+  rownames(date_range_combined) <- NULL
+  
+  
+  # sink/print output
+  
+  
+  if(hasArg(sinkpath)){
+    sinkfile <- file.path(sinkpath, paste("survey_report_", Sys.Date(), ".txt", sep = ""))
+    sink(file = sinkfile)
+    print(paste("Survey Report generated", Sys.Date() ))
+  }
+  cat("\n-------------------------------------------------------\n")
+  print(paste("Total number of stations: ", length(unique(CTtable[,stationCol]))))
+  cat("\n-------------------------------------------------------\n")
+  print(paste("Number of operational stations: ", length(which(n_nights_active >= 1))))
+  cat("\n-------------------------------------------------------\n")
+  
+  if(hasArg(cameraCol)){
+    print(paste("Total number of cameras: ", length(unique(paste(CTtable[,stationCol], CTtable[,cameraCol], sep = "_")))))
+    cat("\n-------------------------------------------------------\n")
+    
+    print(paste("n nights with cameras set up (operational or not): ",
+                sum(n_nights_total, na.rm = TRUE)))
+    cat("\n-------------------------------------------------------\n")
+    print(paste("n nights with cameras set up and active (trap nights): ",
+                sum(n_nights_active, na.rm = TRUE)))
+  } else {
+    print(paste("n nights with cameras set up (operational or not. NOTE: only correct if 1 camera per station):",
+                sum(n_nights_total, na.rm = TRUE)))
+    cat("\n-------------------------------------------------------\n")
+    print(paste("n nights with cameras set up and active (trap nights. NOTE: only correct if 1 camera per station):",
+                sum(n_nights_active, na.rm = TRUE)))
+  }
+  cat("\n-------------------------------------------------------\n")
+  print(paste("total trapping period: ", paste(min(station.tmp1[,2]), max(station.tmp2[,2]), sep = " - ")))
+  
+  
+  
+  # total number of independent records by species
+  species_record_table <- data.frame(species    = rep(NA, times = length(unique(recordTable[, speciesCol]))),
+                                     n_events   = rep(NA, times = length(unique(recordTable[, speciesCol]))), 
+                                     n_stations = rep(NA, times = length(unique(recordTable[, speciesCol]))))
+  
+  for(i in 1:length(unique(recordTable[, speciesCol]))){
+    
+    tmp                           <- unique(recordTable[, speciesCol])[i]
+    subset.tmp                    <- subset(recordTable, recordTable[, speciesCol] == tmp)
+    species_record_table[i, ]     <- c(tmp, nrow(subset.tmp), length(unique(subset.tmp[,stationCol])))
+    rm(subset.tmp, tmp)
+  }
+  species_record_table2           <- species_record_table[order(species_record_table$species),]
+  rownames(species_record_table2) <- NULL
+  
+  # total number of independent records by station
+  
+  # only species that were recorded
+  station_record_table1           <- aggregate(recordTable[,1], by = list(recordTable[,stationCol],recordTable[,speciesCol]), FUN = length)
+  colnames(station_record_table1) <- c(stationCol, speciesCol, "n_events")
+  station_record_table1           <- station_record_table1[order(station_record_table1[,stationCol], station_record_table1[,speciesCol]),]
+  rownames(station_record_table1) <- NULL
+  
+  #including all species and 0s
+  station_record_table           <- expand.grid(sort(unique(recordTable[,stationCol])), sort(unique(recordTable[,speciesCol])))
+  station_record_table           <- data.frame(station_record_table, n_events = 0)
+  colnames(station_record_table) <- c(stationCol, speciesCol, "n_events")
+  rownames(station_record_table) <- NULL
+  # species lists by station
+  
+  n_spec_by_station           <- aggregate(station_record_table1[,speciesCol], by = list(station_record_table1[,stationCol]), FUN = length)
+  colnames(n_spec_by_station) <- c(stationCol, "n_species")
+  rownames(n_spec_by_station) <- NULL
+  
+  for(j in 1:length(unique(recordTable[, stationCol]))){
+    
+    tmp                      <- unique(recordTable[, stationCol])[j]
+    subset.tmp               <- table(subset(recordTable, recordTable[, stationCol] == tmp)[,speciesCol] )
+    
+    station_record_table.tmp <- station_record_table[station_record_table[, stationCol] == tmp,]
+    station_record_table.tmp$n_events[match(names(subset.tmp), station_record_table.tmp[,speciesCol])] <- subset.tmp
+    
+    station_record_table[station_record_table[, stationCol] == tmp,] <- station_record_table.tmp
+    rm(station_record_table.tmp)
+  }
+  station_record_table2 <-  station_record_table[order(station_record_table[,stationCol], station_record_table[,speciesCol]),]
+  rownames(station_record_table2) <- NULL
+  
+  if(hasArg(sinkpath)){
+    cat("\n\n-------------------------------------------------------\n\n")
+    print(" survey station and image date ranges")
+    print(date_range_combined)
+    cat("\n\n-------------------------------------------------------\n\n")
+    print(" number of species by station")
+    print(n_spec_by_station)
+    cat("\n\n-------------------------------------------------------\n\n")
+    print(" number of events and station by species")
+    print(species_record_table2)
+    cat("\n\n-------------------------------------------------------\n\n")
+    print(" number of events and species by station (only species that were recorded at stations)")
+    print(station_record_table1)
+    cat("\n\n-------------------------------------------------------\n\n")
+    print(" number of events and species by station (all species, all stations, including species that were not recorded)")
+    print(station_record_table2)
+    sink()
+    message("saved output to file \n",
+            paste(sinkfile, "\n\n"))
+  }
+  
+  output <- list(date_range_combined, n_spec_by_station, species_record_table2, station_record_table1, station_record_table2)
+  names(output) <- c("survey_dates", "species_by_station", "events_by_species",
+                     "events_by_station", "events_by_station2")
+  
+  # make zip file
+  if(isTRUE(makezip)){
+    
+    arglist_zip <-  list(output               = output,
+                         recordTable          = recordTable,
+                         CTtable              = CTtable,
+                         speciesCol           = speciesCol,
+                         stationCol           = stationCol,
+                         setupCol             = setupCol,
+                         retrievalCol         = retrievalCol,
+                         CTDateFormat         = CTDateFormat,
+                         CTHasProblems        = CTHasProblems,
+                         recordDateTimeCol    = recordDateTimeCol,
+                         recordDateTimeFormat = recordDateTimeFormat,
+                         sinkpath             = sinkpath,
+                         usePackageZip        = usePackageZip)
+    
+    if(hasArg(Xcol) & hasArg(Ycol)) arglist_zip <- c(arglist_zip,  Xcol = Xcol, Ycol = Ycol)
+    
+    do.call(makeSurveyZip, arglist_zip)
+    
+  }
+  
+  return(invisible(output))
 }

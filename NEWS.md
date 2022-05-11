@@ -1,3 +1,44 @@
+# camtrapR 2.2.0
+
+## new functions
+* communityModel: create community occupancy models for JAGS and Nimble. Comes with summary(), fit(), and predict() methods
+* plot_effects(): for plotting marginal effect plots (response curves) from community models
+* plot_coef(): for plotting coefficient estimates from community models
+
+## bugfixes
+* reading digiKam database now works for Mac + Linux systems
+
+## other changes
+* cameraOperation: warning instead of error if problem columns are empty and hasProblems = TRUE
+
+# camtrapR 2.1.0
+
+## new functions
+* OCRdataFields: allows automatic reading of text from data fields in images via optical character recognition (OCR), requires magick and tesseract packages
+* writeDateTimeOriginal: Write values to DateTimeOriginal tag to image metadata
+
+## new features
+* cameraOperation: setup/ retrieval / problem columns can be interpreted as date-time format, then computes effort as fraction of day. (Thank you to Zoe Siegel for the suggestion, Fridolin Zimmermann and the Department of Ecology & Evolution from the University of Lausanne for funding the development of the feature)
+* cameraOperation: gained argument occasionStartTime (deprecated in detectionHistory / spatialDetectionHistory)
+* function camopPlot is now accessible via camtrapR:::camopPlot(). It also gained an argument "lattice", which can be TRUE or FALSE (if TRUE, it uses levelplot() from lattice)
+* surveyReport: new argument camOp (for a camera operation matrix), argument CTHasProblems is deprecated. Improved calculation of survey effort.
+* timeShiftImages / addCopyrightTag: added argument "ignoreMinorErrors", set it to TRUE if functions fails due to bad MakerNotes (reported by An Nguyen)
+* detectionMaps uses package sf instead of sp and rgdal
+
+## bugfixes
+* cameraOperation now works when Problem columns are of class date or POSIX. Now being converted to character (reported by David Nicholls)
+* recordTable: supports extraction of metadata tags from video files in camera subdirectories, and allows duplicate video file names in different camera subdirectories (reported by Sian Green)
+* recordTable: fix bug that assigned Albums to wrong AlbumRoots in the digiKam database (when reading video metadata, reported by Sian Green)
+* imageRename: fixed error when hasCameraFolders is TRUE, but a station has only 1 camera (reported by Camille Coudrat and Ezekiel Gading)
+* detectionHistory: fixed a bug that caused errors when using multiple sessions and non-standard date/time formats (reported by Daniele Barcelos)
+* checkSpeciesNames: fixed error due to change in taxize::get_tsn (reported by Ivonne Oddoy)
+
+
+## other changes
+* lubridate is a dependency now (for cameraOperation)
+* additional Suggests: magick and tesseract (for OCRdataFields), lattice (for camopPlot)
+* roxygen2 documentation
+
 # camtrapR 2.0.3
 
 ## bugfixes

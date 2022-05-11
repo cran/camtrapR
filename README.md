@@ -8,26 +8,37 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/camtrapR)](https://CRAN.R-project.org/package=camtrapR)
 [![](http://cranlogs.r-pkg.org/badges/camtrapR)](https://cran.r-project.org/package=camtrapR)
-[![Build
-Status](https://travis-ci.org/jniedballa/camtrapR.svg?branch=master)](https://travis-ci.org/jniedballa/camtrapR)
+<!-- [![Build Status](https://travis-ci.org/jniedballa/camtrapR.svg?branch=master)](https://travis-ci.org/jniedballa/camtrapR) -->
 <!-- badges: end -->
 
 camtrapR is a package for camera trap data management in R.
 
 ## Installation
 
-You can install the stable version of camtrapR from CRAN:
+You can install the release version of camtrapR from CRAN:
 
 ``` r
-# Install release version from CRAN
 install.packages("camtrapR")
 ```
 
-or you can install the latest development version from GitHub via:
+or the latest GitHub version (containing recent changes and new
+features) via:
 
 ``` r
-library(remotes)
-install_github("jniedballa/camtrapR")
+# install.packages("remotes")
+# install.packages("R.rsp")
+remotes::install_github("jniedballa/camtrapR", build_vignettes = TRUE)
+```
+
+For installation from GitHub make sure package `R.rsp` is available.
+`build_vignettes = TRUE` is necessary since v 2.1.1. due to the new
+static vignettes.
+
+You can also install a previous version (e.g. if a recent update broke
+the code you need to run urgently) via:
+
+``` r
+remotes::install_version(package = "camtrapR", version = "2.0.3")
 ```
 
 ## Exiftool
@@ -64,8 +75,8 @@ Alternatively, you can report bugs and problems as issues on GitHub
 
 See the [Article in Methods in Ecology and
 Evolution](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12600)
-for an overview of the package. The four package vignettes provide
-examples for the entire workflow.
+for an overview of the package. The five vignettes provide examples for
+the entire workflow.
 
 ## Citation
 

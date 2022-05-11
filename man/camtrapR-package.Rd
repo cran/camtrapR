@@ -9,7 +9,7 @@ Overview of the functions in the camtrapR package
 }
 \description{
 This package provides a streamlined workflow for processing data generated in camera trap-based wildlife studies and prepares input for further analyses, particularly in occupancy and spatial capture-recapture frameworks.
-It suggests a simple data structure and provides functions for managing digital camera trap photographs (and videos), generating record tables, maps of species richness and species detections and species activity diagrams. It further helps prepare subsequent analyses by creating detection/non-detection matrices for occupancy analyses, e.g. in the \pkg{unmarked} package, and \code{capthist} objects for spatial capture-recapture analyses in the \pkg{secr} package. In addition, basic survey statistics are computed. The functions build on one another in a logical sequence.
+It suggests a simple data structure and provides functions for managing digital camera trap photographs (and videos), generating record tables, maps of species richness and species detections and species activity diagrams. It further helps prepare subsequent analyses by creating detection/non-detection matrices for occupancy analyses, e.g. in the \pkg{unmarked} or \pkg{ubms} packages, and \code{capthist} objects for spatial capture-recapture analyses in the \pkg{secr} package. In addition, basic survey statistics are computed. The functions build on one another in a logical sequence.
 The only manual input needed is species (and individual) identification, which is achieved by moving images into species directories or by tagging images in image management software. Besides, a table holding basic information about camera trap station IDs, locations and trapping periods must be created in spreadsheet software.
 }
 
@@ -28,6 +28,8 @@ The functions in this section set up a directory structure for storing camera tr
 \tabular{ll}{
 \code{\link{createStationFolders}} \tab Create camera trap station directories for raw images \cr
 \code{\link{fixDateTimeOriginal}}  \tab Fix DateTimeOriginal Exif metadata tag in Reconyx Hyperfire cameras \cr
+\code{\link{OCRdataFields}}        \tab Optical character recognition (OCR) from data fields in images \cr
+\code{\link{writeDateTimeOriginal}} \tab Write values to DateTimeOriginal tag in image metadata \cr
 \code{\link{timeShiftImages}}      \tab Apply time shifts to JPEG images \cr
 \code{\link{imageRename}}          \tab Copy and rename images based on station ID and image creation date \cr
 \code{\link{addCopyrightTag}}      \tab Write a copyright tag into JPEG image metadata \cr
@@ -113,6 +115,7 @@ These plots are generated from the record table and the camera trap table.
 \href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.html}{2. Identifying species and individuals}  \cr
 \href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr3.html}{3. Extracting Data from Camera Trapping Images and Videos}  \cr
 \href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr4.html}{4. Data exploration and visualisation}  \cr
+\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr5.html}{5. Multi-species occupancy models}  \cr
 
 }
 }
@@ -127,7 +130,7 @@ Maintainer:Juergen Niedballa <camtrapr@gmail.com>
 
 \references{
 
-Niedballa, J., Sollmann, R., Courtiol, A., Wilting, A. (2016): camtrapR: an R package for efficient camera trap data management. Methods in Ecology and Evolution, 7(12). \url{http://onlinelibrary.wiley.com/doi/10.1111/2041-210X.12600/full} \cr
+Niedballa, J., Sollmann, R., Courtiol, A., Wilting, A. (2016): camtrapR: an R package for efficient camera trap data management. Methods in Ecology and Evolution, 7(12). \url{https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12600} \cr
 
 camtrapR Google Group \url{https://groups.google.com/forum/#!forum/camtrapr} \cr
 
@@ -143,10 +146,7 @@ Phil Harvey's ExifTool \url{https://exiftool.org/} \cr
 \seealso{
 \pkg{overlap}
 \pkg{unmarked}
+\pkg{ubms}
 \pkg{secr}
-\pkg{plotrix}
-\pkg{taxize}
-\pkg{ritis}
 \pkg{wiqid}
 }
-

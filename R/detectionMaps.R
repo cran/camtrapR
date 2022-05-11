@@ -1,3 +1,123 @@
+#' Generate maps of observed species richness and species presences by station
+#' 
+#' Generates maps of observed species richness and species presence by species
+#' and station. Output can be R graphics, PNG graphics or a shapefile for use
+#' in GIS software.
+#' 
+#' The column name \code{stationCol} must be identical in \code{CTtable} and
+#' \code{recordTable} and station IDs must match.
+#' 
+#' Shapefile creation depends on the packages \pkg{sf}.
+#' Argument \code{shapefileProjection} must be a valid argument of
+#' \code{\link[sf]{st_crs}} (one of (i) character: a string accepted by GDAL, 
+#' (ii) integer, a valid EPSG value (numeric), or (iii) an object of class crs.
+#' If \code{shapefileProjection} is undefined,
+#' the resulting shapefile will lack a coordinate reference system.
+#' 
+#' @param CTtable data.frame. contains station IDs and coordinates
+#' @param Xcol character. name of the column specifying x coordinates in
+#' \code{CTtable}
+#' @param Ycol character. name of the column specifying y coordinates in
+#' \code{CTtable}
+#' @param backgroundPolygon SpatialPolygons or SpatialPolygonsDataFrame.
+#' Polygon to be plotted in the background of the map (e.g. project area
+#' boundary)
+#' @param stationCol character. name of the column specifying station ID in
+#' \code{CTtable} and \code{recordTable}
+#' @param recordTable data.frame. the record table created by
+#' \code{\link{recordTable}}
+#' @param speciesCol character. name of the column specifying species in
+#' \code{recordTable}
+#' @param speciesToShow character. Species to include in the maps. If missing,
+#' all species in \code{recordTable} will be included.
+#' @param writePNG logical. Create PNGs of the plots?
+#' @param plotR logical. Create plots in R graphics device?
+#' @param plotDirectory character. Directory in which to save the PNGs
+#' @param createPlotDir logical. Create \code{plotDirectory}?
+#' @param richnessPlot logical. Generate a species richness plot?
+#' @param speciesPlots logical. Generate plots of all species number of
+#' independent events?
+#' @param printLabels logical. Add station labels to the plots?
+#' @param smallPoints numeric. Number by which to decrease point sizes in plots
+#' (optional).
+#' @param addLegend logical. Add legends to the plots?
+#' @param pngMaxPix integer. number of pixels in pngs on the longer side
+#' @param writeShapefile logical. Create a shapefile from the output?
+#' @param shapefileName character. Name of the shapefile to be saved. If empty,
+#' a name will be generated automatically.
+#' @param shapefileDirectory character. Directory in which to save the
+#' shapefile.
+#' @param shapefileProjection character. A character string of projection
+#' arguments to use in the shapefile.
+#' 
+#' @return An invisible \code{data.frame} with station coordinates, numbers of
+#' events by species at each station and total species number by station. In
+#' addition and optionally, R graphics or png image files.
+#' 
+#' @author Juergen Niedballa
+#' 
+#' @references A great resource for coordinate system information
+#' is \url{https://spatialreference.org/}. Use the Proj4 string as
+#' \code{shapefileProjection} argument.
+#' 
+#' @examples
+#' 
+#' 
+#' # load station information
+#' data(camtraps)
+#' 
+#' # load record table
+#' data(recordTableSample)
+#' 
+#' 
+#' # create maps
+#' Mapstest <- detectionMaps(CTtable           = camtraps,
+#'                           recordTable       = recordTableSample,
+#'                           Xcol              = "utm_x",
+#'                           Ycol              = "utm_y",
+#'                           stationCol        = "Station",
+#'                           speciesCol        = "Species",
+#'                           writePNG          = FALSE,
+#'                           plotR             = TRUE,
+#'                           printLabels       = TRUE,
+#'                           richnessPlot      = TRUE,
+#'                           addLegend         = TRUE
+#' )
+#' 
+#' 
+#' 
+#' # with a polygon in the background, and for one species only
+#' 
+#' # make a dummy polygon for the background
+#' library(sp)
+#' poly1 <- Polygon(cbind(c(521500,526500,527000, 521500),c(607500, 608000, 603500, 603500)))
+#' poly2 <- Polygons(list(poly1), "s1")
+#' poly3 <- SpatialPolygons(list(poly2))
+#' 
+#' Mapstest2 <- detectionMaps(CTtable           = camtraps,
+#'                            recordTable       = recordTableSample,
+#'                            Xcol              = "utm_x",
+#'                            Ycol              = "utm_y",
+#'                            backgroundPolygon = poly3,             # this was added
+#'                            speciesToShow     = c("PBE", "VTA"),   # this was added
+#'                            stationCol        = "Station",
+#'                            speciesCol        = "Species",
+#'                            writePNG          = FALSE,
+#'                            plotR             = TRUE,
+#'                            printLabels       = TRUE,
+#'                            richnessPlot      = TRUE,
+#'                            addLegend         = TRUE
+#' )
+#' 
+#' 
+#' 
+#' 
+#' @importFrom sf st_as_sf st_set_crs st_write
+#' @importFrom sp coordinates
+#' @importFrom grDevices col2rgb dev.off extendrange heat.colors png rgb
+#' @importFrom graphics abline axis box grconvertX grconvertY hist image legend lines mtext par plot plot.default  points polygon rect segments strheight strwidth text
+#' @export detectionMaps
+#' 
 detectionMaps <- function(CTtable,
                           recordTable,
                           Xcol,
@@ -234,18 +354,18 @@ detectionMaps <- function(CTtable,
 
       # this works. migrate everything to ggplot?
 
-      #       ggplot(dat2, aes(dat2[,Xcol], dat2[,Ycol])) +
-      #         geom_point(cex =  cex_pt1_gg , fill = "white", colour = "black", pch = 21) +
-      #         geom_point(aes(size = factor(t4$n_species)), colour = "black") +
-      #         theme_bw() +
-      #         theme(legend.position = "right",
-      #               legend.box = "vertical",
-      #               legend.key = element_blank()) +
-      #         labs(x = Xcol,
-      #              y = Ycol,
-      #              title = "Species Richness")  +
-      #         coord_fixed(ratio = 1) +
-      #         scale_size_discrete(name = "n species")
+            # ggplot(dat2, aes(dat2[,Xcol], dat2[,Ycol])) +
+            #   geom_point(cex =  cex_pt1_gg , fill = "white", colour = "black", pch = 21) +
+            #   geom_point(aes(size = factor(t4$n_species)), colour = "black") +
+            #   theme_bw() +
+            #   theme(legend.position = "right",
+            #         legend.box = "vertical",
+            #         legend.key = element_blank()) +
+            #   labs(x = Xcol,
+            #        y = Ycol,
+            #        title = "Species Richness")  +
+            #   coord_fixed(ratio = 1) +
+            #   scale_size_discrete(name = "n species")
 
 
       plot(x = 0, type = "n", 
@@ -392,19 +512,38 @@ detectionMaps <- function(CTtable,
   
   rownames(outtable) <- NULL
   # write Shapefile
-  if(writeShapefile == TRUE){
-    if(hasArg(shapefileProjection)){proj.tmp <- shapefileProjection } else {proj.tmp <- NA}
-    if(hasArg(shapefileName)){layer.tmp <- shapefileName } else {layer.tmp <- paste("species_detection_", Sys.Date(), sep = "")}
-    
-    spdf <- SpatialPointsDataFrame(coords = outtable[,c(Xcol, Ycol)],
-                                       data = outtable,
-                                       proj4string = CRS(as.character(proj.tmp)))
-    
-    rgdal::writeOGR(obj = spdf,
-                    dsn = shapefileDirectory,
-                    layer = layer.tmp,
-                    driver = "ESRI Shapefile")
-  }
   
-  return(invisible(outtable))
+  if(writeShapefile == TRUE){
+    #if(hasArg(shapefileProjection)){proj.tmp <- shapefileProjection } else {proj.tmp <- NA}
+    if(hasArg(shapefileName)){
+      layer.tmp <- shapefileName 
+    } else {
+      layer.tmp <- paste("species_detection_", Sys.Date(), sep = "")
+    }
+    
+    # spdf <- SpatialPointsDataFrame(coords = outtable[,c(Xcol, Ycol)],
+    #                                    data = outtable,
+    #                                    proj4string = CRS(as.character(proj.tmp)))
+    # 
+    # rgdal::writeOGR(obj = spdf,
+    #                 dsn = shapefileDirectory,
+    #                 layer = layer.tmp,
+    #                 driver = "ESRI Shapefile")
+    
+    outtable_sf <- st_as_sf(outtable, 
+                            coords = c(Xcol, Ycol))
+    
+    if(hasArg(shapefileProjection)) outtable_sf <- st_set_crs(outtable_sf, shapefileProjection)
+    
+    st_write(obj = outtable_sf,
+             dsn = shapefileDirectory,
+             layer = layer.tmp,
+             driver = "ESRI Shapefile")
+    
+    
+    return(invisible(outtable_sf))
+    
+  } else {
+    return(invisible(outtable))
+  }
 }
