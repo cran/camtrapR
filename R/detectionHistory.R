@@ -122,7 +122,7 @@
 #' Please note the section about defining argument \code{timeZone} in the
 #' vignette on data extraction (accessible via
 #' \code{vignette("DataExtraction")} or online
-#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
+#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.pdf})).
 #' 
 #' @author Juergen Niedballa
 #' 
@@ -507,13 +507,22 @@ detectionHistory <- function(recordTable,
   # check if occasions are valid
   if(max(subset_species$occasion) > ncol(effort)) stop("Occasions exceeding total number of occasions calculated. This is a bug. I'm Sorry. Please report it.", call. = FALSE)
   if(any(subset_species$occasion == 0)) {
-    if(all(subset_species$DateTime2$hour == 0) &
-       all(subset_species$DateTime2$min  == 0) &
-       all(subset_species$DateTime2$sec  == 0)) { 
-      warning(paste("recordDateTimeCol seems to be a date column without time. Please provide time also. I will assume time of ALL records was occasionStartTime + 1 second (",
+    # this is old code that works on POSIXlt objects, not POSIXct. Need to convert first
+    subset_species$DateTime2_POSIXlt <- as.POSIXlt(subset_species$DateTime2)
+    
+    # identify records with time 00:00:00
+    idx_records_without_time <- which(subset_species$DateTime2_POSIXlt$hour == 0 &
+                                        subset_species$DateTime2_POSIXlt$min  == 0 &
+                                        subset_species$DateTime2_POSIXlt$sec  == 0)
+    
+    # add 1 second and recalculate occasion
+    if(length(idx_records_without_time) >= 1) { 
+      warning(paste(length(idx_records_without_time), " records out of ", nrow(subset_species),
+                    " seem to have no time information. Please provide time also. I will assume time of these records was occasionStartTime + 1 second (",
               occasionStartTime, ":00:01), but please treat this as experimental.", sep = ""), call. = FALSE)
-      subset_species$DateTime2$sec  <- 1
-      subset_species$DateTime2$hour <- occasionStartTime
+      subset_species$DateTime2_POSIXlt$sec  <- 1
+      subset_species$DateTime2_POSIXlt$hour <- occasionStartTime
+      subset_species$DateTime2 <- as.POSIXct(subset_species$DateTime2_POSIXlt)
       # recalculate occasions with new date/time
       subset_species$occasion <- as.numeric(ceiling((difftime(time1  = subset_species$DateTime2,
                                                               time2  =  time2,
@@ -567,10 +576,15 @@ detectionHistory <- function(recordTable,
       } 
     }
     
+
+   # ensure that occasions with NA or 0 effort are NA in detectionHistory
   if(occasionLength == 1){
     record.hist[is.na(cam.op.worked)] <- NA   # remove the records that were taken when cams were NA (redundant with above:   # remove records taken after day1 + maxNumberDays)
+    if(isFALSE(scaleEffort)) record.hist[cam.op.worked == 0] <- NA
+    
   } else {
     record.hist[is.na(effort)] <- NA     # just to make sure NA stays NA
+    if(isFALSE(scaleEffort)) record.hist[effort == 0] <- NA
   }
     
    # rm(occasions.by.station, xyz)

@@ -131,8 +131,8 @@ taken less than \code{minDeltaTime} minutes after the last record
 (\code{deltaTimeComparedTo = "lastIndependentRecord"}).
 
 \code{removeDuplicateRecords} determines whether duplicate records
-(identical station, species, date/time, (and camera if applicable)) are are
-all returned (TRUE) or collapsed into a single unique record (FALSE).
+(identical station, species, date/time, (and camera if applicable)) are
+all returned (FALSE) or collapsed into a single unique record (TRUE).
 
 \code{camerasIndependent} defines if the cameras at a station are to be
 considered independent. If \code{TRUE}, records of the same species taken by
@@ -209,7 +209,7 @@ independence):
  Custom image metadata must be organised hierarchically
 (tag group - tag; e.g. "Species" - "Leopard Cat"). Detailed information on
 how to set up and use metadata tags can be found in
-\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.html#metadata-tagging}{vignette
+\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.pdf}{vignette
 2: Species and Individual Identification}.
 
 Custom image metadata tags must be written to the images. The function
@@ -220,7 +220,7 @@ make sure "Write to sidecar files" is unchecked.
 Please note the section about defining argument \code{timeZone} in the
 vignette on data extraction (accessible via
 \code{vignette("DataExtraction")} or online
-(\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
+(\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.pdf})).
 }
 
 \examples{

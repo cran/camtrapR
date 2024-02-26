@@ -1,6 +1,6 @@
-#' Create a camera trap station operability matrix
+#' Create a camera trap station operation matrix
 #' 
-#' Construct a matrix of daily camera trap station operability for use in
+#' Construct a matrix of daily camera trap station operation for use in
 #' \code{\link{detectionHistory}} and \code{\link{spatialDetectionHistory}},
 #' where it is needed for calculating trapping effort per occasion. It is also
 #' used in \code{\link{surveyReport}} to calculate the number of trap nights
@@ -98,7 +98,7 @@
 #' @param hasProblems logical. If TRUE, function will look for columns
 #' specifying malfunction periods in \code{CTtable} (naming convention:
 #' \code{ProblemX_from} and \code{ProblemX_to}, where X is a number)
-#' @param byCamera logical. If TRUE, camera operability matrix is computed by
+#' @param byCamera logical. If TRUE, camera operation matrix is computed by
 #' camera, not by station (requires \code{cameraCol})
 #' @param allCamsOn logical. Takes effect only if \code{cameraCol} is defined
 #' and if \code{byCamera} is FALSE. If \code{allCamsOn = TRUE}, all cameras at
@@ -121,7 +121,7 @@
 #' @param occasionStartTime integer. time of day (the full hour) at which to
 #' begin occasions. Replaces \code{occasionStartTime} from
 #' \code{\link{detectionHistory}} and \code{\link{spatialDetectionHistory}}.
-#' @param writecsv logical. Should the camera operability matrix be saved as a
+#' @param writecsv logical. Should the camera operation matrix be saved as a
 #' .csv?
 #' @param outDir character. Directory into which csv is saved
 #' 
@@ -180,7 +180,7 @@
 #' camop_problem_lubridate
 #' 
 #' @importFrom data.table rbindlist setDF setDT setkey foverlaps ":="
-#' @importFrom lubridate as_date as_datetime ddays dhours dseconds interval int_start int_end time_length "%within%"
+#' @importFrom lubridate as_date as_datetime ddays dhours dseconds interval int_start int_end int_overlaps time_length "%within%" 
 #' @importFrom methods hasArg is new
 #' @importFrom stats aggregate na.omit start end rnorm window quantile
 #' @importFrom utils capture.output modifyList write.csv zip head menu read.table
@@ -215,15 +215,26 @@ cameraOperation <- function(CTtable,
   if(!retrievalCol %in% colnames(CTtable))  stop(paste('retrievalCol = "', retrievalCol,   '" is not a column name in CTtable', sep = ''), call. = FALSE)
   
   
+  # flag for whether to use fraction of days (if hours are provided in dateFormat).
+  # If not setup and retrieval are assumed to be at 12 noon
+  effortAsFraction <- grepl("H", dateFormat)
+  
   stopifnot(length(stationCol) == 1)
   CTtable[,stationCol] <- as.character(CTtable[,stationCol])
   
   stopifnot(length(setupCol) == 1)
-  CTtable[,setupCol] <- as.character(CTtable[,setupCol])   # parse_date_time gives error if in Date format
-  
   stopifnot(length(retrievalCol) == 1)
-  CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
   
+  # if(effortAsFraction) {
+  #   CTtable[,setupCol] <- format(CTtable[, setupCol], format = "%Y-%m-%d %H:%M:%S")
+  #   CTtable[,retrievalCol] <- format(CTtable[, retrievalCol], format = "%Y-%m-%d %H:%M:%S")
+  #   dateFormat <- "ymd HMS"
+  # } else {
+  #   CTtable[,setupCol] <- as.character(CTtable[,setupCol])   # parse_date_time gives error if in Date format
+  #   CTtable[,retrievalCol] <- as.character(CTtable[,retrievalCol])
+  # }
+  
+
   stopifnot(is.logical(writecsv))
   stopifnot(is.logical(hasProblems))
   
@@ -322,25 +333,62 @@ cameraOperation <- function(CTtable,
     if(file.exists(outDir) == FALSE) stop("outDir does not exist")
   }
   
-  # check date columns and format
+  # Convert Date columns to character
+  date_columns <- which(sapply(CTtable, is.Date))
+  if(length(date_columns) >= 1) {
+    CTtable[date_columns] <- lapply(CTtable[date_columns], 
+                                    as.character
+                                    # FUN = function(col) format(col, format = "%Y-%m-%d")
+                                    )
+    # dateFormat <- "%Y-%m-%d %H:%M:%S"
+    dateFormat <- "%Y-%m-%d"
+  }
   
-  # flag for whether to use fraction of days (if hours are provided in dateFormat), otherwise daily effort (itteger)
-  effortAsFraction <- grepl("H", dateFormat)
+  # Convert POSIX columns to character
+  posix_columns <- which(sapply(CTtable, is.POSIXt))
+  if(length(posix_columns) >= 1) {
+    CTtable[posix_columns] <- lapply(CTtable[posix_columns], 
+                                     # as.character
+                                     FUN = function(col) format(col, format = "%Y-%m-%d %H:%M:%S")
+                                     )
+    dateFormat <- "%Y-%m-%d %H:%M:%S"
+  }
+  
+  # if(exists("dateFormat_new")) dateFormat <- dateFormat_new
   
   # if dateFormat contains H (hour), use parseDateTimeObject, otherwise parseDateObject
   if(effortAsFraction) {
-    CTtable[,setupCol]     <- parseDateTimeObject(inputColumn = CTtable[,setupCol],     dateTimeFormat = dateFormat, checkNA = TRUE, checkEmpty = TRUE, timeZone = "UTC")
-    CTtable[,retrievalCol] <- parseDateTimeObject(inputColumn = CTtable[,retrievalCol], dateTimeFormat = dateFormat, checkNA = TRUE, checkEmpty = TRUE, timeZone = "UTC")
+    CTtable[,setupCol]     <- parseDateTimeObject(inputColumn = CTtable[,setupCol],     
+                                                  dateTimeFormat = dateFormat, 
+                                                  checkNA = TRUE, 
+                                                  checkEmpty = TRUE, 
+                                                  timeZone = "UTC")
+    CTtable[,retrievalCol] <- parseDateTimeObject(inputColumn = CTtable[,retrievalCol], 
+                                                  dateTimeFormat = dateFormat, 
+                                                  checkNA = TRUE, 
+                                                  checkEmpty = TRUE, 
+                                                  timeZone = "UTC")
   } else {
-    CTtable[,setupCol]     <- parseDateObject(inputColumn = CTtable[,setupCol],     dateFormat = dateFormat, checkNA = TRUE, checkEmpty = TRUE)
-    CTtable[,retrievalCol] <- parseDateObject(inputColumn = CTtable[,retrievalCol], dateFormat = dateFormat, checkNA = TRUE, checkEmpty = TRUE)
+    CTtable[,setupCol]     <- parseDateObject(inputColumn = CTtable[,setupCol],     
+                                              dateFormat = dateFormat, 
+                                              checkNA = TRUE, 
+                                              checkEmpty = TRUE)
+    CTtable[,retrievalCol] <- parseDateObject(inputColumn = CTtable[,retrievalCol], 
+                                              dateFormat = dateFormat, 
+                                              checkNA = TRUE, 
+                                              checkEmpty = TRUE)
   }
   
   # if setup time was not defined, assume 12 noon (so effort on setup/retrieval day = 0.5)
   if(isFALSE(effortAsFraction)){
     CTtable[,setupCol]     <- CTtable[,setupCol]     + dhours(12)
-    CTtable[,retrievalCol] <- CTtable[,retrievalCol] + dhours(12)
+    CTtable[,retrievalCol] <- CTtable[,retrievalCol] + dhours(12) + dseconds(ifelse(occasionStartTime==12 && effortAsFraction==FALSE, 1 ,0))
+    if(occasionStartTime==12 && effortAsFraction==FALSE) message("occasionStartTime = 12 and retrieval time is noon. Occasions beginning on retrieval day (at noon) thus have no effort, but are set to 0 instead of NA to prevent omission of records on retrieval day. Include effort as a detection covariate in your models to account for this.")
   }
+  # * prevent omission of records on retrieval day when occasionStartTime = 12 and occasions end at noon (if retrieval time undefined)
+  # can happen because otherwise effort on retrieval day = NA when setup/retrieval at noon. With this fix it is 0
+  # that may influence detection probabilities in model very slightly, especially if not using effort in models
+  
   
   if(any(CTtable[,setupCol] == CTtable[,retrievalCol])) stop(paste0("row ", paste(which(CTtable[,setupCol] == CTtable[,retrievalCol]), collapse = ", "), ": setup is identical to retrieval"), call. = FALSE)
   
@@ -368,16 +416,21 @@ cameraOperation <- function(CTtable,
 
   # get start / retrieval dates of all cameras
   date0 <- sapply(CTtable[, setupCol],     FUN =  function(x) as.character(min(x)))
+  # if(occasionStartTime != 12) {
   date1 <- sapply(CTtable[, retrievalCol], FUN =  function(x) as.character(max(x) - dseconds(1)))  # if not removing 1 second, last day with end on midnight when the day begins, leading to retrieval day being 0
-  
+  # } else {
+    # date1 <- sapply(CTtable[, retrievalCol], FUN =  function(x) as.character(max(x)))  # if removing 1 second, there will be no overlap between last day and last occasion, resulting in NA and dropped records on last day
+    # if(!effortAsFraction) message("occasionStartTime = 12 and retrieval time is noon (since retrieval time is not defined). The occasion beginning at noon on retrieval day thus has no effort. Effort is set to 0 instead of NA though to prevent omission of records on retrieval day in detectionHistory.")
+  # }
+    
   # create interval from start to end of each camera
   start_to_end <- interval(date0, date1)
   
   if(isTRUE(hasProblems)){
     
     # find problem columns
-    cols.prob.from <- grep(colnames(CTtable), pattern = "Problem\\d\\Sfrom")
-    cols.prob.to   <- grep(colnames(CTtable), pattern = "Problem\\d\\Sto")
+    cols.prob.from <- grep(colnames(CTtable), pattern = "Problem[0-9]+\\Sfrom")
+    cols.prob.to   <- grep(colnames(CTtable), pattern = "Problem[0-9]+\\Sto")
     
     # convert problem column entries to character
     for(problem_col_index in c(cols.prob.from, cols.prob.to)){
@@ -534,59 +587,57 @@ cameraOperation <- function(CTtable,
   #  trapping intervals for all cameras (setup to retrieval)
   # for each day in camop, make an interval covering the entire day
   camop_daily_intervals <- lapply(as.Date(colnames(camOp_empty)),
-                                  FUN = function(x) interval(start = x + dhours(occasionStartTime),  #paste0(x, " ", occasionStartTime, ":00:00"),
-                                                             end =   x + ddays(1) + dhours(occasionStartTime) - dseconds(1) #paste0(x+1, " ", occasionStartTime, ":00:00")  # 86400 s. If 23:59:59 same day, it's 86399 s
-                                                             #end = paste0(x, " ", occasionStartTime, ":59:59")  #  86399 s
+                                  FUN = function(x) interval(start = x + dhours(occasionStartTime),  
+                                                             end =   x + ddays(1) + dhours(occasionStartTime) - dseconds(1)
                                   ))
   names(camop_daily_intervals) <- colnames(camOp_empty)
   
   # get start / end of the days covered by the study (+ occasionStartTime, if defined)
   int_start_daily <- lapply(camop_daily_intervals, FUN = function(x) int_start(x))
   int_end_daily   <- lapply(camop_daily_intervals, FUN = function(x) int_end(x))
+  
   # get start / end of camera trapping period by camera
-  # int_start_total <- as_date(int_start(start_to_end))
-  # int_end_total   <- as_date(int_end(start_to_end))
   int_start_total <- int_start(start_to_end)
   int_end_total   <- int_end(start_to_end)
   
+  
+  # alternative to data.table madness below. Find overlapping intervals between camera traps and days
+  camop_binary <- sapply(camop_daily_intervals, int_overlaps, start_to_end)
+  rownames(camop_binary) <- rownames(camOp_empty)
   
   
   # identify overlapping intervals with data.table
   # https://www.howtobuildsoftware.com/index.php/how-do/bzA9/r-intervals-lubridate-r-and-lubridate-do-the-intervals-in-x-fit-into-any-of-the-intervals-in-y
   
-  #CTtable
-  int.total <- data.frame(start = sapply(int_start(start_to_end), as.POSIXct), 
-                          end   = sapply(int_end(start_to_end), as.POSIXct))
-  
-  # daily intervals
-  int.daily <- data.frame(start = sapply(int_start_daily, as.POSIXct), 
-                          end = sapply(int_end_daily, as.POSIXct))
-  
-  setDT(int.total)[, `:=`(start = start,
-                          end = end)]
-  setkey(setDT(int.daily)[, `:=`(start =start,
-                                 end = end)], start, end)
-  intervals_matched <- foverlaps(int.total, int.daily, type = "any", which = TRUE)
-  #intervals_matched.within <- foverlaps(int.total, int.daily, type = "within", which = TRUE)
-  
-  # equivalent to avove, only x/y exchanged
-  # setDT(int.daily)[, `:=`(start = start,
-  #                         end = end)]
-  # setkey(setDT(int.total)[, `:=`(start =start,
-  #                                end = end)], start, end)
-  # intervals_matched <- foverlaps(int.daily, int.total, type = "any", which = TRUE)
-  
+  # # start and end of each row in camera trap table (setup to retrieval)
+  # time_intervals_cttable <- data.frame(start = sapply(int_start(start_to_end), as.POSIXct), 
+  #                                      end   = sapply(int_end(start_to_end), as.POSIXct))
+  # 
+  # # start and end of each day
+  # time_intervals_each_day <- data.frame(start = sapply(int_start_daily, as.POSIXct), 
+  #                                       end   = sapply(int_end_daily, as.POSIXct))
+  # 
+  # setDT(time_intervals_cttable)[, `:=`(start = start,
+  #                                      end   = end)]
+  # setkey(setDT(time_intervals_each_day)[, `:=`(start = start,
+  #                                              end   = end)], 
+  #        start, end)
+  # # find matching time intervals (between days and cameras set up)
+  # intervals_matched <- foverlaps(time_intervals_cttable, 
+  #                                time_intervals_each_day, 
+  #                                type = "any", 
+  #                                which = TRUE)
   
   # loop over cameras (= rows)
   for(i in 1:nrow(camOp_empty)){
     
-    run_these <- intervals_matched[intervals_matched$xid == i,]$yid
+    run_these <- which(camop_binary[i,])    #intervals_matched[intervals_matched$xid == i,]$yid
     
     # intersect daily intervals with interval from setup to retrieval
-    
     interval.tmp <- sapply(camop_daily_intervals[run_these], intersect.Interval.fast, start_to_end[i])
+
     # assign values to camera operation matrix
-    camOp_empty[i,run_these] <- time_length(interval.tmp, unit = "days")
+    camOp_empty[i, run_these] <- time_length(interval.tmp, unit = "days")
     
     
     # if problems are defined, subtract those from the camera operation values
@@ -607,6 +658,10 @@ cameraOperation <- function(CTtable,
         camOp_empty[i,run_these] <- camOp_empty[i,run_these] - fraction_to_remove
       }
     }
+    
+    if(any(camOp_empty[i, run_these] < 0)) stop(paste("Negative effort calculated in", rownames(camOp_empty)[i], "on:",
+                                                      paste(names(which(camOp_empty[i, run_these] < 0)), collapse = ", "), "\n",
+                                                      "Check for overlapping dates in Problem columns"))
   }
   
   #camOp_filled <- camOp_empty #

@@ -2,7 +2,8 @@
 % Please edit documentation in R/predict.R
 \name{predict,commOccu-method}
 \alias{predict,commOccu-method}
-\title{Spatial predictions from community occupancy models}
+\alias{predict}
+\title{Predictions from community occupancy models}
 \usage{
 \S4method{predict}{commOccu}(
   object,
@@ -12,7 +13,10 @@
   level = 0.95,
   interval = c("none", "confidence"),
   x,
-  speciesSubset
+  aoi = NULL,
+  speciesSubset,
+  batch = FALSE,
+  seed
 )
 }
 \arguments{
@@ -20,21 +24,30 @@
 
 \item{mcmc.list}{mcmc.list. Output of \code{\link{fit}} called on a \code{commOccu} object}
 
-\item{type}{character. "psi" for species occupancy estimates, "richness" for species richness estimates}
+\item{type}{character. "psi" for species occupancy estimates, "richness" for species richness estimates, "pao" for percentage of area occupied (by species), "psi_array" for raw occupancy probabilities in an array. For Royle-Nichols models, "abundance" for species abundance, or "lambda_array" for raw species abundance estimates in an array.}
 
 \item{draws}{Number of draws from the posterior to use when generating the plots. If fewer than draws are available, they are all used}
 
 \item{level}{Probability mass to include in the uncertainty interval}
 
-\item{interval}{# Type of interval calculation. Can be "none" or "confidence". Can be slow for type = "psi" with many cells and posterior samples. Can be abbreviated.}
+\item{interval}{Type of interval calculation. Can be "none" or "confidence" (can be abbreviated). Calculation can be slow for type = "psi" with many cells and posterior samples.}
 
-\item{x}{raster stack or data.frame. Must be scaled with same parameters as site covariates used in model, and have same names.}
+\item{x}{SpatRaster or data.frame. Must be scaled with same parameters as site covariates used in model, and have same names.}
+
+\item{aoi}{SpatRaster with same dimensions as x (if x is a SpatRaster), indicating the area of interest (all cells with values are AOI, all NA cells are ignored). If NULL, predictions are made for all cells.}
 
 \item{speciesSubset}{species to include in richness estimates. Can be index number or species names.}
+
+\item{batch}{logical or numeric. If FALSE, all raster cells / data frame rows will be processed at once (can be memory intensive). If TRUE, computation is conducted in batches of 1000. If numeric, it is the desired batch size.}
+
+\item{seed}{numeric. Seed to use in \code{set.seed} for reproducible results (ensures that \code{draws} are identical).}
 }
 \value{
-A raster stack or data.frame, depending on x
+A SpatRaster or data.frame, depending on \code{x}. If type = "pao", a list. If type = "psi_array" or "lambda_array", a 3D-array [cell, species, draw].
 }
 \description{
-Create spatial predictions of species occupancy and species richness from community occupancy models and raster stacks.
+Create (spatial) predictions of species occupancy and species richness from community occupancy models and spatial rasters or covariate data frames.
+}
+\details{
+Processing can be very memory-intensive. If memory is insufficient, use the  \code{batch} parameter. This can enable processing for higher numbers of \code{draws} or very large rasters / data frames.
 }

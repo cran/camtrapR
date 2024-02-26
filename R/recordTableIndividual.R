@@ -145,7 +145,7 @@
 #' 
 #' @section Warning : Be sure to read the section on individual identification
 #' in the package vignette
-#' (\url{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.html}).
+#' (\url{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.pdf}).
 #' 
 #' Af you use image metadata tags for identification, the tags must be written
 #' to the image metadata. The function cannot read tags from .xmp sidecar
@@ -156,7 +156,7 @@
 #' Please note the section about defining argument \code{timeZone} in the
 #' vignette on data extraction (accessible via
 #' \code{vignette("DataExtraction")} or online
-#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
+#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.pdf})).
 #' 
 #' @author Juergen Niedballa
 #' 
@@ -451,7 +451,7 @@ recordTableIndividual <- function(inDir,
       # if images in station contain no metadata individual ID tag or are not tagged, skip that station
       if(!is.data.frame(metadata.tmp)){
         if(metadata.tmp == "found no species tag") {
-          warning(paste(dirs_short[i], ":   metadataIDTag '", metadataIDTag, "' not found in image metadata tag 'HierarchicalSubject'. Skipping", sep = ""), call. = FALSE, immediate. = TRUE)
+          # warning(paste(dirs_short[i], ":   metadataIDTag '", metadataIDTag, "' not found in image metadata tag 'HierarchicalSubject'. Skipping", sep = ""), call. = FALSE, immediate. = TRUE)
         } else {
           warning(paste(dirs_short[i], ":   error in individual tag extraction. Skipping. Please report", sep = ""), call. = FALSE, immediate. = TRUE)
         }

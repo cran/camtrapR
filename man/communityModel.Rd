@@ -7,6 +7,7 @@
 \usage{
 communityModel(
   data_list,
+  model = c("Occupancy", "RN"),
   occuCovs = list(fixed = NULL, independent = NULL, ranef = NULL),
   detCovs = list(fixed = NULL, ranef = NULL),
   detCovsObservation = list(fixed = NULL, ranef = NULL),
@@ -16,11 +17,14 @@ communityModel(
   richnessCategories = NULL,
   augmentation = NULL,
   modelFile = NULL,
-  nimble = FALSE
+  nimble = FALSE,
+  keyword_quadratic = "_squared"
 )
 }
 \arguments{
 \item{data_list}{list. Contains 3 slots: ylist, siteCovs, obsCovs. ylist is a list of detection histories (can be named), e.g. from \code{\link{detectionHistory}}. siteCovs is a data.frame with site covariates (optional). obsCovs is a list of site-occasion level covariates (e.g. site-occasion-specific effort, which is also returned by \code{\link{detectionHistory}}.}
+
+\item{model}{character. "Occupancy" for standard occupancy model,  or "RN" for the occupancy model of Royle and Nichols (2003), which relates probability of detection of the species to the number of individuals available for detection at each station}
 
 \item{occuCovs}{list. Up to 3 items named "fixed", "independent", and/or "ranef". Specifies fixed, independent or random effects of covariates on occupancy probability (continuous or categorical covariates). Independent effects are only supported for continuous covariates.}
 
@@ -36,23 +40,25 @@ communityModel(
 
 \item{richnessCategories}{character. Name of categorical covariate in \code{data_list$siteCovs} for which to calculate separate richness estimates (optional). Can be useful to obtain separate richness estimates for different areas.}
 
-\item{augmentation}{If NULL, no data augmentation (only use species in \code{data_list$ylist}), otherwise named list or vector with total number of (potential) species. Names: "knownmax" or "full". Example: \code{augmentation = c(knownmax = 30)} or \code{augmentation = c(full = 30)}}
+\item{augmentation}{If NULL, no data augmentation (only use species in \code{data_list$ylist}), otherwise named list or vector with total number of (potential) species. Names: "maxknown" or "full". Example: \code{augmentation = c(maxknown = 30)} or \code{augmentation = c(full = 30)}}
 
 \item{modelFile}{character. Text file name to save model to}
 
 \item{nimble}{logical. If TRUE, model code will be for Nimble (incompatible with JAGS). If FALSE, model code is for JAGS.}
+
+\item{keyword_quadratic}{character. A suffix in covariate names in the model that indicates a covariate is a quadratic effect of another covariate which does not carry the suffix in its name (e.g. if the covariate is "elevation", the quadratic covariate would be "elevation_squared").}
 }
 \value{
 \code{commOccu} object. It is an S4 class containing all information required to run the models. See  \code{\link{commOccu-class}} for details.
 }
 \description{
-Flexibly creates complete code and input data for community occupancy models for in JAGS amd Nimble, and automatically sets initial values and parameters to monitor. 
+Flexibly creates complete code and input data for community occupancy models for JAGS amd Nimble (both standard occupancy models and Royle-Nichols occupancy models), and automatically sets initial values and parameters to monitor. 
 Supports fixed and random effects of covariates on detection and occupancy probabilities, using both continuous and categorical covariates (both site and site-occasion covariates). 
 
 Optionally includes data augmentation (fully open community, or up to known maximum number of species, or no data augmentation). 
 Allows combination of all these parameters for fast and flexible customization of community occupancy models.
 
-Incidentally, the function can also be used to create  model code and input for single-species single-season occupancy models (it is the special case of the community model with only one species). 
+Incidentally, the function can also be used to create model code and input for single-species single-season occupancy models (it is the special case of the community model with only one species). 
 Such a model will run slower than proper single-species model JAGS code due to the additional species loop, but it is possible.
 
 The function returns several derived quantities, e.g. species richness, Bayesian p-values (overall and by species), Freeman-Tukey residuals for actual and simulated data (by station and total). If doing data augmentation, metacommunity size and number of unseen species are returned also.
@@ -75,8 +81,9 @@ Derived quantities returned by the model are:
     \code{Bpvalue_species} \tab Bayesian p-value (by species) \cr
     
     
-    \code{Nspecies} \tab Species richness (only in JAGS model)\cr
-    \code{Nspecies_Covariate} \tab Species richness by categorical covariate (when using \code{richnessCategories}, only in JAGS model) \cr
+    \code{Nspecies} \tab Species richness (only in JAGS models)\cr
+    \code{Nspecies_station} \tab Species richness at each sampling locations (only in JAGS models) \cr
+    \code{Nspecies_Covariate} \tab Species richness by categorical covariate (when using \code{richnessCategories}, only in JAGS models) \cr
     
     
     \code{R2} \tab sum of Freeman-Tukey residuals of observed data within each species \cr

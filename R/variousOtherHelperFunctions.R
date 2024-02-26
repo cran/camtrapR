@@ -11,7 +11,7 @@
   suppressWarnings( conn <- try( url(cran_pkg_loc) , silent=TRUE ) )
   
   # If connection, try to parse values, otherwise return NULL
-  if ( all( class(conn) != "try-error") ) {
+  if (!inherits(conn, "try-error") ) {
     suppressWarnings( cran_pkg_page <- try( readLines(conn) , silent=TRUE ) )
     close(conn)
   } else {
@@ -208,14 +208,15 @@ assignSpeciesID <- function(intable,
     if(hasArg(metadataSpeciesTag)){
       metadataSpeciesTag2 <- paste("metadata", metadataSpeciesTag, sep = "_")
       
-      # if the metadata_Species tag is found in metadata.tmp1
+      # if the metadata_Species tag is found in metadata.tmp
       if(metadataSpeciesTag2 %in% colnames(intable)){
         
         # copy to species column proper
         intable[,speciesCol] <- intable[,metadataSpeciesTag2]
         
-        # find records without proper species tag, to be removes
-        species_records_to_remove <- which(is.na(intable[,speciesCol]))
+        # find records without proper species tag, to be removed
+        species_records_to_remove <- c(which(is.na(intable[,speciesCol])),
+                                       which(intable[,speciesCol] == "NA"))
         
         # if there's records to remove
         if(length(species_records_to_remove) >= 1){    
@@ -332,17 +333,42 @@ addStationCameraID <- function(intable,
 
 # check if date/time information is present and was readable    ####
 
-checkDateTimeOriginal <- function (intable, dirs_short, i){
+checkDateTimeOriginal <- function (intable, dirs_short, i, stationCol, recordDateTimeCol = "DateTimeOriginal"){
+  
+  if(any(is.na(intable[, recordDateTimeCol]))){
+    which_na_time <- which(is.na(intable[, recordDateTimeCol]))
+    warning(paste0(dirs_short[i], ": Removing ", length(which_na_time), " out of ",
+                   nrow(intable)," images because date/time is NA:\n",
+                   paste("  ", file.path(intable$Directory, intable$FileName)[which_na_time], collapse = "\n")), call. = FALSE,  immediate. = TRUE)
+    intable <- intable[-which_na_time,]
+  }
+    
+    
   # if all date/time information is missing, go to next station
-  if(all(intable$DateTimeOriginal == "-")){
-    warning(paste(dirs_short[i], ": no readable date/time information. Skipping"), call. = FALSE,  immediate. = TRUE)
+  if(all(intable[, recordDateTimeCol] == "-")){
+    if(hasArg(dirs_short)) {
+      warning(paste(dirs_short[i], ": no readable date/time information. Skipping"), call. = FALSE,  immediate. = TRUE)
+    } 
+    
+    if(hasArg(stationCol)) {
+      warning(paste(unique(intable[, stationCol]), ": no readable date/time information. Skipping"), call. = FALSE,  immediate. = TRUE)
+    }
     intable <- NULL
   } else {
     
     # if date/time information is missing for some records only
-    if(any(intable$DateTimeOriginal == "-")){
-      which_no_time <- which(intable$DateTimeOriginal == "-")
-      warning(paste(dirs_short[i], ": omitting", length(which_no_time), "images because of missing/unreadable date/time information."), call. = FALSE,  immediate. = FALSE)
+    if(any(intable[, recordDateTimeCol] == "-")){
+      which_no_time <- which(intable[, recordDateTimeCol] == "-")
+      if(hasArg(dirs_short)) {
+        warning(paste(dirs_short[i], ": omitting", length(which_no_time), "images because of missing/unreadable date/time information."), 
+                call. = FALSE,  immediate. = FALSE)
+      }
+      
+      if(hasArg(stationCol)) {
+        warning(paste(unique(intable[, stationCol]), ": omitting", length(which_no_time), "images because of missing/unreadable date/time information."), 
+                call. = FALSE,  immediate. = FALSE)
+      }
+      
       intable <-  intable[-which_no_time,]    # removing rows with missing date/time information
     }
   }
@@ -359,50 +385,60 @@ removeDuplicatesOfRecords <- function(metadata.tmp,
                                       stationCol, 
                                       speciesCol, 
                                       cameraCol, 
+                                      recordDateTimeCol = "DateTimeOriginal",
                                       current, 
                                       total,
-                                      max_nchar_station){
+                                      max_nchar_station,
+                                      quiet = FALSE){
+  
   metadata.tmp0 <- metadata.tmp
   
-  pb <- makeProgressbar(current = current, total = total)
+
   
   if(isTRUE(removeDuplicateRecords)){
     if(isTRUE(camerasIndependent)){
-      remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", stationCol, speciesCol, cameraCol)]))
+      remove.tmp <- which(duplicated(metadata.tmp[,c(recordDateTimeCol, stationCol, speciesCol, cameraCol)]))
       if(length(remove.tmp >= 1)){
         metadata.tmp <- metadata.tmp[-remove.tmp,]
       }
     } else {
-      remove.tmp <- which(duplicated(metadata.tmp[,c("DateTimeOriginal", stationCol, speciesCol)]))
+      remove.tmp <- which(duplicated(metadata.tmp[,c(recordDateTimeCol, stationCol, speciesCol)]))
       if(length(remove.tmp >= 1)) {
         metadata.tmp <- metadata.tmp[-remove.tmp,]
       }
     }
     
-    if(length(unique(metadata.tmp[,stationCol])) == 1) {                  # 1 station per exiftool call
-      message(formatC(as.character(unique(metadata.tmp[,stationCol])), 
-                      width = max_nchar_station, 
-                      flag = "-"), ":  ",
-              formatC(nrow(metadata.tmp0), width = 5), " images ", 
-              formatC(length(remove.tmp),  width = 4), " duplicates removed",
-              pb)
-    } else {                                                               # > 1 station per exiftool call (recordTableIndividual)
-      message(paste(unique(metadata.tmp[,stationCol]), collapse = ", "), ":  ",
-              formatC(nrow(metadata.tmp0), width = 5), " images ", 
-              formatC(length(remove.tmp),  width = 4), " duplicates removed",
-              pb)
-    }
-  } else {
-    if(length(unique(metadata.tmp[,stationCol])) == 1) {                  # 1 station per exiftool call
-      message(formatC(as.character(unique(metadata.tmp[,stationCol])), 
-                      width = max_nchar_station, 
-                      flag = "-"), ":  ",
-              formatC(nrow(metadata.tmp0), width = 5), " images", 
-              pb)
-    } else {                                                               # > 1 station per exiftool call (recordTableIndividual)
-      message(paste(unique(metadata.tmp[,stationCol]), collapse = ", "), ":  ", 
-              formatC(nrow(metadata.tmp0), width = 5), " images", 
-              pb)
+    if(!quiet) {
+      pb <- makeProgressbar(current = current, total = total)
+      
+      if(length(unique(metadata.tmp[,stationCol])) == 1) {                  # 1 station per exiftool call
+        message(formatC(as.character(unique(metadata.tmp[,stationCol])), 
+                        width = max_nchar_station, 
+                        flag = "-"), ":  ",
+                formatC(nrow(metadata.tmp0), width = 5), " images ", 
+                formatC(length(remove.tmp),  width = 4), " duplicates removed",
+                pb)
+      } else {                                                               # > 1 station per exiftool call (recordTableIndividual)
+        message(paste(unique(metadata.tmp[,stationCol]), collapse = ", "), ":  ",
+                formatC(nrow(metadata.tmp0), width = 5), " images ", 
+                formatC(length(remove.tmp),  width = 4), " duplicates removed",
+                pb)
+      }
+    } 
+    
+    
+    if(isFALSE(removeDuplicateRecords)){
+      if(length(unique(metadata.tmp[,stationCol])) == 1) {                  # 1 station per exiftool call
+        message(formatC(as.character(unique(metadata.tmp[,stationCol])), 
+                        width = max_nchar_station, 
+                        flag = "-"), ":  ",
+                formatC(nrow(metadata.tmp0), width = 5), " images", 
+                pb)
+      } else {                                                               # > 1 station per exiftool call (recordTableIndividual)
+        message(paste(unique(metadata.tmp[,stationCol]), collapse = ", "), ":  ", 
+                formatC(nrow(metadata.tmp0), width = 5), " images", 
+                pb)
+      }
     }
   }
   return(metadata.tmp)
@@ -414,6 +450,7 @@ removeDuplicatesOfRecords <- function(metadata.tmp,
 assessTemporalIndependence <- function(intable,
                                        deltaTimeComparedTo,
                                        columnOfInterest,     # species/individual column
+                                       recordDateTimeCol = "DateTimeOriginal",
                                        cameraCol,
                                        camerasIndependent,
                                        stationCol,
@@ -422,8 +459,8 @@ assessTemporalIndependence <- function(intable,
                                        eventSummaryFunction)
 {
   # check if all Exif DateTimeOriginal tags were read correctly
-  if(any(is.na(intable$DateTimeOriginal))){
-    which.tmp <- which(is.na(intable$DateTimeOriginal))
+  if(any(is.na(intable[, recordDateTimeCol]))){
+    which.tmp <- which(is.na(intable[, recordDateTimeCol]))
     if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), " Consider checking for corrupted Exif metadata.")
     warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them.\nConsider checking for corrupted Exif metadata. Or does your selected time zone have daylight saving time and the image(s) fall in the misisng hour at spring formward (cameras don't usually record DST)?. \n",
                   paste(file.path(intable[which.tmp, "Directory"],
@@ -443,7 +480,7 @@ assessTemporalIndependence <- function(intable,
                         check.names      = FALSE)        # to prevent ":" being converted to ".", e.g. in EXIF:Make
   
   # sort records by station, species, then time
-  intable <- intable[order(intable[, stationCol], intable[, columnOfInterest], intable$DateTimeOriginal),]
+  intable <- intable[order(intable[, stationCol], intable[, columnOfInterest], intable[, recordDateTimeCol]),]
   
   for(xy in 1:nrow(intable)){     # for every record
     
@@ -451,7 +488,7 @@ assessTemporalIndependence <- function(intable,
     which.columnOfInterest <- which(intable[, columnOfInterest]  == intable[xy, columnOfInterest])          # same species/individual
     which.stationCol       <- which(intable[, stationCol]        == intable[xy, stationCol])                # at same station
     which.independent      <- which(intable$independent          == TRUE)                                   # independent (first or only record of a species at a station)
-    which.earlier          <- which(intable$DateTimeOriginal     <  intable$DateTimeOriginal[xy])          # earlier than record xy (takes long)
+    which.earlier          <- which(intable[, recordDateTimeCol]     <  intable[xy, recordDateTimeCol])          # earlier than record xy (takes long)
     #which.earlier          <- 1: (xy-1)                                                                  # earlier than record xy  (fast alternative, relies on table being sorted by date/time before anything else)
     if(camerasIndependent) {
       which.cameraCol      <- which(intable[, cameraCol]  == intable[xy, cameraCol])                        # at same camera
@@ -463,14 +500,14 @@ assessTemporalIndependence <- function(intable,
       which.tmp <- Reduce(intersect, list(which.columnOfInterest, 
                                           which.stationCol, 
                                           which.cameraCol))
-      if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which.tmp])){    # cameras at same station assessed independently
+      if(intable[xy, recordDateTimeCol]  == min(intable[which.tmp, recordDateTimeCol])){    # cameras at same station assessed independently
         intable$independent[xy]       <- TRUE
         intable$delta.time.secs[xy]   <- 0
       }
     } else {
       which.tmp <- Reduce(intersect, list(which.columnOfInterest, 
                                           which.stationCol))
-      if(intable$DateTimeOriginal[xy]  == min(intable$DateTimeOriginal[which.tmp])){
+      if(intable[xy, recordDateTimeCol]  == min(intable[which.tmp, recordDateTimeCol])){
         intable$independent[xy]       <- TRUE
         intable$delta.time.secs[xy]   <- 0
       }
@@ -508,8 +545,8 @@ assessTemporalIndependence <- function(intable,
       }
       
       # time difference to last (independent) record
-      diff_tmp <- min(na.omit(difftime(time1 = intable$DateTimeOriginal[xy],            # delta time to last independent record
-                                       time2 = intable$DateTimeOriginal[which_time2],
+      diff_tmp <- min(na.omit(difftime(time1 = intable[xy, recordDateTimeCol],            # delta time to last independent record
+                                       time2 = intable[which_time2, recordDateTimeCol],
                                        units = "secs")))
       
       # save delta time in seconds
@@ -554,16 +591,16 @@ assessTemporalIndependence <- function(intable,
       which_records_to_group <- which(intable[, columnOfInterest]     == intable[current_row, columnOfInterest] &   # same species
                                       intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
                                       intable[, cameraCol]            == intable[current_row, cameraCol]   &        # same camera
-                                      intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row] &    # later than current record
+                                      intable[, recordDateTimeCol]    >= intable[current_row, recordDateTimeCol] &    # later than current record
                                       !isTRUE(intable$independent))                                        # not independent
       
     } else {
       which_records_to_group <- which(intable[, columnOfInterest]     == intable[current_row, columnOfInterest] &   # same species
                                       intable[, stationCol]           == intable[current_row, stationCol]  &        # same station
-                                      intable$DateTimeOriginal        >= intable$DateTimeOriginal[current_row] &
+                                      intable[, recordDateTimeCol]    >= intable[current_row, recordDateTimeCol] &
                                       !isTRUE(intable$independent))                                                 # not independent
     }
-    
+
     # subset to records before the next independent record
     if(xy < length(which_independent)){
       which_records_to_group <- which_records_to_group[which_records_to_group < which_independent[xy + 1]] #which_records_to_group[which_records_to_group %in% seq(current_row, (which_independent[xy + 1] - 1))]
@@ -593,7 +630,7 @@ assessTemporalIndependence <- function(intable,
     }      # end if(hasArg(eventSummaryColumn))
     
     
-    # quick and dirty solution to prevent n_images = 0 when lenght(which_records_to_group) = 0 (can happen if only 1 image in a directory)
+    # quick and dirty solution to prevent n_images = 0 when length(which_records_to_group) = 0 (can happen if only 1 image in a directory)
     
     if(length(which_records_to_group) == 0) {
       intable[ current_row, n_imagesColumn] <- 1
@@ -667,6 +704,8 @@ checkCamOpColumnNames <- function(cameraOperationMatrix){
   
   if(any(is.na(colnames(cameraOperationMatrix)))) stop("There are NAs in the column names of camOp", call. = FALSE)
   
+  if(!all(diff(as.Date(colnames(cameraOperationMatrix))) == 1)) stop("Column names in camop must be a continuous sequence of dates without gaps", call. = FALSE)
+  
   # check if camera operration matrix has time shift
   if(all(grepl(pattern = "+", colnames(cameraOperationMatrix), fixed = TRUE))){
     colnames_as_dates <- sapply(strsplit(colnames(cameraOperationMatrix), split = "+", fixed = TRUE), FUN = function(x)x[1])
@@ -677,7 +716,7 @@ checkCamOpColumnNames <- function(cameraOperationMatrix){
     camopTest <- try(as.Date(colnames(cameraOperationMatrix)), silent = TRUE)
   }
   
-  if("try-error" %in% class(camopTest)) stop(paste('Could not interpret column names in camOp as Dates. Desired format is YYYY-MM-DD (e.g. "2016-12-31") YYYY-MM-DD+Xh (X being a number, e.g. "2016-12-31+12h"). First column name in your camera operation matrix is "', colnames(cameraOperationMatrix)[1], '"', sep = '' ), call. = FALSE)
+  if(inherits(camopTest, "try-error")) stop(paste('Could not interpret column names in camOp as Dates. Desired format is YYYY-MM-DD (e.g. "2016-12-31") YYYY-MM-DD+Xh (X being a number, e.g. "2016-12-31+12h"). First column name in your camera operation matrix is "', colnames(cameraOperationMatrix)[1], '"', sep = '' ), call. = FALSE)
   
   
   colnames(cameraOperationMatrix) <- as.character(camopTest)
@@ -1293,7 +1332,7 @@ makeSurveyZip <- function(output,
   
   if(isFALSE(usePackageZip)) {
   zip(zipfile = file.path(sinkpath,
-                                           paste(dir.zip.short, ".zip", sep = "")),
+                          paste(dir.zip.short, ".zip", sep = "")),
                        files   = files2zip,
                        flags   = "")
   }
@@ -1469,7 +1508,8 @@ assignSessionIDtoRecordTable <- function(recordTable_tmp,
 
 dataFrameTibbleCheck <- function(df, 
                                  tibble_allowed = TRUE, 
-                                 data_table_allowed = TRUE){
+                                 data_table_allowed = TRUE,
+                                 message = FALSE){
   
   # check if it is a data.frame at all
   if(!is.data.frame(df)) stop(paste(substitute(df), "must be a data.frame"), call. = FALSE)
@@ -1479,7 +1519,7 @@ dataFrameTibbleCheck <- function(df,
     
     if(tibble::is_tibble(df)) {
       if(tibble_allowed) {
-        message (paste(substitute(df), "was converted from tibble to data.frame"))
+        if(message) message (paste(substitute(df), "was converted from tibble to data.frame"))
         df <- as.data.frame(df)
       } else {
         stop (paste(substitute(df), "is a tibble. Please provide a data.frame instead (use read.csv() or as.data.frame())"), call. = FALSE)
@@ -1547,7 +1587,7 @@ parseDateObject <- function(inputColumn,
 }
 
 
-# check and convert date - time (character) to datetime objects (POSIXlt), either with base functions or lubridate    ####
+# check and convert date - time (character) to datetime objects (POSIXct), either with base functions or lubridate    ####
 
 parseDateTimeObject <- function(inputColumn,   
                                 dateTimeFormat,
@@ -1559,12 +1599,18 @@ parseDateTimeObject <- function(inputColumn,
                                 quiet = FALSE
 ){
   
-  
-  if("POSIXct" %in% class(inputColumn)){
-    message(paste("datetime column is in POSIXct format. Converting to character:", deparse(substitute(inputColumn)), ""), call. = FALSE)
-    inputColumn <- as.character(inputColumn)
+  if(inherits(inputColumn, c("POSIXct", "POSIXlt"))){
+    if(inherits(inputColumn, "POSIXlt")) {
+      # warning(paste("datetime column is in POSIXlt format. Converting to character:", deparse(substitute(inputColumn)), ""), call. = FALSE)
+    }
+    
+    if(inherits(inputColumn, "POSIXct")){
+      # message(paste("datetime column is in POSIXct format. Converting to character:", deparse(substitute(inputColumn)), ""), call. = FALSE)
+    }
+    # inputColumn <- as.character(inputColumn)  # converts date-time to date if time = 00:00:00
+    inputColumn <- format(inputColumn, format = "%Y-%m-%d %H:%M:%S")
   } else {
-    if(!class(inputColumn) %in% c("factor", "character")) stop(paste("datetime column must be a factor or character:", deparse(substitute(inputColumn))), call. = FALSE)
+    if(!inherits(inputColumn, "character")) stop(paste("datetime column must be a character:", deparse(substitute(inputColumn))), call. = FALSE)
   }
   
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
@@ -1577,7 +1623,7 @@ parseDateTimeObject <- function(inputColumn,
   
   # option 1: base functions for dates as per strptime (identified by "%")
   if(grepl(pattern = "%", x = dateTimeFormat, fixed = TRUE)){
-    out <- as.POSIXlt(inputColumn.char, tz = timeZone, format = dateTimeFormat)
+    out <- as.POSIXct(inputColumn.char, tz = timeZone, format = dateTimeFormat)
   } else {
     # option 2: lubridate functions (identified by absence of "%")
     if(!requireNamespace("lubridate", quietly = TRUE)) stop(paste("package 'lubridate' is required for the specified dateTimeFormat", dateTimeFormat))
@@ -1592,8 +1638,8 @@ parseDateTimeObject <- function(inputColumn,
                                                deparse(substitute(inputColumn)), "cannot be interpreted using dateTimeFormat:", dateTimeFormat, "\n",
                                                "rows", paste(which(is.na(out)), collapse = ", ")), call. = FALSE)
   
-  
-  if(!any(class(out) %in% c("POSIXct", "POSIXlt"))) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat. Output is not POSIX object")
+ 
+  if(inherits(inputColumn, c("POSIXct", "POSIXlt"))) stop("couldn't interpret recordDateTimeCol of recordTable using specified recordDateTimeFormat. Output is not POSIX object")
   return(out)
 }
 
@@ -2484,3 +2530,39 @@ surveyReport_legacy <- function(recordTable,
   
   return(invisible(output))
 }
+
+
+# split file names (created by imageRename) into their components
+
+deparseFilename <- function(x, cameras) {
+  x2 <- strsplit(x, split = "__")
+  
+  if(isTRUE(cameras)) {
+    out <- data.frame(Station = sapply(x2, FUN = function(x) x[[1]]),
+                      Camera = sapply(x2, FUN = function(x) x[[2]]),
+                      Date = as.Date(sapply(x2, FUN = function(x) x[[3]])),
+                      Time = sapply(x2, FUN = function(x) x[[4]]))
+  }
+  
+  if(isFALSE(cameras)) {
+    out <- data.frame(Station = sapply(x2, FUN = function(x) x[[1]]),
+                      Camera = NA,
+                      Date = as.Date(sapply(x2, FUN = function(x) x[[2]])),
+                      Time = sapply(x2, FUN = function(x) x[[3]]))
+  }
+  
+  time_split <- strsplit(out$Time, split = "(", fixed = T)
+  out$Time <- sapply(time_split, FUN = function(y) y[1])
+  
+  
+  
+  # out$DateTimeOriginal <- ymd_hms(paste(out$Date, out$Time))
+  out$DateTimeOriginal <- paste(out$Date, out$Time)
+  
+  out$number <- as.numeric(sapply(strsplit(sapply(time_split, FUN = function(y) y[2]), 
+                                           split = ")", fixed = T), 
+                                  FUN = function(y) y[1]))
+  
+  out
+}
+

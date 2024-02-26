@@ -2,27 +2,24 @@
 #' Create a community (multi-species) occupancy model for JAGS or Nimble
 #' 
 #' @description 
-#' Flexibly creates complete code and input data for community occupancy models for in JAGS amd Nimble, and automatically sets initial values and parameters to monitor. 
+#' Flexibly creates complete code and input data for community occupancy models for JAGS amd Nimble (both standard occupancy models and Royle-Nichols occupancy models), and automatically sets initial values and parameters to monitor. 
 #' Supports fixed and random effects of covariates on detection and occupancy probabilities, using both continuous and categorical covariates (both site and site-occasion covariates). 
 #' 
 #' Optionally includes data augmentation (fully open community, or up to known maximum number of species, or no data augmentation). 
 #' Allows combination of all these parameters for fast and flexible customization of community occupancy models.
 #' 
-#' Incidentally, the function can also be used to create  model code and input for single-species single-season occupancy models (it is the special case of the community model with only one species). 
+#' Incidentally, the function can also be used to create model code and input for single-species single-season occupancy models (it is the special case of the community model with only one species). 
 #' Such a model will run slower than proper single-species model JAGS code due to the additional species loop, but it is possible.
 #' 
 #' The function returns several derived quantities, e.g. species richness, Bayesian p-values (overall and by species), Freeman-Tukey residuals for actual and simulated data (by station and total). If doing data augmentation, metacommunity size and number of unseen species are returned also. 
 #'
 #' @importFrom generics fit
-#  @importFrom rjags jags.model coda.samples
-# @importFrom coda c coda::mcmc.list mcmc
-# @importFrom snowfall snowfall::sfInit snowfall::sfLibrary snowfall::sfExportAll snowfall::sfClusterSetupRNG snowfall::sfLapply snowfall::sfStop
-# @importFrom nimble nimble::readBUGSmodel nimble::buildMCMC nimble::compileNimble nimble::runMCMC
 #' @importFrom stats rnorm window 
 #' @importFrom ggplot2 ggplot ggsave xlim geom_line facet_wrap geom_ribbon theme_bw ggtitle xlab ylab aes
 #' @export
 #'
 #' @param data_list    list. Contains 3 slots: ylist, siteCovs, obsCovs. ylist is a list of detection histories (can be named), e.g. from \code{\link{detectionHistory}}. siteCovs is a data.frame with site covariates (optional). obsCovs is a list of site-occasion level covariates (e.g. site-occasion-specific effort, which is also returned by \code{\link{detectionHistory}}.
+#' @param model character. "Occupancy" for standard occupancy model,  or "RN" for the occupancy model of Royle and Nichols (2003), which relates probability of detection of the species to the number of individuals available for detection at each station
 #' @param occuCovs  list. Up to 3 items named "fixed", "independent", and/or "ranef". Specifies fixed, independent or random effects of covariates on occupancy probability (continuous or categorical covariates). Independent effects are only supported for continuous covariates.
 #' @param detCovs   list. Up to 3 items named "fixed", "independent", and/or "ranef". Specifies fixed, independent or random effects of covariates on detection probability (continuous or categorical covariates). Independent effects are only supported for continuous covariates.
 #' @param detCovsObservation   list. Up to 2 items named "fixed" and/or "ranef". Specifies fixed or random effects of observation-level covariates on detection probability  (continuous or categorical covariates - categorical must be coded as character matrix)
@@ -30,9 +27,10 @@
 #' @param intercepts     list. Two items named "det" and "occu" for detection and occupancy probability intercepts. Values can be "fixed" (= constant across species), "independent" (= independent estimates for each species), or "ranef" (= random effect of species on intercept).
 #' @param effortCov     character. Name of list item in \code{data_list$obsCovs} which contains effort. This does not include effort as a covariate on detection probability, but only uses NA / not NA information to create binary effort and ensure detection probabilities p are 0 when there was no effort (p will be 0 whereever \code{effortCov} is NA).
 #' @param richnessCategories  character. Name of categorical covariate in \code{data_list$siteCovs} for which to calculate separate richness estimates (optional). Can be useful to obtain separate richness estimates for different areas.
-#' @param augmentation     If NULL, no data augmentation (only use species in \code{data_list$ylist}), otherwise named list or vector with total number of (potential) species. Names: "knownmax" or "full". Example: \code{augmentation = c(knownmax = 30)} or \code{augmentation = c(full = 30)}
+#' @param augmentation     If NULL, no data augmentation (only use species in \code{data_list$ylist}), otherwise named list or vector with total number of (potential) species. Names: "maxknown" or "full". Example: \code{augmentation = c(maxknown = 30)} or \code{augmentation = c(full = 30)}
 #' @param modelFile   character. Text file name to save model to
 #' @param nimble  logical. If TRUE, model code will be for Nimble (incompatible with JAGS). If FALSE, model code is for JAGS.
+#' @param keyword_quadratic  character. A suffix in covariate names in the model that indicates a covariate is a quadratic effect of another covariate which does not carry the suffix in its name (e.g. if the covariate is "elevation", the quadratic covariate would be "elevation_squared").
 #'
 #'
 #' @details
@@ -53,8 +51,9 @@
 #'     \code{Bpvalue_species} \tab Bayesian p-value (by species) \cr
 #'     
 #'     
-#'     \code{Nspecies} \tab Species richness (only in JAGS model)\cr
-#'     \code{Nspecies_Covariate} \tab Species richness by categorical covariate (when using \code{richnessCategories}, only in JAGS model) \cr
+#'     \code{Nspecies} \tab Species richness (only in JAGS models)\cr
+#'     \code{Nspecies_station} \tab Species richness at each sampling locations (only in JAGS models) \cr
+#'     \code{Nspecies_Covariate} \tab Species richness by categorical covariate (when using \code{richnessCategories}, only in JAGS models) \cr
 #'     
 #'     
 #'     \code{R2} \tab sum of Freeman-Tukey residuals of observed data within each species \cr
@@ -272,6 +271,7 @@
 #' 
 
 communityModel <- function(data_list,
+                           model = c("Occupancy", "RN"),
                            occuCovs = list(fixed = NULL, independent = NULL, ranef = NULL),
                            detCovs = list(fixed = NULL, ranef = NULL),
                            detCovsObservation = list(fixed = NULL, ranef = NULL),
@@ -281,8 +281,14 @@ communityModel <- function(data_list,
                            richnessCategories = NULL,
                            augmentation = NULL,
                            modelFile = NULL,
-                           nimble = FALSE)
+                           nimble = FALSE,
+                           keyword_quadratic = "_squared")
 {   
+  
+  
+  model <- match.arg(model, choices = c("Occupancy", "RN"))
+  if(model == "RN" & nimble) stop("Royle-Nichols models are currently not supported in Nimble.")
+  
   
   speciesIndex <- "i"      # k in AHMbook
   stationIndex <- "j"      # i in AHMbook
@@ -357,7 +363,7 @@ communityModel <- function(data_list,
   keyword_nested <- "+Species"
   
   # keyword for quadratic covariate effect
-  keyword_quadratic <- "_squared"
+  # keyword_quadratic <- "_squared"
   
   # parse covariates ####
   
@@ -440,14 +446,28 @@ communityModel <- function(data_list,
   if(exists("siteCovs", where = data_list)) {
     if(!inherits(data_list$siteCovs, "data.frame")) stop("data_list$siteCovs must be a data.frame")
   } else {
-    warning("data_list$siteCovs does not exist. No site covariates available.", call. = FALSE)
+    warning("data_list$siteCovs does not exist. No site covariates available.\n", call. = FALSE)
   }
   
   
   # get covariate information
-  if(!is.null(unlist(detCovs)))     covariate_info <- rbind(covariate_info, get_cov_info (detCovs, keyword_nested, keyword_quadratic, data_list, type = "site", submodel = "det"))
-  if(!is.null(unlist(occuCovs)))    covariate_info <- rbind(covariate_info, get_cov_info (occuCovs, keyword_nested, keyword_quadratic, data_list, type = "site", submodel = "state"))
+  if(!is.null(unlist(detCovs))) {
+    if(!all(c("obsCovs", "siteCovs") %in% names(data_list))) {
+      stop("detCovs is defined, but data_list does not contain siteCovs or obsCovs.", call. = F)
+    } else {
+      covariate_info <- rbind(covariate_info, 
+                              get_cov_info (detCovs, keyword_nested, keyword_quadratic, data_list, type = "site", submodel = "det"))
+    }
+  }
   
+  if(!is.null(unlist(occuCovs))) {
+    if(! "siteCovs" %in% names(data_list)) {
+      stop("occuCovs is defined, but data_list does not contain siteCovs.", call. = F)
+    } else {
+      covariate_info <- rbind(covariate_info, 
+                              get_cov_info (occuCovs, keyword_nested, keyword_quadratic, data_list, type = "site", submodel = "state")) 
+    }
+  }
   
   covariates_original <- data_list$siteCovs
 
@@ -608,6 +628,13 @@ communityModel <- function(data_list,
     }
   }
   
+  
+  # check is covariates are scaled
+  if(length(covariates_numeric) >= 1) {
+    if(any(abs(sapply(data_list$siteCovs[, covariates_numeric], mean)) > 1)){
+      message("Site covariates may not be scaled. Scaling is strongly recommended for numeric covariates.")
+    }
+  }
   
                        
   
@@ -1114,6 +1141,7 @@ communityModel <- function(data_list,
   ## station loop ####
   # including formula for psi
   
+  if(model == "Occupancy") {
   loop2 <- paste("# station loop", 
                  paste0("for (", stationIndex ," in 1:", stationMax, "){"),
                  paste("\n# Occupancy probability formula"),
@@ -1134,13 +1162,55 @@ communityModel <- function(data_list,
                         ""),
                  "\n", sep = "\n"
   )
+  }
+  
+  if(model == "RN") {
+    loop2 <- paste("# station loop", 
+                   paste0("for (", stationIndex ," in 1:", stationMax, "){"),
+                   paste("\n# Abundance formula"),
+                   if (nimble) {
+                     paste0("log(lambda[", speciesIndex, ",", stationIndex, "]) <- ", beta0_formula, beta_formula_occu_categ_fixed, beta_formula_occu_categ_ranef, beta_formula_occu_fixed, beta_formula_occu_indep, beta_formula_occu_ranef)
+                   },
+                   
+                   if (!nimble) {
+                     paste0("log.lambda[", speciesIndex, ",", stationIndex, "] <- ", beta0_formula, beta_formula_occu_categ_fixed, beta_formula_occu_categ_ranef, beta_formula_occu_fixed, beta_formula_occu_indep, beta_formula_occu_ranef)
+                   },
+                   if (!nimble) {
+                     paste0("lambda[", speciesIndex, ",", stationIndex, "] <- exp(log.lambda[", speciesIndex, ",", stationIndex, "])")
+                   },
+                   paste("\n# convert lambda to psi"),
+                   paste0("psi[", speciesIndex, ",", stationIndex, "] <- 1 - dpois(0, lambda[", speciesIndex, ",", stationIndex, "])"),
+                   
+                   
+                   ifelse(!nimble,
+                          paste0(paste("\n# Occupancy_status matrix\n"),
+                                 # "z[", speciesIndex, ",", stationIndex, "] ~ dbern(psi[", speciesIndex, ",", stationIndex, "]",
+                                 "z[", speciesIndex, ",", stationIndex, "] <- ifelse(z_lambda[", speciesIndex, ",", stationIndex, "] >= 1, 1, 0",
+                                 ifelse(augment == "full", paste0(" * w[", speciesIndex, "])"), ")")),
+                                 
+                          ""),
+                   ifelse(!nimble, 
+                          paste0("\n# Expected abundance matrix\n",
+                                 "z_lambda[", speciesIndex, ",", stationIndex, "] ~ dpois(lambda[", speciesIndex, ",", stationIndex, "]", 
+                                 ifelse(augment == "full", paste0(" * w[", speciesIndex, "])"), ")")), 
+                          ""),
+                   "\n", sep = "\n"
+    )
+  }
+  
+  
   attr(loop2, "params") <- NULL
   
   
   zin <- t(sapply(data_list$ylist, rowSums, na.rm = TRUE))  # species x Station matrix with n detections
   zin[zin>1] <- 1
-  if(!nimble) attr(loop2, "inits") <- list(z = zin)
+  if(model == "RN"){
+    if(!nimble) attr(loop2, "inits") <- list(z_lambda = zin)
+  } else {
+    if(!nimble) attr(loop2, "inits") <- list(z = zin)
+  }
   if(nimble)  attr(loop2, "inits") <- NULL
+  
   
   ## construct formula for p (detection model - alpha parameters)   ####
   
@@ -1228,12 +1298,23 @@ communityModel <- function(data_list,
                    paste0("p[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] <- exp(logit.p[", speciesIndex, ",", stationIndex, ",", occasionIndex,"]) / (1+exp(logit.p[", speciesIndex, ",", stationIndex, ",", occasionIndex,"]))"),
                    
                    paste("\n# Ensure occasions without effort have p = 0"),
-                   paste0("p.eff[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] <- z[", speciesIndex, ",", stationIndex, "] * p[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] * effort_binary[", stationIndex, ",", occasionIndex,"]"),
+                   
+                   if(model == "RN") {
+                     paste0("p.e[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] <- p[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] * effort_binary[", stationIndex, ",", occasionIndex,"]")
+                   },
+                   if(model == "RN") {
+                     paste0("p.eff[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] <-  1-(1-p.e[", speciesIndex, ",", stationIndex, ",", occasionIndex, "])^z_lambda[", speciesIndex, ",", stationIndex, "]")
+                     },
+                   if(model == "Occupancy") {
+                     paste0("p.eff[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] <- z[", speciesIndex, ",", stationIndex, "] * p[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] * effort_binary[", stationIndex, ",", occasionIndex,"]")
+                     },
+                   
                    
                    paste0("y[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] ~ dbern(p.eff[", speciesIndex, ",", stationIndex, ",", occasionIndex,"])"),
-                   
-                   "\n### generate new data from model under consideration",
-                   paste0("new.y[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] ~ dbern(p.eff[", speciesIndex, ",", stationIndex, ",", occasionIndex,"])"),
+
+                   ## remove GOF calculation temporarily until it is corrected
+                   # "\n### generate new data from model under consideration",
+                   # paste0("new.y[", speciesIndex, ",", stationIndex, ",", occasionIndex,"] ~ dbern(p.eff[", speciesIndex, ",", stationIndex, ",", occasionIndex,"])"),
                    "}   # close occasion loop", 
                    "\n", sep = "\n")
     attr(loop3, "params") <- NULL
@@ -1259,11 +1340,16 @@ communityModel <- function(data_list,
                           " * effort_binary[", stationIndex, ", 1:", occasionMax, "]"),
                    
                    
-                   "\n### calculate probability of observed data ",
+                   # NOTE: which functions from nimbleEcology to use for RN-Model? 
+                   # to replace: dOcc_v / rOcc_v
+                   
+                   
+                   # "\n### calculate probability of observed data ",
                    paste0("y[", speciesIndex, ",", stationIndex, ",", "1:", occasionMax, "] ~ dOcc_v(probOcc = psi[", speciesIndex, ",", stationIndex, "], probDetect = p.eff[", speciesIndex, ",", stationIndex, ",", "1:", occasionMax, "], len = ", occasionMax, ")"),
                    
-                   "\n### generate new data from model under consideration",
-                   paste0("new.y[", speciesIndex, ",", stationIndex, ",", "1:", occasionMax, "]  <- rOcc_v(n = 1, probOcc = psi[", speciesIndex, ",", stationIndex, "], probDetect = p.eff[", speciesIndex, ",", stationIndex, ",", "1:", occasionMax, "], len = ", occasionMax, ")"), 
+                   ## remove GOF calculation temporarily until it is corrected
+                   # "\n### generate new data from model under consideration",
+                   # paste0("new.y[", speciesIndex, ",", stationIndex, ",", "1:", occasionMax, "]  <- rOcc_v(n = 1, probOcc = psi[", speciesIndex, ",", stationIndex, "], probDetect = p.eff[", speciesIndex, ",", stationIndex, ",", "1:", occasionMax, "], len = ", occasionMax, ")"), 
                    
                    "\n", sep = "\n")
     attr(loop3, "params") <- NULL
@@ -1275,32 +1361,41 @@ communityModel <- function(data_list,
   
   ## derived quantities #### 
   
-  close_loop2 <-  paste( "### calculate Freeman-Tukey residuals for real and new data",
-                         paste0("res[", speciesIndex, ",", stationIndex, "] <- (sqrt(sum(y[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])) - sqrt(sum(p.eff[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])))^2"),
-                         paste0("new.res[", speciesIndex, ",", stationIndex, "] <- (sqrt(sum(new.y[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])) - sqrt(sum(p.eff[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])))^2"),
-                         "}   # close station loop",
-                         "\n", sep = "\n")
-  attr(close_loop2, "params") <- NULL
+  if(!nimble) {    
+    # remove GOF calculation  temporarily until it is corrected
+    close_loop2 <-  paste(# "### calculate Freeman-Tukey residuals for real and new data",
+                          # paste0("res[", speciesIndex, ",", stationIndex, "] <- (sqrt(sum(y[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])) - sqrt(sum(p.eff[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])))^2"),
+                          # paste0("new.res[", speciesIndex, ",", stationIndex, "] <- (sqrt(sum(new.y[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])) - sqrt(sum(p.eff[", speciesIndex, ",", stationIndex, ", 1:", occasionMax, "])))^2"),
+                           "}   # close station loop",
+                           "\n", sep = "\n")
+    attr(close_loop2, "params") <- NULL
+    
+    
+    
+    close_loop1a1 <- paste(#"### sum residuals over stations",
+                           #paste0("R2[", speciesIndex, "] <- sum(res[", speciesIndex, ", 1:", stationMax, "])"),
+                           #paste0("new.R2[", speciesIndex, "] <- sum(new.res[", speciesIndex, ", 1:", stationMax, "])"),
+                           
+                           #"\n### species-level Bayesian p-value",
+                           #paste0("Bpvalue_species[", speciesIndex, "] <- R2[", speciesIndex, "] > new.R2[", speciesIndex, "]"),
+                           "# Goodness-of-fit test was temporarily removed from models.",
+                           "\n", sep = "\n")
+    # attr(close_loop1a1, "params") <- c("R2", "new.R2", "Bpvalue_species")
+  } else {
+    close_loop2 <- "}   # close station loop\n"
+    close_loop1a1 <- "# Goodness-of-fit test was temporarily removed from models.\n"
+  }
   
   
-  
-  close_loop1a1 <- paste("### sum residuals over stations",
-                         paste0("R2[", speciesIndex, "] <- sum(res[", speciesIndex, ", 1:", stationMax, "])"),
-                         paste0("new.R2[", speciesIndex, "] <- sum(new.res[", speciesIndex, ", 1:", stationMax, "])"),
-                         
-                         "\n### species-level Bayesian p-value",
-                         paste0("Bpvalue_species[", speciesIndex, "] <- R2[", speciesIndex, "] > new.R2[", speciesIndex, "]"),
-                         "\n", sep = "\n")
-  attr(close_loop1a1, "params") <- c("R2", "new.R2", "Bpvalue_species")
   
   if(!nimble){
-    close_loop1a2 <- paste("\n### total number of occupied stations for each species",
-                           paste0("Ntot[", speciesIndex, "] <- sum(z[", speciesIndex, ", 1:", stationMax, "])"),
+    close_loop1a2 <- paste("\n### Number of occupied stations for each species",
+                           paste0("NStationsOccupied[", speciesIndex, "] <- sum(z[", speciesIndex, ", 1:", stationMax, "])"),
                            "\n### species is part of community?",
-                           paste0("occt[", speciesIndex ,"] <- 1 - equals(Ntot[", speciesIndex ,"],0)"),
+                           paste0("speciesInCommunity[", speciesIndex ,"] <- 1 - equals(NStationsOccupied[", speciesIndex ,"],0)"),
                            "\n", sep = "\n")
   } else {
-    close_loop1a2 <- "# Total number of occupied and community membership indicator are not returned if nimble = TRUE"
+    close_loop1a2 <- "# Total number of occupied and community membership indicator are not returned if nimble = TRUE\n"
   }
   attr(close_loop1a2, "params") <- NULL
   
@@ -1308,7 +1403,7 @@ communityModel <- function(data_list,
   
   
   
-  Nstations <- list()
+  fractionStationsOccupied <- list()
   
   if(!is.null(occuIntercept_categ$fixed)) {
     
@@ -1324,22 +1419,22 @@ communityModel <- function(data_list,
       current_s3  <- paste0(stationMax, s_occu)
       
       
-      if(s_occu == 1) Nstations[[s_occu]] <- paste(paste0("### Number of stations occupied (in each level of '", richnessCategories, "')"),
-                                                   paste0("Nstations[", speciesIndex , ", ", s_occu, "] <- sum(z[", speciesIndex ,", 1:", current_s1, "])/", current_s1), 
+      if(s_occu == 1) fractionStationsOccupied[[s_occu]] <- paste(paste0("### Number of stations occupied (in each level of '", richnessCategories, "')"),
+                                                   paste0("fractionStationsOccupied[", speciesIndex , ", ", s_occu, "] <- sum(z[", speciesIndex ,", 1:", current_s1, "])/", current_s1), 
                                                    sep = "\n")
       
-      if(s_occu > 1 & s_occu != length(unique(covariates[,occuIntercept_categ$fixed]))) Nstations[[s_occu]] <- paste0("Nstations[", speciesIndex , ", ", s_occu, "] <- sum(z[", speciesIndex ,", (", current_s2a, " + 1):(", current_s2b ,")]) / ", current_s3)
+      if(s_occu > 1 & s_occu != length(unique(covariates[,occuIntercept_categ$fixed]))) fractionStationsOccupied[[s_occu]] <- paste0("fractionStationsOccupied[", speciesIndex , ", ", s_occu, "] <- sum(z[", speciesIndex ,", (", current_s2a, " + 1):(", current_s2b ,")]) / ", current_s3)
       
-      if(s_occu == length(unique(covariates[,occuIntercept_categ$fixed]))) Nstations[[s_occu]] <- paste0("Nstations[", speciesIndex , ", ", s_occu, "] <- sum(z[", speciesIndex ,", (", current_s2a, " + 1):", stationMax, "]) / (", stationMax, " - (", current_s2a, "))")      
+      if(s_occu == length(unique(covariates[,occuIntercept_categ$fixed]))) fractionStationsOccupied[[s_occu]] <- paste0("fractionStationsOccupied[", speciesIndex , ", ", s_occu, "] <- sum(z[", speciesIndex ,", (", current_s2a, " + 1):", stationMax, "]) / (", stationMax, " - (", current_s2a, "))")      
     }
   } else {
-    Nstations[[1]] <- paste("### Number of stations occupied",
-                            paste0("Nstations[", speciesIndex ,"] <- sum(z[", speciesIndex ,", 1:", stationMax,"])/", stationMax), sep = "\n")
+    fractionStationsOccupied[[1]] <- paste("### Fraction of stations occupied",
+                            paste0("fractionStationsOccupied[", speciesIndex ,"] <- NStationsOccupied[", speciesIndex ,"] /", stationMax), sep = "\n")
   }
   
   if(!nimble) {
     close_loop1b <- paste(
-      paste(unlist(Nstations), collapse = "\n"),
+      paste(unlist(fractionStationsOccupied), collapse = "\n"),
       "\n", sep = "\n")
   } else {
     close_loop1b <- "# Number of stations occupied is not returned when nimble = TRUE\n"
@@ -1347,35 +1442,39 @@ communityModel <- function(data_list,
   
   
   if(!is.null(occuIntercept_categ$fixed)) {
-    occ <- paste0("occ[", speciesIndex, ", ", 1:length(unique(covariates[,occuIntercept_categ$fixed])), "]<- 1 - equals(Nstations[i,", 1:length(unique(covariates[,occuIntercept_categ$fixed])), "], 0)")
+    occ <- paste0("occ[", speciesIndex, ", ", 1:length(unique(covariates[,occuIntercept_categ$fixed])), "]<- 1 - equals(fractionStationsOccupied[i,", 1:length(unique(covariates[,occuIntercept_categ$fixed])), "], 0)")
   } else {
-    occ <- paste0("occ[", speciesIndex ,"] <- 1 - equals(Nstations[", speciesIndex ,"], 0)")
+    occ <- paste0("occ[", speciesIndex ,"] <- 1 - equals(fractionStationsOccupied[", speciesIndex ,"], 0)")
   }
   
   if(!nimble){
     close_loop1c <- paste(    
-      paste0("### Does species occur at all or not at each station", ifelse(!is.null(richnessCategories), paste0("(within each level of '", richnessCategories, "')"), "")),
+      paste0("### Does species occur at all (at any station)", ifelse(!is.null(richnessCategories), paste0("(within each level of '", richnessCategories, "')"), "")),
       paste(occ, collapse = "\n"),
       "}    # close species loop",
       "\n", sep = "\n")
   } else {
-    close_loop1c <- paste("}    # close species loop\n")
+    close_loop1c <- paste("}    # close species loop\n\n")
   }
   
-  finish_residuals <- paste("###sum residuals over observed species", 
-                            paste0("R3 <- sum(R2[1:", speciesMax, "])"),
-                            paste0("new.R3 <- sum(new.R2[1:", speciesMax, "])"),
-                            paste0("Bpvalue <- R3 > new.R3"),
-                            "\n", sep = "\n")
-  attr(finish_residuals, "params") <- c("R3", "new.R3", "Bpvalue")
   
+  # if(!nimble){    # remove GOF calculation temporarily until it it corrected
+  #   finish_residuals <- paste("###sum residuals over observed species", 
+  #                             paste0("R3 <- sum(R2[1:", speciesMax, "])"),
+  #                             paste0("new.R3 <- sum(new.R2[1:", speciesMax, "])"),
+  #                             paste0("Bpvalue <- R3 > new.R3"),
+  #                             "\n", sep = "\n")
+  #   attr(finish_residuals, "params") <- c("R3", "new.R3", "Bpvalue")
+  # } else {
+    finish_residuals <- ""
+  # }
   
   
   if(augment == "full") {
     finish_nspecies <- paste("### total number of species", 
                              ifelse(nimble, 
                                     "# not returned if nimble = TRUE", 
-                                    paste0("Nspecies <- sum(occt[1:", speciesMax , "])")),
+                                    paste0("Nspecies <- sum(speciesInCommunity[1:", speciesMax , "])")),
                              "",
                              "### Total number of unobserved species",
                              paste0("n0 <- sum(w[(nspec+1):(nspec+nz)])"),
@@ -1392,13 +1491,11 @@ communityModel <- function(data_list,
     finish_nspecies <- paste("### total number of species", 
                              ifelse(nimble, 
                                     "# not returned if nimble = TRUE", 
-                                    paste0("Nspecies <- sum(occt[1:", speciesMax , "])")),
+                                    paste0("Nspecies <- sum(speciesInCommunity[1:", speciesMax , "])")),
                              "\n", sep = "\n")
     if(!nimble) attr(finish_nspecies, "params") <- "Nspecies"
     if(nimble)  attr(finish_nspecies, "params") <- NULL
   } 
-  
-  
   
   
   if(!is.null(occuIntercept_categ$fixed) & !nimble) {
@@ -1406,13 +1503,32 @@ communityModel <- function(data_list,
                                    paste0("for(s_occu in 1:", length(unique(covariates[,occuIntercept_categ$fixed])), "){"), 
                                    paste0("Nspecies_", richnessCategories, "[s_occu] <- sum(occ[1:", speciesMax , ", s_occu])"),
                                    "}",
-                                   "",
-                                   "}",
-                                   "", sep = "\n")
+                                   "", 
+                                   sep = "\n")
     attr(finish_nspecies_categ, "params") <- paste0("Nspecies_", richnessCategories)
   } else {
-    finish_nspecies_categ <- paste("}", "", sep = "\n")
+    finish_nspecies_categ <- paste("", sep = "\n")
   }
+  
+  # species richness at each camera trap station
+  if(nimble)  species_richness <-  paste(paste0("### Species richness at every location"),
+                                         "# not returned if nimble = TRUE",
+                                         "", sep = "\n")
+  
+  if(!nimble){ species_richness <- paste(paste0("### Species richness at every location"),
+                                        paste0("for (", stationIndex, " in 1:", stationMax, "){"),
+                                        paste0("Nspecies_station[", stationIndex, "] <- sum(z[1:", speciesMax, ",", stationIndex, "])"),
+                                        "}",
+                                        "",
+                                        "", sep = "\n")
+    attr(species_richness, "params") <- "Nspecies_station"
+  }
+  
+  close_model <- paste("}",
+                       "", sep = "\n")
+    
+
+  
   
   
   
@@ -1486,7 +1602,9 @@ communityModel <- function(data_list,
                      close_loop1c,
                      finish_residuals, 
                      finish_nspecies,
-                     finish_nspecies_categ)
+                     finish_nspecies_categ,
+                     species_richness,
+                     close_model)
   
   out <- list()
   out$model <- unlist(model_text)
@@ -1658,7 +1776,8 @@ communityModel <- function(data_list,
               input     = data_list,
               nimble    = nimble,
               modelFile = ifelse(!is.null(modelFile), modelFile, "undefined"),
-              covariate_info = covariate_info
+              covariate_info = covariate_info,
+              model     = model
               )
   return(out2)
   
@@ -1677,6 +1796,7 @@ communityModel <- function(data_list,
 #' @slot nimble logical indicator for whether it is a Nimble model
 #' @slot modelFile Path of the text file containing the model code
 #' @slot covariate_info Data frame containing information about covariates. Only used internally in plot_* and predict methods
+#' @slot model character indicating whether it is a standard "Occupancy" model or Royle-Nichols ("RN") occupancy model
 #'
 #' @note 
 #' The \code{data} slot is a list of model input data. While the exact content depends on function input, it can be summarized as:
@@ -1698,20 +1818,17 @@ communityModel <- function(data_list,
 #' @export
 #' 
 setClass("commOccu", 
-         slots = c(modelText = "character",
-                   params    = "character",
-                   inits_fun = "function",
-                   data      = "list",
-                   input     = "list",
-                   nimble    = "logical",
-                   modelFile = "character", 
-                   #call      = "list"
-                   covariate_info = "data.frame"
+         slots = c(modelText      = "character",
+                   params         = "character",
+                   inits_fun      = "function",
+                   data           = "list",
+                   input          = "list",
+                   nimble         = "logical",
+                   modelFile      = "character", 
+                   covariate_info = "data.frame",
+                   model          = "character"
                    )
 )
-
-
-
 
 
 
@@ -1722,17 +1839,16 @@ setClass("commOccu",
 fit.commOccu <- function(object,
                          n.iter = 100,
                          thin = 1,
-                         n.burnin = 0,
+                         n.burnin = n.iter/2,
                          n.adapt = 0,
-                         cores = 1,
                          chains = 3,
+                         inits = NULL,
                          compile = TRUE,
                          WAIC	= FALSE,
                          quiet = FALSE,
                          ...) {
   
   if(thin == 0) stop("thin can't be 0")
-  if(cores > 1 & isTRUE(object@nimble))    message(paste("nimble models will not run in parallel, cores =", cores, "will be ignored."))
   if(n.adapt != 0 & isTRUE(object@nimble)) message(paste("nimble models don't use n.adapt. It will be ignored."))
   
   if(isFALSE(object@nimble)){
@@ -1741,14 +1857,12 @@ fit.commOccu <- function(object,
     
     if(isTRUE(WAIC)) warning("WAIC is only returned in Nimble models", immediate. = TRUE)
     
-    #if(isTRUE(compile)) message("'compile' is meaningless for JAGS models")
     
-    # JAGS sampling function
-    wrapper<-function(a){
+    
       mod <- rjags::jags.model(file = object@modelFile, 
                                data = object@data, 
-                               inits = object@inits_fun(), 
-                               n.chain=1, 
+                               inits = object@inits_fun(),
+                               n.chain=chains, 
                                n.adapt=n.adapt,
                                quiet = quiet)
       
@@ -1756,28 +1870,15 @@ fit.commOccu <- function(object,
                                 variable.names = object@params, 
                                 n.iter	= n.iter, 
                                 thin = thin)
-      return(out)
-    }
-    
-    ###run JAGS
-    parallel <- ifelse(cores > 1, TRUE, FALSE)
-    
-    #suppressMessages({
-    snowfall::sfInit(parallel = parallel, 
-           cpus = cores)
-    snowfall::sfLibrary("rjags", character.only = TRUE)
-    snowfall::sfExportAll()
-    snowfall::sfClusterSetupRNG()
-    out <- snowfall::sfLapply(1 : chains, wrapper)
-    
-    snowfall::sfStop()
-   # })
+      
     
     # posterior summaries
-    out_mcmclist <- coda::mcmc.list(lapply(out, FUN = function(x) coda::mcmc(x[[1]])))
+      out_mcmclist <- coda::mcmc.list(out)
     
     if(n.burnin >= 1) {
-      out2 <- window(out_mcmclist, start=(n.burnin/thin))    # start=(n.burnin/thin) + 1?
+      out2 <- window(out_mcmclist, 
+                     start=n.burnin+1, 
+                     end = n.iter)
       return(out2)
     } else {
       return(out_mcmclist)
@@ -1844,10 +1945,10 @@ setGeneric("fit", function(object, ...){})
 #' @param object \code{commOccu} object
 #' @param n.iter number of iterations to monitor
 #' @param thin thinning interval for monitors
-#' @param n.burnin   burnin length
+#' @param n.burnin   burnin length. Defaults to half of n.iter.
 #' @param n.adapt Length of adaptive phase
-#' @param cores number of cores to utilize
 #' @param chains number of MCMC chains to run
+#' @param inits named list. Initial values to use. If NULL (default), the values from the inits function in \code{object} are used.
 #' @param compile logical. If Nimble model, compile model with \code{\link[nimble]{compileNimble}} before running model?
 #' @param WAIC logical. Return WAIC (only Nimble models)
 #' @param quiet if TRUE messages and progress bar will be suppressed
@@ -1858,7 +1959,7 @@ setGeneric("fit", function(object, ...){})
 #' 
 #' For Nimble, compilation is strongly recommended for long model runs. Uncompiled models can run extremely slow. Compilation itself can take a while also, and requires that Rtools is available on the system.
 #' 
-#' It is a convenience function only which hides some of the configuration options. If you require more control over model fitting, you can run all steps individually. See vignette 5 for details. 
+#' This is a convenience function only which hides some of the configuration options. If you require more control over model fitting, you can run all steps individually. See vignette 5 for details. 
 #'  
 #' @return A coda::mcmc.list
 #'
@@ -1872,7 +1973,11 @@ setMethod("fit", signature(object = "commOccu"),
 # summary method ####
 
 summary.commOccu <- function(object, ...) {
-  cat(paste0("commOccu object (for ", ifelse(object@nimble, "Nimble", "JAGS"), ")\n\n"))
+  
+  if(object@model == "RN")        model_type <- "Royle-Nichols community occupancy model"
+  if(object@model == "Occupancy") model_type <- "community occupancy model"
+  
+  cat(paste0("commOccu object for ", model_type, " (in ", ifelse(object@nimble, "Nimble", "JAGS"), ")\n\n"))
   dims <- dim(object@data$y)
   cat(paste(dims[1], "species, ",
             dims[2], "stations, ", 
@@ -1984,6 +2089,26 @@ get_cov_info <- function(cov,
 
 
 # helper functions to create priors (both detection and occupancy)  ####
+
+
+# # paste index letters (not used currently)
+# indices <- function(...){
+# #   inargs <- list(...)
+# #   species  <- ifelse("i" %in% inargs, "i", NA)
+# #   station  <- ifelse("j" %in% inargs, "j", NA)
+# #   occasion <- ifelse("k" %in% inargs, "k", NA)
+# #  #
+# # 
+# #   paste0("[",
+# #          paste(na.omit(c(species, station, occasion)), collapse = ","),
+# #         # "]")
+# paste0("[",
+#        paste(unlist(strsplit(..., split = "")), collapse = ","),
+#        "]")
+# 
+# }
+## e.g. indices("ijk") gives "[i,j,k]"
+
 
 
 # change number of random numbers created (from default = 1)
@@ -2522,7 +2647,7 @@ randomEffectPriorsCateg <- function(effect_names,
   } else {
     priors_list <- list("# < empty > \n\n")
     attr(priors_list, "params") <- NULL
-    species_draws <- "# categorical occupancy covariates: no random effect of species"
+    species_draws <- paste("# categorical", type, "covariates: no random effect of species")
     attr(priors_list, "formula") <- ""
   }
   

@@ -1,3 +1,30 @@
+# camtrapR 2.3.0
+
+## new functions
+* surveyDashboard: Shiny dashboard for summarizing and analyzing camera trap survey data
+* filterRecordTable: filter existing record table for temporal independence between records
+* addToPath: replacement for exiftoolPath with identical functionality
+
+## new features
+* communityModel: new argument "model" allows Royle-Nichols models
+* fit, predict, plot_effects, plot_coef also support Royle-Nichols models
+* predict: now accepts type = "pao" (for percentage of area occupied, by species), "psi_array" (raw occupancy probabilities), "abundance" (abundance statistics, for Royle-Nichols model) and "lambda_array" (raw abundances from Royle-Nichols model)
+* predict: new argument "batch" to allow memory-friendly processing in batches
+* communityModel: returns species richness at sampling locations (only in JAGS models)
+
+## bugfixes
+* cameraOperation: last occasions is 0 (not NA) when occasionStartTime = 12 and retrieval time is 12 noon (to prevent dropping of records on last day)
+* cameraOperation: allows any number of ProblemX_from/to columns (was previously limited to 9). Reported by Nicolas Deere.
+* predict / plot_effects: fixed wrong assignment of intercept estimates to posterior draws
+
+## Other
+* migrated functions from raster/sp to terra/sf, removed rgdal
+* modified plot titles in activityRadial().
+* package "overlap" in Suggests, not Depends
+ 
+
+
+
 # camtrapR 2.2.0
 
 ## new functions
@@ -32,7 +59,6 @@
 * imageRename: fixed error when hasCameraFolders is TRUE, but a station has only 1 camera (reported by Camille Coudrat and Ezekiel Gading)
 * detectionHistory: fixed a bug that caused errors when using multiple sessions and non-standard date/time formats (reported by Daniele Barcelos)
 * checkSpeciesNames: fixed error due to change in taxize::get_tsn (reported by Ivonne Oddoy)
-
 
 ## other changes
 * lubridate is a dependency now (for cameraOperation)

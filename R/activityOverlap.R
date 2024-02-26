@@ -69,6 +69,8 @@
 #' 
 #' @examples
 #' 
+#' if(requireNamespace("overlap")) {
+#' 
 #' # load record table
 #' data(recordTableSample)
 #' 
@@ -106,8 +108,8 @@
 #'                                      speciesA_for_activity, "and", 
 #'                                      speciesB_for_activity)
 #' )
+#' }
 #' 
-#' @importFrom overlap overlapEst getBandWidth densityFit overlapPlot densityPlot
 #' @export activityOverlap
 #' 
 activityOverlap <- function(recordTable,
@@ -127,6 +129,9 @@ activityOverlap <- function(recordTable,
                             overlapEstimator = c("Dhat1", "Dhat4", "Dhat5"),
                             ...){
 
+  if (!requireNamespace("overlap", quietly = TRUE)) {
+    stop("Please install the package overlap to run this function")
+  }
 
   wd0  <- getwd()
   mar0 <- par()$mar
@@ -158,8 +163,8 @@ activityOverlap <- function(recordTable,
   recordTable$Time.rad <- (as.numeric(as.POSIXct(strptime(recordTable$Time2, format = "%H:%M:%S", tz = timeZone))) -
                              as.numeric(as.POSIXct(strptime("0", format = "%S", tz = timeZone)))) / 3600 * (pi/12)
 
-  subset_speciesA <- subset(recordTable, recordTable[,speciesCol] == speciesA)
-  subset_speciesB <- subset(recordTable, recordTable[,speciesCol] == speciesB)
+  subset_speciesA <- recordTable[recordTable[,speciesCol] == speciesA,]
+  subset_speciesB <- recordTable[recordTable[,speciesCol] == speciesB,]
   
   if(nrow(subset_speciesA) == 1) stop("speciesA has only 1 record. Cannot estimate density.")
   if(nrow(subset_speciesB) == 1) stop("speciesB has only 1 record. Cannot estimate density.")
@@ -213,7 +218,7 @@ activityOverlap <- function(recordTable,
         type     = "cairo")
 
     par(mar = mar.tmp)
-    overlapPlot(A    = subset_speciesA$Time.rad, 
+    overlap::overlapPlot(A    = subset_speciesA$Time.rad, 
                 B    = subset_speciesB$Time.rad,
                 rug  = add.rug,
                 main = main.tmp,
@@ -240,7 +245,7 @@ activityOverlap <- function(recordTable,
   if(isTRUE(plotR)){
 
     par(mar = mar.tmp)
-    plot.values <- overlapPlot(A = subset_speciesA$Time.rad, 
+    plot.values <- overlap::overlapPlot(A = subset_speciesA$Time.rad, 
                                B = subset_speciesB$Time.rad,
                                rug = add.rug,
                                main = main.tmp,

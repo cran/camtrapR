@@ -9,10 +9,11 @@
   object,
   mcmc.list,
   submodel = "state",
+  response = "occupancy",
   draws = 1000,
   outdir,
   level = 0.95,
-  keyword_squared = "_squared",
+  keyword_quadratic = "_squared",
   ...
 )
 }
@@ -21,21 +22,26 @@
 
 \item{mcmc.list}{mcmc.list. Output of \code{\link{fit}} called on a \code{commOccu} object}
 
-\item{submodel}{Submodel to get plots for. Can be "det" or "state"}
+\item{submodel}{character. Submodel to get plots for. Can be \code{"det"} (detection submodel) or \code{"state"} (occupancy submodel)}
 
-\item{draws}{Number of draws from the posterior to use when generating the plots. If fewer than draws are available, they are all used}
+\item{response}{character. response type on y axis. Only relevant for \code{submodel = "state"}. Default is \code{"occupancy"}, can be set to \code{"abundance"} for Royle-Nichols models}
 
-\item{outdir}{Directory to save plots to (optional)}
+\item{draws}{integer. Number of draws from the posterior to use when generating the plots. If fewer posterior samples than specified in \code{draws} are available, all posterior samples are used.}
 
-\item{level}{Probability mass to include in the uncertainty interval}
+\item{outdir}{character. Directory to save plots to (optional)}
 
-\item{keyword_squared}{character. A suffix in covariate names in the model that indicates a covariate is a quadratic effect of another covariate which does not carry the suffix in its name.}
+\item{level}{numeric. Probability mass to include in the uncertainty interval.}
 
-\item{...}{additional arguments for \code{\link[ggplot2]{ggsave}}}
+\item{keyword_quadratic}{character. A suffix in covariate names in the model that indicates a covariate is a quadratic effect of another covariate which does not carry the suffix in its name (e.g. if the covariate is "elevation", the quadratic covariate would be "elevation_squared").}
+
+\item{...}{additional arguments for \code{\link[ggplot2]{ggsave}} - only relevant if \code{outdir} is defined}
 }
 \value{
-list of ggplot objects
+A list of ggplot objects (one list item per covariate).
 }
 \description{
 Plot marginal effect plots (= response curves if covariates are continuous) for all species in a community (multi-species) occupancy model. Takes into account species-specific intercepts (if any). Currently only supports continuous covariates, not categorical covariates.
+}
+\details{
+Users who wish to create their own visualizations can use the data stored in the ggplot output. It is accessed via e.g. \code{output$covariate_name$data}
 }

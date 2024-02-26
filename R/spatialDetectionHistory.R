@@ -144,7 +144,7 @@
 #' @section Warning : Please note the section about defining argument
 #' \code{timeZone} in the vignette on data extraction (accessible via
 #' \code{vignette("DataExtraction")} or online
-#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
+#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.pdf})).
 #' 
 #' @author Juergen Niedballa
 #' 
@@ -685,6 +685,8 @@ spatialDetectionHistory <- function(recordTableIndividual,
 
   coord.ct <- CTtable[,c(Xcol, Ycol)]
   colnames(coord.ct) <- c("x", "y")
+  
+  if(any(duplicated(CTtable[,stationCol]))) stop("Duplicate values in stationCol of CTtable are not allowed", call. = F)
   
   rownames(coord.ct) <- CTtable[,stationCol]
 

@@ -34,9 +34,6 @@ The functions in this section set up a directory structure for storing camera tr
 \code{\link{imageRename}}          \tab Copy and rename images based on station ID and image creation date \cr
 \code{\link{addCopyrightTag}}      \tab Write a copyright tag into JPEG image metadata \cr
 \code{\link{appendSpeciesNames}}   \tab Add or remove species names from image filenames \cr
-
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
-
 }
 }
 
@@ -48,7 +45,6 @@ These functions assist in species identification and prepare individual identifi
 \code{\link{createSpeciesFolders}}       \tab Create directories for species identification\cr
 \code{\link{checkSpeciesIdentification}} \tab Consistency check on species image identification \cr
 \code{\link{getSpeciesImages}}           \tab Gather all images of a species in a new directory \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
 }
 }
 
@@ -60,9 +56,8 @@ These function use the directory structure built above (Section 'Image managemen
 \code{\link{recordTable}}           \tab Create a species record table from camera trap images and videos \cr
 \code{\link{recordTableIndividual}} \tab Create a single-species record table from camera trap images and videos with individual IDs \cr
 \code{\link{exifTagNames}}          \tab Return Exif metadata tags and tag names from JPEG images \cr
-\code{\link{exiftoolPath}}          \tab Add the directory containing exiftool.exe to PATH temporarily (Windows only) \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
-
+\code{\link{addToPath}}             \tab Add the directory containing exiftool.exe to PATH temporarily (Windows only) \cr
+\code{\link{filterRecordTable}}     \tab Filter existing record table for temporal independence. \cr 
 }
 }
 
@@ -75,22 +70,35 @@ These plots are generated from the record table and the camera trap table.
 \code{\link{activityDensity}}   \tab Single-species diel activity kernel density estimation plots \cr
 \code{\link{activityRadial}}    \tab Single-species diel activity radial plot \cr
 \code{\link{activityOverlap}}   \tab Two-species diel activity overlap plots and estimates \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
-
 }
 }
 
-\section{Data export}{
+
+\section{Prepare occupancy and spatial capture-recapture analyses, and summarise surveys}{
 
 \tabular{ll}{
-\code{\link{cameraOperation}}         \tab Create a camera operability matrix \cr
+\code{\link{cameraOperation}}         \tab Create a camera operation matrix \cr
 \code{\link{detectionHistory}}        \tab Species detection histories for occupancy analyses (single and multi-season) \cr
 \code{\link{spatialDetectionHistory}} \tab Detection histories of individuals for spatial capture-recapture analyses  \cr
 \code{\link{surveyReport}}            \tab Create a report about camera trap surveys and species detections \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
+\code{\link{surveyDashboard}}         \tab Shiny dashboard for summarizing and analyzing camera trap survey data \cr
+}
+}
 
+
+\section{Community (multi-species) occupancy models}{
+
+\tabular{ll}{
+\code{\link{communityModel}}        \tab Create a community (multi-species) occupancy model for JAGS or Nimble \cr
+\code{\link{commOccu-class}}        \tab commOccu objects \cr
+\code{\link{fit,commOccu-method}}   \tab Fit a community (multi-species) occupancy model \cr
+\code{\link{predict,commOccu-method}}   \tab Predictions from community occupancy models \cr
+\code{\link{summary,commOccu-method}}   \tab Summarize community occupancy model \cr
+\code{\link{plot_coef}}             \tab Plot effect sizes of covariates in community occupancy model \cr
+\code{\link{plot_effects}}          \tab Plot Marginal Effects of Covariates \cr
 }
 }
+
 
 \section{Sample data}{
 
@@ -102,8 +110,6 @@ These plots are generated from the record table and the camera trap table.
 \code{\link{recordTableSampleMultiSeason}} \tab Sample  multi season species record table \cr
 \code{\link{recordTableIndividualSampleMultiSeason}}  \tab Single-species multi season record table with individual IDs\cr
 \code{\link{timeShiftTable}}    \tab Sample camera trap time shift information \cr
---------------------------- \tab ---------------------------------------------------------------------------------------------- \cr
-
 }
 }
 
@@ -111,12 +117,11 @@ These plots are generated from the record table and the camera trap table.
 
 \tabular{ll}{
 
-\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr1.html}{1. Organising raw camera trap images}  \cr
-\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.html}{2. Identifying species and individuals}  \cr
-\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr3.html}{3. Extracting Data from Camera Trapping Images and Videos}  \cr
-\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr4.html}{4. Data exploration and visualisation}  \cr
+\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr1.pdf}{1. Organising raw camera trap images}  \cr
+\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.pdf}{2. Identifying species and individuals}  \cr
+\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr3.pdf}{3. Extracting Data from Camera Trapping Images and Videos}  \cr
+\href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr4.pdf}{4. Data exploration and visualisation}  \cr
 \href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr5.html}{5. Multi-species occupancy models}  \cr
-
 }
 }
 
@@ -133,10 +138,6 @@ Maintainer:Juergen Niedballa <camtrapr@gmail.com>
 Niedballa, J., Sollmann, R., Courtiol, A., Wilting, A. (2016): camtrapR: an R package for efficient camera trap data management. Methods in Ecology and Evolution, 7(12). \url{https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12600} \cr
 
 camtrapR Google Group \url{https://groups.google.com/forum/#!forum/camtrapr} \cr
-
-Lemon, J. (2006) Plotrix: a package in the red light district of R. R-News, 6(4): 8-12. \cr
-
-Mike Meredith and Martin Ridout (2018). overlap: Estimates of coefficient of overlapping for animal activity patterns. R package version 0.3.2. \url{https://CRAN.R-project.org/package=overlap} \cr
 
 Phil Harvey's ExifTool \url{https://exiftool.org/} \cr
 }

@@ -2,17 +2,19 @@
 #' 
 #' Temporarily adds a directory to the environmental variable PATH for system
 #' calls from within R. This allows Windows users to store exiftool.exe
-#' anywhere on their hard drive. It is not needed on Linux or MacOS machines.
+#' anywhere on their hard drive and is useful if they cannot store the file 
+#' in system directories. It is not needed on Linux or MacOS machines.
 #' 
 #' Several functions within this package depend on ExifTool. Under Windows,
 #' exiftool.exe cannot be used if it is not in a directory path specified in
 #' PATH. This can be solved by adding the directory containing exiftool.exe for
-#' temporary use within the running R process.
+#' temporary use within the running R process. It can also be useful in other 
+#' contexts besides Exiftool.
 #' 
-#' @param exiftoolDir character. the directory in the file system containing
-#' exiftool.exe.
+#' @param directory character. the directory in the file system to add to PATH 
+#' (e.g. the directory containing exiftool.exe).
 #' 
-#' @return invisible logical indicating whether \code{exiftoolDir} was added to
+#' @return invisible logical indicating whether \code{directory} was added to
 #' PATH successfully (in the running R process).
 #' 
 #' @note The directories in PATH can be queried by \code{Sys.getenv("PATH")}.
@@ -22,16 +24,16 @@
 #' @examples
 #' 
 #' exiftool_dir <- "C:/Path/To/Exiftool"
-#' exiftoolPath(exiftoolDir = exiftool_dir)
+#' addToPath(directory = exiftool_dir)
 #' 
 #' # check if it has been added to PATH
 #' grepl(exiftool_dir,  Sys.getenv("PATH"))
 #' 
-#' @export exiftoolPath
+#' @export addToPath
 #' 
-exiftoolPath <- function(exiftoolDir){
+addToPath <- function(directory){
   WPATH <- Sys.getenv("PATH")
-  WPATH1 <- paste(exiftoolDir, WPATH, sep=";")
+  WPATH1 <- paste(directory, WPATH, sep=";")
   Sys.setenv(PATH=WPATH1)
-  return(invisible(grepl(exiftoolDir,  Sys.getenv("PATH"))))
+  return(invisible(grepl(directory,  Sys.getenv("PATH"))))
 }

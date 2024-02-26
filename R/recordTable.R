@@ -28,8 +28,8 @@
 #' (\code{deltaTimeComparedTo = "lastIndependentRecord"}).
 #' 
 #' \code{removeDuplicateRecords} determines whether duplicate records
-#' (identical station, species, date/time, (and camera if applicable)) are are
-#' all returned (TRUE) or collapsed into a single unique record (FALSE).
+#' (identical station, species, date/time, (and camera if applicable)) are
+#' all returned (FALSE) or collapsed into a single unique record (TRUE).
 #' 
 #' \code{camerasIndependent} defines if the cameras at a station are to be
 #' considered independent. If \code{TRUE}, records of the same species taken by
@@ -158,7 +158,7 @@
 #' @section Warning : Custom image metadata must be organised hierarchically
 #' (tag group - tag; e.g. "Species" - "Leopard Cat"). Detailed information on
 #' how to set up and use metadata tags can be found in
-#' \href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.html#metadata-tagging}{vignette
+#' \href{https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr2.pdf}{vignette
 #' 2: Species and Individual Identification}.
 #' 
 #' Custom image metadata tags must be written to the images. The function
@@ -169,7 +169,7 @@
 #' Please note the section about defining argument \code{timeZone} in the
 #' vignette on data extraction (accessible via
 #' \code{vignette("DataExtraction")} or online
-#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.html})).
+#' (\url{https://cran.r-project.org/package=camtrapR/vignettes/camtrapr3.pdf})).
 #' 
 #' @author Juergen Niedballa
 #' 
@@ -494,19 +494,19 @@ recordTable <- function(inDir,
                                             multiple_tag_separator     = multiple_tag_separator)
 
       # add species names to metadata table (from folders or metadata, otherwise NA)
-      metadata.tmp <- assignSpeciesID(intable                = metadata.tmp,
-                                      IDfrom                 = IDfrom,
-                                      metadataSpeciesTag     = metadataSpeciesTag,
-                                      speciesCol             = speciesCol,
-                                      dirs_short             = dirs_short,
-                                      i_tmp                  = i,
-                                      multiple_tag_separator = multiple_tag_separator,
+      metadata.tmp <- assignSpeciesID(intable                    = metadata.tmp,
+                                      IDfrom                     = IDfrom,
+                                      metadataSpeciesTag         = metadataSpeciesTag,
+                                      speciesCol                 = speciesCol,
+                                      dirs_short                 = dirs_short,
+                                      i_tmp                      = i,
+                                      multiple_tag_separator     = multiple_tag_separator,
                                       returnFileNamesMissingTags = returnFileNamesMissingTags)
       
       # if images in station contain no metadata species tags, skip that station
       if(!is.data.frame(metadata.tmp)){
         if(metadata.tmp == "found no species tag") {
-          warning(paste(dirs_short[i], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'. Skipping", sep = ""), call. = FALSE, immediate. = TRUE)
+          # warning(paste(dirs_short[i], ":   metadataSpeciesTag '", metadataSpeciesTag, "' not found in image metadata tag 'HierarchicalSubject'. Skipping", sep = ""), call. = FALSE, immediate. = TRUE)
         } else {
           warning(paste(dirs_short[i], ":   error in species tag extraction. Skipping. Please report this bug", sep = ""), call. = FALSE, immediate. = TRUE)
         }

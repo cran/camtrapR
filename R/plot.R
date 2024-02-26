@@ -1,12 +1,13 @@
 
-plot.effects.commOccu <- function(object,       # commOccu object
-                                   mcmc.list,    # mcmc.list (output of fit())
-                                   submodel = "state",      # "det" or "state"
-                                   draws = 1000,    # number of posterior samples to use (will draw random sample from posterior distribution if defined). 
-                                   outdir,       # directory to save plots in (optional)
-                                   level = 0.95,   # confidence level for CIs in plot
-                                   keyword_squared = "_squared",   # the suffix of a covariate that indicates a quadratic effect  (e.g. "elevation" and "elevation_squared" -> will be combined in plot)
-                                   ...)                            # additional arguments for ggsave()
+plot_effects_commOccu <- function(object,
+                                  mcmc.list,
+                                  submodel = "state",
+                                  response = "occupancy",
+                                  draws = 1000,
+                                  outdir,
+                                  level = 0.95,
+                                  keyword_quadratic = "_squared",
+                                  ...)
 {
   
   
@@ -20,6 +21,10 @@ plot.effects.commOccu <- function(object,       # commOccu object
     keyword_submodel <- "^alpha"
     keyword_submodel_short <- "alpha"
   } 
+  
+  response <- match.arg(response, choices = c("occupancy", "abundance"))
+  if(response == "abundance" & object@model != "RN") stop("response = 'abundance' is only available for Royle-Nichols models.")
+  if(response == "abundance" & submodel == "det") warning("response = 'abundance' is not available for the detection submodel.")
   
   # get covariate information for submodel
   cov_info_subset <- object@covariate_info[object@covariate_info$submodel == submodel & object@covariate_info$param == "param",]
@@ -49,6 +54,9 @@ plot.effects.commOccu <- function(object,       # commOccu object
   
   list_responses <- list()
   
+  
+  
+  
   # loop over covariates
   for(cov in 1:nrow(cov_info_subset)) {
     
@@ -60,7 +68,7 @@ plot.effects.commOccu <- function(object,       # commOccu object
     
     if(is_squared) {
       attr(params_covariate, "include") [cov] <- FALSE
-      if(gsub(keyword_squared, "", current_cov) %in% params_covariate) next
+      if(gsub(keyword_quadratic, "", current_cov) %in% params_covariate) next
     } 
     attr(params_covariate, "include") [cov] <- TRUE
     
@@ -82,9 +90,9 @@ plot.effects.commOccu <- function(object,       # commOccu object
     # check if there is a squared version of the current covariate
     
     has_squared <- cov_info_subset$has_quadratic[cov]
-    if(paste0(current_cov, keyword_squared) %in% params_covariate){
+    if(paste0(current_cov, keyword_quadratic) %in% params_covariate){
       #has_squared <- TRUE
-      squared_cov <- paste0(current_cov, keyword_squared)
+      squared_cov <- paste0(current_cov, keyword_quadratic)
     } #else {
       #has_squared <- FALSE
     #}
@@ -142,9 +150,11 @@ plot.effects.commOccu <- function(object,       # commOccu object
     for(i in 1:dim(out)[2]){
       
       if(cov_info_intercept$ranef == TRUE | cov_info_intercept$independent == TRUE){  # random or independent intercepts
-        out_intercept[,i,] <- posterior_matrix[, colnames(posterior_matrix) %in% paste0(keyword_submodel_short, "0", "[", i, "]")] 
+        out_intercept[,i,] <- matrix(posterior_matrix[, colnames(posterior_matrix) %in% paste0(keyword_submodel_short, "0", "[", i, "]")] , 
+                 nrow = dim(out_intercept)[1], ncol = dim(out_intercept)[3], byrow = T)
       } else {
-        out_intercept[,i,] <- posterior_matrix[, grepl(paste0(keyword_submodel_short, "0$"), colnames(posterior_matrix))] 
+        out_intercept[,i,] <- matrix(posterior_matrix[, grepl(paste0(keyword_submodel_short, "0$"), colnames(posterior_matrix))] , 
+                 nrow = dim(out_intercept)[1], ncol = dim(out_intercept)[3], byrow = T)
       }
       
         
@@ -167,6 +177,9 @@ plot.effects.commOccu <- function(object,       # commOccu object
         } else {    # ranef or independent
           index_covariate <- grep(paste0(current_coef, "[", i, "]"), colnames(posterior_matrix), fixed = T)
         }
+        if(length(index_covariate) == 0) stop(paste("Covariate", current_coef, "not found in posterior matrix"), call. = FALSE)
+        if(length(index_covariate) >= 2) stop(paste("Covariate", current_coef, "has more than 2 matches in posterior matrix"), call. = FALSE)
+        
         
         out[,i,] <-  sapply(posterior_matrix[, index_covariate], FUN = function(x){
           x * values_to_predict
@@ -206,38 +219,68 @@ plot.effects.commOccu <- function(object,       # commOccu object
       out_comb <- out_intercept + out + out_sq
     }
     
-    prob <- exp(out_comb) / (exp(out_comb) + 1)    # prediction for each species / habitat value (from mean estimates)
+    if(!.hasSlot(object, "model")) {  # legacy support (when no RN model available)
+      val <- exp(out_comb) / (exp(out_comb) + 1)    # prediction for each species / habitat value (from mean estimates)
+    } else {
+      if(object@model == "RN" & submodel == "state"){
+        lambda <- exp(out_comb)    # val is lambda. out_comb is log(lambda)
+        psi <- 1 - dpois(0, lambda)  
+        
+        if(response == "abundance") val <- lambda
+        if(response == "occupancy") val <- psi
+        
+      } else {
+        val <- exp(out_comb) / (exp(out_comb) + 1) 
+      }
+    }
     
     # summarize estimates (across posterior samples)
-    prob.mean  <- apply(prob, MARGIN = c(1,2), mean)
-    prob.lower <- apply(prob, MARGIN = c(1,2), quantile, (1-level) / 2)
-    prob.upper <- apply(prob, MARGIN = c(1,2), quantile, (1 - (1-level) / 2))
+    val.mean  <- apply(val, MARGIN = c(1,2), mean)
+    val.lower <- apply(val, MARGIN = c(1,2), quantile, (1-level) / 2, na.rm = FALSE)
+    val.upper <- apply(val, MARGIN = c(1,2), quantile, (1 - (1-level) / 2), na.rm = FALSE)
     
     # make data frame for ggplot
-    prob.mean2  <- reshape2::melt(prob.mean)
-    prob.lower2 <- reshape2::melt(prob.lower)
-    prob.upper2 <- reshape2::melt(prob.upper)
+    val.mean2  <- reshape2::melt(val.mean)
+    val.lower2 <- reshape2::melt(val.lower)
+    val.upper2 <- reshape2::melt(val.upper)
     
-    names(prob.mean2)  <- c("Index", "Species", "mean")
-    names(prob.lower2) <- c("Index", "Species", "lower")
-    names(prob.upper2) <- c("Index", "Species", "upper")
+    names(val.mean2)  <- c("Index", "Species", "mean")
+    names(val.lower2) <- c("Index", "Species", "lower")
+    names(val.upper2) <- c("Index", "Species", "upper")
     
-    probs <- cbind(prob.mean2, lower = prob.lower2$lower, upper = prob.upper2$upper)
-    probs <- cbind(cov = values_to_predict,
-                   probs)
-    colnames(probs) [1] <- current_cov
+    vals <- cbind(val.mean2, lower = val.lower2$lower, upper = val.upper2$upper)
+    vals <- cbind(cov = values_to_predict,
+                   vals)
+    colnames(vals) [1] <- current_cov
     
     
     # assign species names (if available)
     if(!is.null(dimnames(object@data$y)[[1]])) {
-      probs$Species <- dimnames(object@data$y)[[1]][probs$Species]
+      vals$Species <- dimnames(object@data$y)[[1]][vals$Species]
     }
     
-    probs <- probs[order(probs$Species, probs[, 1]),]
+    vals <- vals[order(vals$Species, vals[, 1]),]
     
     
-    if(submodel == "det")   ylabel <- "Detection probability p"
-    if(submodel == "state") ylabel <- expression(paste("Occupancy probability  ", psi))
+    if(submodel == "det")  {
+      label_filename <- "detection"
+      ylabel <- "Detection probability p"
+    }
+    if(submodel == "state" & object@model == "Occupancy"){
+      label_filename <- "occupancy"
+      ylabel <- expr(paste("Occupancy probability  ", psi))
+    }
+    if(submodel == "state" & object@model == "RN")  {
+      if(response == "occupancy"){
+        label_filename <- "occupancy"
+        ylabel <- expr(paste("Occupancy probability  ", psi))
+      }
+      
+      if(response == "abundance"){
+        label_filename <- "abundance"
+        ylabel <- expr(paste("Local abundance"))
+      }
+    } 
     
     main <- paste0(ifelse(covariate_is_site_cov, "Site", "Observation"), " covariate: ", current_cov)
     
@@ -253,11 +296,11 @@ plot.effects.commOccu <- function(object,       # commOccu object
     
     # for squared covariates which have no unsquared version, sqrt-transform covariate and add expand covariate range to negative values (by mirr)
     if(is_squared & !has_squared) {
-      probs[,1] <- sqrt(probs[,1])
+      vals[,1] <- sqrt(vals[,1])
       
-      probs2 <- probs
-      probs2[,1] <- -probs2[,1]
-      probs <- rbind(probs, probs2)
+      vals2 <- vals
+      vals2[,1] <- -vals2[,1]
+      vals <- rbind(vals, vals2)
       
     }
     
@@ -269,17 +312,18 @@ plot.effects.commOccu <- function(object,       # commOccu object
     
     if(covariate_is_numeric){
       
-      p <- ggplot(probs, aes_string(x = params_covariate[[cov]], y = "mean", group = "Species")) + 
+      p <- ggplot(vals, aes_string(x = params_covariate[[cov]], y = "mean", group = "Species")) + 
         geom_line() +
         theme_bw() +
         ggtitle(label = main,
                 subtitle = subtitle) +
-        xlab (ifelse(is_squared, gsub(keyword_squared, "", current_cov), current_cov)) +
+        xlab (ifelse(is_squared, gsub(keyword_quadratic, "", current_cov), current_cov)) +
         ylab(ylabel) +
-        xlim(range(probs[, 1])) +
-        ylim(0, 1) +
+        xlim(range(vals[, 1])) +
         theme(panel.grid.minor = element_blank())
       
+      if(.hasSlot(object, "model")) if(object@model == "Occupancy") p <- p + ylim(0, 1) 
+      if(!.hasSlot(object, "model")) p <- p + ylim(0, 1) 
       
       # note for later, can optionally plot all species in  one plot if combine = TRUE (= ggplot code to this point)
       if(!combine){
@@ -293,10 +337,11 @@ plot.effects.commOccu <- function(object,       # commOccu object
       
       # create x axis labels for factors
       if(covariate_is_site_cov){
-        probs[,1] <- levels(object@data[[current_cov]]) [probs[,1]]
+        vals[,1] <- factor(levels(object@data[[current_cov]]) [vals[,1]],
+                           levels = levels(object@data[[current_cov]]))
       } 
       
-      p <- ggplot(probs, aes_string(x = params_covariate[[cov]], y = "mean", group = "Species")) + 
+      p <- ggplot(vals, aes_string(x = params_covariate[[cov]], y = "mean", group = "Species")) + 
         geom_col() +
         facet_wrap(~Species) +
         geom_linerange(aes_string(ymin = "lower", ymax = "upper")) +
@@ -305,8 +350,10 @@ plot.effects.commOccu <- function(object,       # commOccu object
                 subtitle = subtitle) +
         xlab (current_cov) +
         ylab(ylabel) +
-        ylim(0, 1) +
         theme(panel.grid.minor = element_blank())
+      
+      if(.hasSlot(object, "model")) if(object@model == "Occupancy") p <- p + ylim(0, 1) 
+      if(!.hasSlot(object, "model")) p <- p + ylim(0, 1) 
       
       # don't know yet how to combine species on one plot. 
       
@@ -314,7 +361,7 @@ plot.effects.commOccu <- function(object,       # commOccu object
     
     
     if(hasArg(outdir)) {
-      ggsave(filename = file.path(outdir, paste0("response_curves_", current_cov, "_", Sys.Date(),  ".png")),
+      ggsave(filename = file.path(outdir, paste0("response_curves_", label_filename, "_", current_cov, "_", Sys.Date(),  ".png")),
              plot = p,
              ...)
     }
@@ -329,7 +376,7 @@ plot.effects.commOccu <- function(object,       # commOccu object
 }
 
 
-  setGeneric("plot_effects", function(object, ...) standardGeneric("plot_effects"))
+  setGeneric("plot_effects", def = function(object, ...) standardGeneric("plot_effects"))
   
   
   #' Plot Marginal Effects of Covariates
@@ -339,28 +386,33 @@ plot.effects.commOccu <- function(object,       # commOccu object
   #' @aliases plot_effects
   #' @param object \code{commOccu} object
   #' @param mcmc.list  mcmc.list. Output of \code{\link{fit}} called on a \code{commOccu} object
-  #' @param submodel  Submodel to get plots for. Can be "det" or "state"
-  #' @param draws  Number of draws from the posterior to use when generating the plots. If fewer than draws are available, they are all used
-  #' @param outdir Directory to save plots to (optional)
-  #' @param level  Probability mass to include in the uncertainty interval
-  #' @param keyword_squared  character. A suffix in covariate names in the model that indicates a covariate is a quadratic effect of another covariate which does not carry the suffix in its name.
-  #' @param ...  additional arguments for \code{\link[ggplot2]{ggsave}}
+  #' @param submodel  character. Submodel to get plots for. Can be \code{"det"} (detection submodel) or \code{"state"} (occupancy submodel)
+  #' @param response character. response type on y axis. Only relevant for \code{submodel = "state"}. Default is \code{"occupancy"}, can be set to \code{"abundance"} for Royle-Nichols models
+  #' @param draws  integer. Number of draws from the posterior to use when generating the plots. If fewer posterior samples than specified in \code{draws} are available, all posterior samples are used.
+  #' @param outdir character. Directory to save plots to (optional)
+  #' @param level  numeric. Probability mass to include in the uncertainty interval.
+  #' @param keyword_quadratic  character. A suffix in covariate names in the model that indicates a covariate is a quadratic effect of another covariate which does not carry the suffix in its name (e.g. if the covariate is "elevation", the quadratic covariate would be "elevation_squared").
+  #' @param ...  additional arguments for \code{\link[ggplot2]{ggsave}} - only relevant if \code{outdir} is defined
   #'
+  #' @details
+  #' Users who wish to create their own visualizations can use the data stored in the ggplot output. It is accessed via e.g. \code{output$covariate_name$data}
+  #' 
   #'
-  #' @return list of ggplot objects
+  #' @return A list of ggplot objects (one list item per covariate).
   #' @export
-  #' @importFrom ggplot2 geom_vline geom_linerange geom_pointrange element_blank theme labs
+  #' @importFrom ggplot2 geom_vline geom_linerange geom_pointrange element_blank theme labs expr
   #' @importFrom ggplot2 scale_color_manual scale_y_discrete aes_string vars facet_grid facet_wrap ylim geom_col
   # @import coda
   #'
-  setMethod("plot_effects", signature(object = "commOccu"), 
-            plot.effects.commOccu)
+  setMethod("plot_effects", 
+            signature = c(object = "commOccu"), 
+            plot_effects_commOccu)
   
   
   
   
 
-plot.coef.commOccu <- function(object, 
+plot_coef_commOccu <- function(object, 
                                mcmc.list,
                                submodel = "state",
                                ordered = TRUE,
@@ -368,11 +420,16 @@ plot.coef.commOccu <- function(object,
                                outdir,
                                level = c(outer = 0.95, inner = 0.75),
                                colorby = "significance",
+                               scales = "free_y",
+                               community_lines = FALSE,
                                ...) {
   
   
   submodel <- match.arg(submodel, choices = c("det", "state"))
   colorby  <- match.arg(colorby, choices = c("significance", "Bayesian p-value"))
+  if(colorby == "Bayesian p-value") stop(paste("colorby = 'Bayesian p-value' is currently not supported."))
+  
+  scales <- match.arg(scales, choices = c("free", "free_y"))
   
   if(submodel == "state") {
     keyword_submodel <- "^beta"
@@ -625,15 +682,23 @@ plot.coef.commOccu <- function(object,
     
     if(covariate_is_factor){
       if(effect_type == "fixed"){
-        if(covariate_is_site_cov)  df_quantiles_i$covariate  <- paste0(current_cov, "_", levels_tmp)
-        if(!covariate_is_site_cov) df_quantiles_i$covariate  <- paste0(current_cov, "_",  levels_tmp)
+        if(covariate_is_site_cov)  df_quantiles_i$covariate  <- factor(paste0(current_cov, "_", levels_tmp),
+                                                                       labels = levels_tmp)
+        if(!covariate_is_site_cov) df_quantiles_i$covariate  <- factor(paste0(current_cov, "_",  levels_tmp),
+                                                                       labels = levels_tmp)
       }
       
       if(effect_type == "ranef"){
-        if(covariate_is_site_cov)  df_quantiles_i$covariate  <- paste0(current_cov, "_", c(levels_tmp,
-                                                                                           rep(levels_tmp, each = object@data$M)))
-        if(!covariate_is_site_cov) df_quantiles_i$covariate  <- paste0(current_cov, "_", c(levels_tmp,
-                                                                                           rep(levels_tmp, each = object@data$M)))
+        if(covariate_is_site_cov)  df_quantiles_i$covariate  <- factor(paste0(current_cov, "_", c(levels_tmp,
+                                                                                                  rep(levels_tmp, each = object@data$M))),
+                                                                       levels = paste0(current_cov, "_", levels_tmp),
+                                                                       labels = levels_tmp)
+        
+        if(!covariate_is_site_cov) df_quantiles_i$covariate  <- factor(paste0(current_cov, "_", c(levels_tmp,
+                                                                                                  rep(levels_tmp, each = object@data$M))),
+                                                                       levels = paste0(current_cov, "_", levels_tmp),
+                                                                       labels = levels_tmp)
+        
       }
     }
     
@@ -654,7 +719,9 @@ plot.coef.commOccu <- function(object,
         }
         
         if(effect_type == "ranef"){
-          subset_level2 <- df_quantiles_i[df_quantiles_i$covariate == paste0(current_cov, "_", levels_tmp[2]),]
+          subset_level2 <- df_quantiles_i[df_quantiles_i$covariate == #paste0(current_cov, "_", 
+                                            levels_tmp[2]#)
+                                          ,]
           
           df_quantiles_i$species <- factor(df_quantiles_i$species, 
                                            levels = subset_level2$species[order(subset_level2$median)])
@@ -672,19 +739,42 @@ plot.coef.commOccu <- function(object,
     
     type <- NULL   # just for CRAN checks
     covariate <- NULL
+    lower_outer <- NULL
+    upper_outer <- NULL
+    median <- NULL
     
     if(colorby == "significance")      color_by <- "significance"
     if(colorby == "Bayesian p-value")  color_by <- "significance2"
     
+    alpha_community <- ifelse(effect_type == "ranef", 0.3, 0)
+    alpha_zero <- 0.3
+    color_community <- "blue"
+    
     if(!combine){
       
+      
       p_list[[cov]] <- ggplot (df_quantiles_i, aes_string(y = "species", x = "median", color = color_by)) +
-        geom_vline(xintercept = 0, alpha = 0.2) +
+        
+        if(community_lines) {
+        # community effect
+          p_list[[cov]] <- p_list[[cov]] + 
+            geom_vline(data = df_quantiles_i[df_quantiles_i$type == "mean", -which(colnames(df_quantiles_i) == "type")],
+                       aes(xintercept = median), col = color_community, linetype = 1, alpha = alpha_community) +
+            geom_vline(data = df_quantiles_i[df_quantiles_i$type == "mean", -which(colnames(df_quantiles_i) == "type")],
+                       aes(xintercept = lower_outer), col = color_community, linetype = 2, alpha = alpha_community) +
+            geom_vline(data = df_quantiles_i[df_quantiles_i$type == "mean", -which(colnames(df_quantiles_i) == "type")],
+                       aes(xintercept = upper_outer), col = color_community, linetype = 2, alpha = alpha_community)
+        }
+      
+      p_list[[cov]] <- p_list[[cov]] +
+        geom_vline(xintercept = 0, alpha = alpha_zero) +
+        
+        # species effects
         geom_pointrange(aes_string(xmin = "lower_outer", xmax = "upper_outer")) + 
         geom_linerange( aes_string(xmin = "lower_inner", xmax = "upper_inner"), size = 1) +
-        facet_grid(rows = vars(type), 
+        facet_grid(rows = vars(type),
                    cols = vars(covariate),
-                   scales = "free_y", 
+                   scales = scales,
                    space = "free_y"
         ) +
         xlab ("Effect size") +  ylab(element_blank()) +
@@ -696,7 +786,7 @@ plot.coef.commOccu <- function(object,
         scale_color_manual(breaks = c("outer", "inner", "no"),
                            values=c("firebrick", "black", "grey50"),
                            guide = "none") +
-        ggtitle(paste("Effect sizes:", current_cov)) 
+        ggtitle(paste("Effect sizes:", current_cov))
       
       
       if(!covariate_is_factor) {
@@ -725,13 +815,25 @@ plot.coef.commOccu <- function(object,
     df_quantiles_all$species <- factor(df_quantiles_all$species, 
                                        levels = rev(sort(unique(as.character(df_quantiles_all$species)))))
     
-    p <- ggplot (df_quantiles_all, aes_string(y = "species", x = "median", color = color_by)) +
-      geom_vline(xintercept = 0, alpha = 0.2) +
+    p <- ggplot (df_quantiles_all, aes_string(y = "species", x = "median", color = color_by))
+      
+    if(community_lines)  {
+      # community effect
+     p <- p + 
+       geom_vline(data = df_quantiles_all[df_quantiles_all$type == "mean", -which(colnames(df_quantiles_all) == "type")],    
+                  aes(xintercept = median), col = color_community, linetype = 1, alpha = alpha_community) +
+       geom_vline(data = df_quantiles_all[df_quantiles_all$type == "mean", -which(colnames(df_quantiles_all) == "type")],
+                  aes(xintercept = lower_outer), col = color_community, linetype = 2, alpha = alpha_community) +
+       geom_vline(data = df_quantiles_all[df_quantiles_all$type == "mean", -which(colnames(df_quantiles_all) == "type")],
+                  aes(xintercept = upper_outer), col = color_community, linetype = 2, alpha = alpha_community) 
+    }
+    p <- p + geom_vline(xintercept = 0, alpha = alpha_zero) +
+      # species effects
       geom_pointrange(aes_string(xmin = "lower_outer", xmax = "upper_outer")) + 
       geom_linerange (aes_string(xmin = "lower_inner", xmax = "upper_inner"), size = 1) +
       facet_grid(rows = vars(type), 
                  cols = vars(covariate),
-                 scales = "free_y", 
+                 scales = scales, 
                  space = "free_y") +
       xlab ("Effect size") +  ylab(element_blank()) +
       theme_bw() +
@@ -749,22 +851,19 @@ plot.coef.commOccu <- function(object,
              plot = p,
              ...)
     }
-    
     return(p)
   }
   
   
   if(!combine){
-    
     names(p_list) <-  cov_info_subset$covariate
     return(p_list)
-    
   }
 }
 
 
 
-  setGeneric("plot_coef", function(object, ...) standardGeneric("plot_coef"))
+  setGeneric("plot_coef", def = function(object, ...) standardGeneric("plot_coef"))
   
   
   #' Plot effect sizes of covariates in community occupancy model
@@ -774,19 +873,26 @@ plot.coef.commOccu <- function(object,
   #' @aliases plot_coef
   #' @param object \code{commOccu} object
   #' @param mcmc.list  mcmc.list. Output of \code{\link{fit}} called on a \code{commOccu} object
-  #' @param submodel  Submodel to get plots for. Can be "det" or "state"
+  #' @param submodel  character. Submodel to get plots for. Can be \code{"det"} or \code{"state"}
   #' @param ordered logical. Order species in plot by median effect (TRUE) or by species name (FALSE)
-  #' @param combine logical. Combine multiple plots into one (via facets)?
-  #' @param outdir Directory to save plots to (optional)
-  #' @param level  Probability mass to include in the uncertainty interval (two values, second value - inner interval - will be plotted thicker)
-  #' @param colorby Whether to color estimates by "significance" (of the effect estimates), or "Bayesian p-value" (of the species)
-  #' @param ...  additional arguments for \code{\link[ggplot2]{ggsave}}
+  #' @param combine logical. Combine multiple plots into one plot (via facets)?
+  #' @param outdir character. Directory to save plots to (optional)
+  #' @param level  numeric. Probability mass to include in the uncertainty interval (two values named "outer" and "inner", in that order). Second value (= inner interval) will be plotted thicker.
+  #' @param colorby character. Whether to color estimates by \code{"significance"} (of the effect estimates), or \code{"Bayesian p-value"} (of the species). Currently allows only \code{"significance"}.
+  #' @param scales character. Passed to \code{\link[ggplot2]{facet_grid}}. Can be \code{"free"} to scale x axes of effect estimates independently, or "free_y" to scale all x axes identically.
+  #' @param community_lines logical. Add faint vertical lines to the plot indicating median community effect (solid line) and its confidence interval (first value from \code{level}).
+  #' @param ...  additional arguments for \code{\link[ggplot2]{ggsave}} - only relevant if \code{outdir} is defined.
   #'
-  #' @return list of ggplot objects
+  #' @return A list of ggplot objects (one list item per covariate).
+  #' 
+  #' @details
+  #' Users who wish to create their own visualizations can use the data stored in the ggplot output. It is accessed via e.g. \code{output$covariate_name$data}
+  #' 
   #' @export
   #' 
   #'
-  setMethod("plot_coef", signature(object = "commOccu"), 
-            plot.coef.commOccu)
+  setMethod("plot_coef", 
+            signature = c(object = "commOccu"), 
+            plot_coef_commOccu)
   
   
