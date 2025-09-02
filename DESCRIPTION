@@ -2,8 +2,8 @@ Package: camtrapR
 Type: Package
 Title: Camera Trap Data Management and Preparation of Occupancy and
         Spatial Capture-Recapture Analyses
-Version: 2.3.0
-Date: 2024-02-24
+Version: 2.3.1
+Date: 2025-08-31
 Authors@R: c(
         person("Juergen", "Niedballa", email = "camtrapr@gmail.com", role = c("aut", "cre"),
                 comment = c(ORCID = "0000-0002-9187-2116")),
@@ -15,7 +15,7 @@ Authors@R: c(
         person("Seth Timothy", "Wong", role = "ctb",
                 comment = c(ORCID = "0000-0001-8083-9268")),
         person("An The Truong", "Nguyen", role = "ctb",
-                comment = c(ORCID = "0000-0003-0456-3866")),
+                comment = c(ORCID = "0009-0000-2861-2672")),
         person("Azlan bin", "Mohamed", role = "ctb",
                 comment = c(ORCID = "0000-0003-3788-4383")),
         person("Andrew", "Tilker", role = "ctb",
@@ -43,20 +43,26 @@ URL: https://github.com/jniedballa/camtrapR,
 BugReports: https://groups.google.com/forum/#!forum/camtrapr
 Encoding: UTF-8
 License: GPL (>= 2)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2024-02-25 18:00:47 UTC; niedballa
-Author: Juergen Niedballa [aut, cre] (<https://orcid.org/0000-0002-9187-2116>),
-  Alexandre Courtiol [aut] (<https://orcid.org/0000-0003-0637-2959>),
-  Rahel Sollmann [aut] (<https://orcid.org/0000-0002-1607-2039>),
+Packaged: 2025-09-01 07:33:17 UTC; Juergen
+Author: Juergen Niedballa [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-9187-2116>),
+  Alexandre Courtiol [aut] (ORCID:
+    <https://orcid.org/0000-0003-0637-2959>),
+  Rahel Sollmann [aut] (ORCID: <https://orcid.org/0000-0002-1607-2039>),
   John Mathai [ctb],
-  Seth Timothy Wong [ctb] (<https://orcid.org/0000-0001-8083-9268>),
-  An The Truong Nguyen [ctb] (<https://orcid.org/0000-0003-0456-3866>),
-  Azlan bin Mohamed [ctb] (<https://orcid.org/0000-0003-3788-4383>),
-  Andrew Tilker [ctb] (<https://orcid.org/0000-0003-3630-8691>),
-  Roshan Guharajan [ctb] (<https://orcid.org/0000-0001-8124-5461>),
-  Ioannis Alexiou [ctb] (<https://orcid.org/0000-0001-5095-4767>),
-  Andreas Wilting [ctb, ths] (<https://orcid.org/0000-0001-5073-9186>)
+  Seth Timothy Wong [ctb] (ORCID:
+    <https://orcid.org/0000-0001-8083-9268>),
+  An The Truong Nguyen [ctb] (ORCID:
+    <https://orcid.org/0009-0000-2861-2672>),
+  Azlan bin Mohamed [ctb] (ORCID:
+    <https://orcid.org/0000-0003-3788-4383>),
+  Andrew Tilker [ctb] (ORCID: <https://orcid.org/0000-0003-3630-8691>),
+  Roshan Guharajan [ctb] (ORCID: <https://orcid.org/0000-0001-8124-5461>),
+  Ioannis Alexiou [ctb] (ORCID: <https://orcid.org/0000-0001-5095-4767>),
+  Andreas Wilting [ctb, ths] (ORCID:
+    <https://orcid.org/0000-0001-5073-9186>)
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-02-26 19:40:02 UTC
+Date/Publication: 2025-09-02 07:30:25 UTC
