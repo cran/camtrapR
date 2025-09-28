@@ -471,8 +471,8 @@ cameraOperation <- function(CTtable,
     
 
     # check that there are some problems at all (since hasProblems = TRUE)
-    if(all(is.na(CTtable[, problemFromColumn]))) warning("in problemFromColumn column(s), all values are NA", call. = FALSE)
-    if(all(is.na(CTtable[, problemToColumn])))   warning("in Problem_to column(s), all values are NA", call. = FALSE)
+    if(all(is.na(CTtable[, cols.prob.from]))) warning("in problemFromColumn column(s), all values are NA", call. = FALSE)
+    if(all(is.na(CTtable[, cols.prob.to])))   warning("in Problem_to column(s), all values are NA", call. = FALSE)
     
     # if problems begin on setup day, make sure it's the same time as setup (if only dates are specified)
     if(isFALSE(effortAsFraction)){
@@ -519,6 +519,12 @@ cameraOperation <- function(CTtable,
       problem_colnames_index_list[[Problem_group]]$prob.from <- CTtable[, cols.prob.from [order(colnames(CTtable) [cols.prob.from])] [Problem_group]]
       problem_colnames_index_list[[Problem_group]]$prob.to   <- CTtable[, cols.prob.to   [order(colnames(CTtable) [cols.prob.to])]   [Problem_group]]
     }
+    
+    # enure that no problem pairs are all NA
+    lapply(1:length(problem_colnames_index_list),
+           FUN = function(x) {
+             if(all(is.na(unlist(problem_colnames_index_list[x])))) stop(paste0("Problem", x, " columns are both NA"), call. = F)
+           })
     
     # loop over cameras, make and concatenate the problem intervals by station
     problem_intervals_by_row <- list()
@@ -587,9 +593,13 @@ cameraOperation <- function(CTtable,
   #  trapping intervals for all cameras (setup to retrieval)
   # for each day in camop, make an interval covering the entire day
   camop_daily_intervals <- lapply(as.Date(colnames(camOp_empty)),
-                                  FUN = function(x) interval(start = x + dhours(occasionStartTime),  
-                                                             end =   x + ddays(1) + dhours(occasionStartTime) - dseconds(1)
-                                  ))
+                                  FUN = function(x){
+                                    start <- x + dhours(occasionStartTime)
+                                    end <- start + ddays(1) - dseconds(1)
+                                    interval(start = start,  
+                                             end =  end)
+                                  }
+                                  )
   names(camop_daily_intervals) <- colnames(camOp_empty)
   
   # get start / end of the days covered by the study (+ occasionStartTime, if defined)
@@ -600,10 +610,18 @@ cameraOperation <- function(CTtable,
   int_start_total <- int_start(start_to_end)
   int_end_total   <- int_end(start_to_end)
   
-  
   # alternative to data.table madness below. Find overlapping intervals between camera traps and days
   camop_binary <- sapply(camop_daily_intervals, int_overlaps, start_to_end)
+  
+  # handle case of 1-camera input table
+  if(nrow(CTtable) == 1) {
+    camop_binary <- t(as.matrix(camop_binary))
+    dimnames(camop_binary) <- dimnames(camOp_empty)
+  }
+  
   rownames(camop_binary) <- rownames(camOp_empty)
+  
+  
   
   
   # identify overlapping intervals with data.table

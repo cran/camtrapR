@@ -337,9 +337,15 @@ checkDateTimeOriginal <- function (intable, dirs_short, i, stationCol, recordDat
   
   if(any(is.na(intable[, recordDateTimeCol]))){
     which_na_time <- which(is.na(intable[, recordDateTimeCol]))
-    warning(paste0(dirs_short[i], ": Removing ", length(which_na_time), " out of ",
-                   nrow(intable)," images because date/time is NA:\n",
-                   paste("  ", file.path(intable$Directory, intable$FileName)[which_na_time], collapse = "\n")), call. = FALSE,  immediate. = TRUE)
+    if(hasArg(dirs_short)) {
+      warning(paste0(dirs_short[i], ": Removing ", length(which_na_time), " out of ",
+                     nrow(intable)," images because date/time is NA:\n",
+                     paste("  ", file.path(intable$Directory, intable$FileName)[which_na_time], collapse = "\n")), call. = FALSE,  immediate. = TRUE)
+    } else {
+      warning(paste0("Removing ", length(which_na_time), " out of ",
+                     nrow(intable)," images because date/time is NA."), 
+              call. = FALSE,  immediate. = TRUE)
+    }
     intable <- intable[-which_na_time,]
   }
     
@@ -462,7 +468,7 @@ assessTemporalIndependence <- function(intable,
   if(any(is.na(intable[, recordDateTimeCol]))){
     which.tmp <- which(is.na(intable[, recordDateTimeCol]))
     if(length(which.tmp) == nrow(intable)) stop("Could not read any Exif DateTimeOriginal tag at station: ", paste(unique(intable[which.tmp, stationCol])), " Consider checking for corrupted Exif metadata.")
-    warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them.\nConsider checking for corrupted Exif metadata. Or does your selected time zone have daylight saving time and the image(s) fall in the misisng hour at spring formward (cameras don't usually record DST)?. \n",
+    warning(paste("Could not read Exif DateTimeOriginal tag of", length(which.tmp),"image(s) at station", paste(unique(intable[which.tmp, stationCol]), collapse = ", "), ". Will omit them.\nConsider checking for corrupted Exif metadata. Or does your selected time zone have daylight saving time and the image(s) fall in the missing hour at spring forward (cameras don't usually record DST)?. \n",
                   paste(file.path(intable[which.tmp, "Directory"],
                                   intable[which.tmp, "FileName"]), collapse = "\n")), call. = FALSE, immediate. = TRUE)
     intable <- intable[-which.tmp ,]
@@ -1562,7 +1568,8 @@ parseDateObject <- function(inputColumn,
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
   if(checkEmpty & any(inputColumn == "")) stop(paste("there are blank values in", deparse(substitute(inputColumn))), call. = FALSE)
   
-  if(all(inputColumn == "") & allowEmptyOutput) return(NA)
+  if(all(is.na(inputColumn)) & allowEmptyOutput) return(NA)
+  if(all(inputColumn == "")  & allowEmptyOutput) return(NA)
   
   inputColumn.char <- as.character(inputColumn)
   
@@ -1616,19 +1623,24 @@ parseDateTimeObject <- function(inputColumn,
   if(checkNA & any(is.na(inputColumn)))   stop(paste("there are NAs in", deparse(substitute(inputColumn))), call. = FALSE)
   if(checkEmpty & any(inputColumn == "")) stop(paste("there are blank values in", deparse(substitute(inputColumn))), call. = FALSE)
   
+  if(all(is.na(inputColumn)) & allowEmptyOutput) return(NA)
   if(all(inputColumn == "") & allowEmptyOutput) return(NA)
   
   
   inputColumn.char <- as.character(inputColumn)
   
   # option 1: base functions for dates as per strptime (identified by "%")
-  if(grepl(pattern = "%", x = dateTimeFormat, fixed = TRUE)){
+  if(grepl(pattern = "%", x = dateTimeFormat[1], fixed = TRUE)){
     out <- as.POSIXct(inputColumn.char, tz = timeZone, format = dateTimeFormat)
   } else {
     # option 2: lubridate functions (identified by absence of "%")
     if(!requireNamespace("lubridate", quietly = TRUE)) stop(paste("package 'lubridate' is required for the specified dateTimeFormat", dateTimeFormat))
     
-    out <- lubridate::parse_date_time(inputColumn.char, orders = dateTimeFormat, tz = timeZone, quiet = quiet)
+    out <- lubridate::parse_date_time(inputColumn.char, orders = c(dateTimeFormat, 
+                                                                   "ymd"),   # to catch records exactly on midnight where R drops the time
+                                      tz = timeZone, 
+                                      quiet = quiet,
+                                      truncated = 3)    # allow time to be missing, defaulting to 00:00:00
   }
   
   if(all(is.na(out))) stop(paste0("Cannot read datetime format in ", deparse(substitute(inputColumn)), ". Output is all NA.\n",
@@ -1643,7 +1655,7 @@ parseDateTimeObject <- function(inputColumn,
   return(out)
 }
 
-## make a new empty matrix, a row for each unique station / camera combination
+# make empty matrix, a row for each unique station / camera combination ----
 stationSessionCamMatrix <- function(CTtable,
                                     stationCol,
                                     cameraCol, 
@@ -1806,6 +1818,8 @@ makeProgressbar <- function(current,
 }
 
 
+# Accessing / manipulating digiKam database ----
+
 # access digiKam database and provide tables to extract species tags for videos
 # call before exiftool
 
@@ -1895,10 +1909,11 @@ digiKamVideoHierarchicalSubject <- function(stationDir,
   
   # see if stationDir exists in database
   if(!stationDir %in% Albums[, pathColumn]){
-    stop(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE)
+    # stop(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE)
     # try to handle with a warning instead
-    # warning(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE, immediate. = T)
+    warning(paste("station directory", stationDir,  "was not found in digiKam albums. Skipping"), call. = FALSE, immediate. = T)
     # next
+    return(NULL)
   }
   
   # find current station in albums
@@ -2046,6 +2061,7 @@ addVideoHierarchicalSubject <- function(metadata.tmp,
                                         videoFormat){
   
   if(nrow(digiKamVideoMetadata) == 0) return(metadata.tmp)
+  if(is.null(digiKamVideoMetadata))   return(metadata.tmp)
   # add HierarchialSubject for video files (match by filename, must be unique)
 
   # new version, should match filenames AND paths in digiKamVideoMetadata with metadata.tmp (can deal with duplicate file names in separate folders)
@@ -2108,7 +2124,9 @@ addVideoHierarchicalSubject <- function(metadata.tmp,
 }
 
 
-# function to return fraction of day that has passed already at a given time (or its inverse, fraction of day remaining)
+# function to return fraction of day that has passed already at a given time  ----
+# also does the inverse, fraction of day remaining
+
 fractionOfDay <- function(time, type) {
   # time difference between time and midnight that day (fraction of the day that has passed already)
   delta <- as.numeric(difftime(time, as.Date(time), units = "days"))
@@ -2119,7 +2137,8 @@ fractionOfDay <- function(time, type) {
   if(type == "before")  return(delta)
 }
 
-# plot camera operation matrix (function from vignette 3)
+
+# plot camera operation matrix (function from vignette 3) ----
 camopPlot <- function(camOp, 
                       palette = "viridis",
                       lattice = FALSE){
@@ -2175,8 +2194,9 @@ camopPlot <- function(camOp,
   }
 }
 
-# intersect intervals, fast (adapted from lubridate)
-#https://github.com/tidyverse/lubridate/blob/master/R/intervals.r
+# intersect intervals, fast (adapted from lubridate) ----
+# https://github.com/tidyverse/lubridate/blob/master/R/intervals.r
+
 intersect.Interval.fast <- function(int1, int2, ...) {  # (x, y, ...) {
 
   starts <- pmax(int1@start, int2@start)
@@ -2189,7 +2209,7 @@ intersect.Interval.fast <- function(int1, int2, ...) {  # (x, y, ...) {
 
 
 
-# surveyReport legacy version (from 2.0.3)
+# surveyReport legacy version (from 2.0.3) ----
 # intended to run instead of new surveyReport to prevent error when re-running old code
 
 surveyReport_legacy <- function(recordTable,
@@ -2532,7 +2552,7 @@ surveyReport_legacy <- function(recordTable,
 }
 
 
-# split file names (created by imageRename) into their components
+# split file names (created by imageRename) into their components ----
 
 deparseFilename <- function(x, cameras) {
   x2 <- strsplit(x, split = "__")
@@ -2566,3 +2586,31 @@ deparseFilename <- function(x, cameras) {
   out
 }
 
+
+# Probe internet connection  ----
+
+# check if connection to Google's DNS server can be established
+# caveat: specific IP/port which could theoretically be blocked even if internet is otherwise fine
+# 8.8.8.8:53 should be reliable though
+
+has_internet_socket <- function() {
+  is_connected <- FALSE
+  # Use a known public DNS server or a reliable website's IP
+  # Google DNS: 8.8.8.8, Port 53 (DNS) or 80 (HTTP)
+  host <- "8.8.8.8"
+  port <- 53 # DNS port is good for basic connectivity check
+  timeout_seconds <- 3 # Prevent hanging
+  
+  suppressWarnings({
+    tryCatch({
+      con <- socketConnection(host = host, port = port, blocking = FALSE, open = "w+", timeout = timeout_seconds)
+      if (isOpen(con)) {
+        is_connected <- TRUE
+        close(con)
+      }
+    }, error = function(e) {
+      is_connected <- FALSE
+    })
+  })
+  return(is_connected)
+}

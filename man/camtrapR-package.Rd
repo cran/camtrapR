@@ -77,6 +77,7 @@ These plots are generated from the record table and the camera trap table.
 \section{Prepare occupancy and spatial capture-recapture analyses, and summarise surveys}{
 
 \tabular{ll}{
+\code{\link{createCovariates}}        \tab Extract covariate values from spatial rasters and prepare rasters for spatial predictions \cr
 \code{\link{cameraOperation}}         \tab Create a camera operation matrix \cr
 \code{\link{detectionHistory}}        \tab Species detection histories for occupancy analyses (single and multi-season) \cr
 \code{\link{spatialDetectionHistory}} \tab Detection histories of individuals for spatial capture-recapture analyses  \cr
@@ -96,6 +97,8 @@ These plots are generated from the record table and the camera trap table.
 \code{\link{summary,commOccu-method}}   \tab Summarize community occupancy model \cr
 \code{\link{plot_coef}}             \tab Plot effect sizes of covariates in community occupancy model \cr
 \code{\link{plot_effects}}          \tab Plot Marginal Effects of Covariates \cr
+\code{\link{PPC.residuals}}         \tab Calculate residuals from MCMC output of occupancy models \cr
+\code{\link{PPC.community}}         \tab Calculate community-level posterior predictive checks for occupancy models \cr
 }
 }
 

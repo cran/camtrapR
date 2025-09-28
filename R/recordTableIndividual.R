@@ -352,6 +352,21 @@ recordTableIndividual <- function(inDir,
 
   max_nchar_station <- max(nchar(dirs_short))
 
+  # Ignore the ".dtrash" folder if present (on Mac)
+  if(".dtrash" %in% dirs_short) {
+    # message("Ignoring .dtrash folder.")
+    dirs <- dirs[dirs_short != ".dtrash"]
+    dirs_short <- dirs_short[dirs_short != ".dtrash"]
+  }
+  
+  # Ignore  the ".mysql.digikam" folder if present
+  if(".mysql.digikam" %in% dirs_short) {
+    # message("Ignoring .mysql.digikam folder.")
+    dirs <- dirs[dirs_short != ".mysql.digikam"]
+    dirs_short <- dirs_short[dirs_short != ".mysql.digikam"]
+  }
+  
+  
   # process video argument (if present)
   if(hasArg(video)){
     video_out <- processVideoArgument(IDfrom = IDfrom,
@@ -482,6 +497,7 @@ recordTableIndividual <- function(inDir,
 
         # sort by station, (camera), individual and time
         if(camerasIndependent == TRUE) {
+          if(all(is.na(metadata.tmp[, cameraCol]))) stop(paste("Failed to extract camera ID from", cameraID))
           metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,individualCol], metadata.tmp[,cameraCol], metadata.tmp$DateTimeOriginal),]
         } else {
           metadata.tmp <- metadata.tmp[order(metadata.tmp[,stationCol], metadata.tmp[,individualCol], metadata.tmp$DateTimeOriginal),]
