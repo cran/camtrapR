@@ -1,14 +1,14 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # camtrapR
 
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/camtrapR)](https://CRAN.R-project.org/package=camtrapR)
+status](https://www.r-pkg.org/badges/version-ago/camtrapR)](https://CRAN.R-project.org/package=camtrapR)
+![](https://cranlogs.r-pkg.org/badges/grand-total/camtrapR)
 [![](http://cranlogs.r-pkg.org/badges/camtrapR)](https://cran.r-project.org/package=camtrapR)
-<!-- [![Build Status](https://travis-ci.org/jniedballa/camtrapR.svg?branch=master)](https://travis-ci.org/jniedballa/camtrapR) -->
+[![Codecov test
+coverage](https://codecov.io/gh/jniedballa/camtrapR/graph/badge.svg)](https://app.codecov.io/gh/jniedballa/camtrapR)
 <!-- badges: end -->
 
 camtrapR is a package for camera trap data management in R.
@@ -46,7 +46,7 @@ You can also install a previous version (e.g. if a recent update broke
 the code you need to run urgently) via:
 
 ``` r
-remotes::install_version(package = "camtrapR", version = "2.0.3")
+remotes::install_version(package = "camtrapR", version = "2.3.1")
 ```
 
 ## Exiftool
