@@ -1,3 +1,12 @@
+# camtrapR 3.0.3
+
+## bugfixes
+* surveyDashboard: in covariate extraction, fix "Error in date$retrievalCol: object of type 'closure' is not subsettable"
+
+## Other changes
+* predict method (commOccu): improved system memory checks
+
+
 # camtrapR 3.0.2
 
 ## bugfixes

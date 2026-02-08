@@ -1,8 +1,8 @@
 Type: Package
 Package: camtrapR
 Title: Camera Trap Data Management and Analysis Framework
-Version: 3.0.2
-Date: 2026-01-25
+Version: 3.0.3
+Date: 2026-02-08
 Authors@R: c(
     person("Juergen", "Niedballa", , "camtrapr@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9187-2116")),
@@ -58,7 +58,7 @@ Encoding: UTF-8
 RoxygenNote: 7.3.3
 SystemRequirements: ExifTool (https://exiftool.org/)
 NeedsCompilation: no
-Packaged: 2026-01-25 19:57:03 UTC; Juergen
+Packaged: 2026-02-08 09:54:20 UTC; Juergen
 Author: Juergen Niedballa [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-9187-2116>),
   Alexandre Courtiol [aut] (ORCID:
@@ -78,4 +78,4 @@ Author: Juergen Niedballa [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-5073-9186>)
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-01-25 22:00:13 UTC
+Date/Publication: 2026-02-08 23:40:02 UTC
