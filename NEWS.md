@@ -1,3 +1,8 @@
+# camtrapR 3.0.4
+
+maintenance release to avoid potential problems in CRAN checks (unit tests)
+
+
 # camtrapR 3.0.3
 
 ## bugfixes
