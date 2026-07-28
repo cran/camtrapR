@@ -1,10 +1,10 @@
 Type: Package
 Package: camtrapR
 Title: Camera Trap Data Management and Analysis Framework
-Version: 3.0.4
-Date: 2026-04-26
+Version: 3.1.0
+Date: 2026-07-25
 Authors@R: c(
-    person("Juergen", "Niedballa", , "camtrapr@gmail.com", role = c("aut", "cre"),
+    person("Juergen", "Niedballa", email = "camtrapr@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9187-2116")),
     person("Alexandre", "Courtiol", role = "aut",
            comment = c(ORCID = "0000-0003-0637-2959")),
@@ -43,22 +43,22 @@ URL: https://github.com/jniedballa/camtrapR,
         https://groups.google.com/forum/#!forum/camtrapr
 BugReports: https://groups.google.com/forum/#!forum/camtrapr
 Depends: R (>= 4.1.0)
-Imports: data.table, dplyr, DT, generics, ggplot2, leaflet, lubridate,
-        methods, secr, sf, shiny, shinyBS, shinydashboard, shinyjs,
-        terra
-Suggests: abind, bayesplot, callr, coda, corrplot, elevatr, iNEXT,
-        jsonify, jsonlite, knitr, lattice, magick, mapview, mockery,
-        nimble, nimbleEcology, overlap, parallel, patchwork, pbapply,
-        plotly, psych, R.rsp, raster, reshape2, ritis, rjags, rlang,
-        rmarkdown, RSQLite, rstudioapi, scales, shinyWidgets, stringr,
-        taxize, tesseract, testthat, tibble, ubms, units, unmarked,
-        viridisLite, withr, zip
+Imports: checkmate, crayon, data.table, dplyr, DT, generics, ggplot2,
+        htmltools, leaflet, lubridate, methods, reshape2, secr, sf,
+        shiny, shinyBS, shinydashboard, shinyjs, terra, tibble
+Suggests: abind, bayesplot, callr, camtrapdp, coda, corrplot, elevatr,
+        iNEXT, jsonify, jsonlite, knitr, lattice, magick, mapview,
+        mockery, nimble, nimbleEcology, overlap, parallel, patchwork,
+        pbapply, plotly, psych, R.rsp, raster, ritis, rjags, rlang,
+        rmarkdown, RSQLite, rstudioapi, scales, shinytest2,
+        shinyWidgets, stringr, taxize, tesseract, testthat, ubms,
+        units, unmarked, viridisLite, withr, zip
 VignetteBuilder: R.rsp
 Encoding: UTF-8
-RoxygenNote: 7.3.3
 SystemRequirements: ExifTool (https://exiftool.org/)
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-04-28 07:44:44 UTC; juergen
+Packaged: 2026-07-28 10:35:24 UTC; juergen
 Author: Juergen Niedballa [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-9187-2116>),
   Alexandre Courtiol [aut] (ORCID:
@@ -78,4 +78,4 @@ Author: Juergen Niedballa [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-5073-9186>)
 Maintainer: Juergen Niedballa <camtrapr@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-04-30 08:10:02 UTC
+Date/Publication: 2026-07-28 11:20:02 UTC
