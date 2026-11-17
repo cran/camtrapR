@@ -69,14 +69,13 @@ remotes::install_version(package = "camtrapR", version = "3.0.1")
 ## Exiftool
 
 Many camtrapR functions read EXIF metadata from JPG images and videos
-via [**Exiftool**](https://exiftool.sourceforge.net/), a free and
-open-source tool by Phil Harvey (available for Windows, macOS, and
-Linux).
+via [**Exiftool**](https://exiftool.org/), a free and open-source tool
+by Phil Harvey (available for Windows, macOS, and Linux).
 
 To make full use of camtrapR, you will need Exiftool on your system. See
 the installation instructions in [vignette
 1](https://CRAN.R-project.org/package=camtrapR/vignettes/camtrapr1.pdf)
-and the [Exiftool website](https://exiftool.sourceforge.net/).
+and the [Exiftool website](https://exiftool.org/).
 
 > If you only use camtrapR to create model input from existing record
 > tables (without working with raw image files), Exiftool is not
@@ -106,24 +105,26 @@ locally after installation with `browseVignettes("camtrapR")`.
 
 ## Further reading
 
+Niedballa, J., Sollmann, R., Courtiol, A., Deere, N. J., Struebig, M.
+J., & Wilting, A. (2026). The camtrapR R package: From data management
+to interactive ecological analysis of camera trap data. *Methods in
+Ecology and Evolution*, 00, 1–8.
+<https://doi.org/10.1111/2041-210x.70409>
+
 Niedballa, J., Sollmann, R., Courtiol, A., Wilting, A. (2016). camtrapR:
 an R package for efficient camera trap data management. *Methods in
 Ecology and Evolution*, 7(12), 1457–1462.
 <https://doi.org/10.1111/2041-210X.12600>
 
-Niedballa, J., Sollmann, R., Wilting, A. (2025) The camtrapR R package:
-From data management to interactive ecological analysis of camera trap
-data. *bioRxiv* 2025.09.26.678697; doi:
-<https://doi.org/10.1101/2025.09.26.678697>
-
 ## Citation
 
 To cite camtrapR in publications, please use:
 
-> Niedballa, J., Sollmann, R., Courtiol, A., Wilting, A. (2016).
-> camtrapR: an R package for efficient camera trap data management.
-> *Methods in Ecology and Evolution* 7(12), 1457–1462.
-> <https://doi.org/10.1111/2041-210X.12600>
+Niedballa, J., Sollmann, R., Courtiol, A., Deere, N. J., Struebig, M.
+J., & Wilting, A. (2026). The camtrapR R package: From data management
+to interactive ecological analysis of camera trap data. Methods in
+Ecology and Evolution, 00, 1–8.
+<https://doi.org/10.1111/2041-210x.70409>
 
 or run `citation("camtrapR")` in R.
 

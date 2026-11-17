@@ -6759,7 +6759,7 @@ surveyDashboard <- function(CTtable = NULL,
           # --- Process the results ---
           
           # Get prediction extent if clipping is requested (this seems redundant if createCovariates handles it internally based on buffer_aoi?)
-          # Keep it for now in case createCovariates doesn't clip internally
+          # createCovariates Creates rectangular clip. This is buffered. Prediction rasters below are masked to ensure match.
           prediction_extent <- if (input$predictionExtent != "none") {
             get_prediction_extent( # Ensure this helper function still works or adapt it
               points_sf = data$CTtable_sf,
@@ -6832,6 +6832,18 @@ surveyDashboard <- function(CTtable = NULL,
             #    }
             # }
             # --- Potential Redundant Clipping End ---
+            
+            
+            # Mask prediction rasters if requested
+            if(!is.null(prediction_extent)) {
+              mask_tmp <- vect(prediction_extent)
+              
+              pred_rasts <- mask(x = pred_rasts,
+                                 mask = mask_tmp)
+              # original covariate rasters are not masked at the moment
+              
+            }
+            
             
             if (!is.null(data$prediction_raster)) {
               existing_pred_names <- names(data$prediction_raster)
@@ -9832,7 +9844,7 @@ surveyDashboard <- function(CTtable = NULL,
           
           showNotification("Model run completed", type = "message")
         }, error = function(e) {
-          showNotification(paste("Error fitting model:", e$message), type = "error")
+          showNotification(paste("Error fitting model:", e$message), type = "error", duration = 10)
           print(paste("Detailed error:", e))
         })
       })

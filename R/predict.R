@@ -5,6 +5,7 @@
 # - nested  / other random effects
 # - allow for alpha if it only has site covariates?
 
+# TODO: replace rownames(object@data$y) / dimnames(object@data$y)[1] / dimnames(object@data$y)[[1]] with single new object throughout
 
 setGeneric("predict", function(object, ...) {})
 
@@ -29,6 +30,9 @@ predictionMapsCommunity <- function(object,
                                       "p_array"))
   interval <- match.arg(interval, choices = c("none", "confidence"))
 
+  if (!requireNamespace("coda", quietly = TRUE)) {
+    stop("Package 'coda' is required to predict from this model. Please install it.")
+  }
   
   if(.hasSlot(object, "model")) {
     if(object@model != "RN"){
@@ -80,7 +84,10 @@ predictionMapsCommunity <- function(object,
   
   
   # subset posterior matrix to number of draws
-  posterior_matrix <- as.matrix(mcmc.list)
+  
+  posterior_matrix <- as.matrix(mcmc.list)   # can fail in new session when coda not loaded yet
+  # posterior_matrix <- do.call("rbind", mcmc.list)  # this is safer but likely not needed with requireNamespace above
+  
   if(hasArg(draws)) {
     if(nrow(posterior_matrix) > draws){
       selected_rows <- sort(sample(1:nrow(posterior_matrix), draws))
@@ -118,6 +125,7 @@ rast(YourRaster)")
     values_to_predict_all <- as.data.frame(terra::values(x))
   } else {
     if(is.data.frame(x)) {
+      if("tbl_df" %in% class(x)) x <- as.data.frame(x)
       values_to_predict_all <- x
     } else {
       stop("x must be a SpatRaster, data.frame, or NULL")
